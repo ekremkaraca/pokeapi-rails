@@ -1,5 +1,6 @@
 require Rails.root.join("lib/pokeapi/contract/openapi_drift")
 require Rails.root.join("lib/pokeapi/contract/report_formatter")
+require Rails.root.join("lib/pokeapi/contract/openapi_validator")
 
 namespace :pokeapi do
   namespace :contract do
@@ -27,6 +28,14 @@ namespace :pokeapi do
       end
 
       raise "Contract drift detected" unless result[:matches]
+    end
+
+    desc "Validate /api/v3 OpenAPI skeleton contract file"
+    task :validate_v3_openapi do
+      openapi_path = ENV.fetch("V3_OPENAPI_PATH", Rails.root.join("docs/openapi-v3.yml").to_s)
+      validator = Pokeapi::Contract::OpenapiValidator.new(path: openapi_path)
+      validator.validate
+      puts "Validated v3 OpenAPI: #{openapi_path}"
     end
   end
 end

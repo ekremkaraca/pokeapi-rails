@@ -50,6 +50,9 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+      - name: Validate /api/v3 OpenAPI skeleton
+        run: bin/rails pokeapi:contract:validate_v3_openapi
+
   api_contract_parity:
     runs-on: ubuntu-latest
     timeout-minutes: 90

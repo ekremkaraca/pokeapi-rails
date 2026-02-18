@@ -16,6 +16,8 @@ This file is the single checkpoint for where to continue work next.
 - Contract drift checker exists: `bin/rails pokeapi:contract:drift` (source OpenAPI vs Rails routes).
 - Contract drift task supports machine-readable output: `OUTPUT_FORMAT=json`.
 - CI workflow includes API contract/parity job (import smoke + import all + `core` parity + contract drift).
+- `/api/v3` OpenAPI skeleton exists: `docs/openapi-v3.yml`.
+- v3 OpenAPI validation task exists: `bin/rails pokeapi:contract:validate_v3_openapi`.
 
 ## Next Target (Primary)
 
@@ -66,3 +68,4 @@ RAILS_BASE_URL=http://localhost:3000 SOURCE_BASE_URL=http://localhost:8000 bin/r
 
 - Expand `full` profile path coverage with at least one curated high-cardinality detail endpoint per resource family.
 - Add fast-path CI variant (smoke parity + contract drift only) to reduce runtime on non-main branches.
+- Start `/api/v3` Phase 1 foundation with one pilot endpoint and shared conventions.
