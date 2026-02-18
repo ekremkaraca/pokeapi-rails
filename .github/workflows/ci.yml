@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Scan for common Rails security vulnerabilities using static analysis
+        run: bin/brakeman --no-pager
+      
+      - name: Scan for known security vulnerabilities in gems used
+        run: bin/bundler-audit
+      
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      RUBOCOP_CACHE_ROOT: tmp/rubocop
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Prepare RuboCop cache
+        uses: actions/cache@v4
+        env:
+          DEPENDENCIES_HASH: ${{ hashFiles('.ruby-version', '**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile.lock') }}
+        with:
+          path: ${{ env.RUBOCOP_CACHE_ROOT }}
+          key: rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
+          restore-keys: |
+            rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-
+
+      - name: Lint code for consistent style
+        run: bin/rubocop -f github
+
+  api_contract_parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pokeapi_rails_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d pokeapi_rails_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/pokeapi_rails_ci
+      SOURCE_BASE_URL: https://pokeapi.co
+      RAILS_BASE_URL: http://127.0.0.1:3000
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Prepare database
+        run: bin/rails db:prepare
+
+      - name: Import smoke check
+        run: bin/rails pokeapi:import:language
+
+      - name: Import all data
+        run: bin/rails pokeapi:import:all
+
+      - name: Boot Rails API
+        run: bin/rails server -b 127.0.0.1 -p 3000 -d
+
+      - name: Wait for Rails API
+        run: |
+          for i in {1..30}; do
+            if curl -fsS "$RAILS_BASE_URL/api/v2/" > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Rails API did not become ready in time"
+          exit 1
+
+      - name: Run core parity diff (JSON report)
+        run: |
+          mkdir -p tmp/reports
+          OUTPUT_FORMAT=json PATH_PROFILE=core bin/rails pokeapi:parity:diff | tee tmp/reports/parity-core.json
+
+      - name: Download source OpenAPI
+        run: |
+          mkdir -p tmp/reports
+          curl -fsSL https://raw.githubusercontent.com/PokeAPI/pokeapi/master/openapi.yml -o tmp/reports/source-openapi.yml
+
+      - name: Run contract drift (JSON report)
+        run: |
+          OUTPUT_FORMAT=json SOURCE_OPENAPI_PATH=tmp/reports/source-openapi.yml bin/rails pokeapi:contract:drift | tee tmp/reports/contract-drift.json
+
+      - name: Upload API reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-contract-parity-reports
+          path: tmp/reports
