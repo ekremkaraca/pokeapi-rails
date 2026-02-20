@@ -79,27 +79,27 @@ module Api
 
         # Cap high-cardinality include expansions per move to preserve latency
         # budgets while keeping deterministic output ordering by pokemon id.
-        id_list = ids.map { |id| Integer(id) }.join(",")
-        sql = <<~SQL.squish
-          WITH dedup AS (
-            SELECT DISTINCT move_id, pokemon_id
-            FROM pokemon_move
-            WHERE move_id IN (#{id_list})
-          ),
-          ranked AS (
-            SELECT move_id, pokemon_id, ROW_NUMBER() OVER (
-              PARTITION BY move_id
-              ORDER BY pokemon_id ASC
+        dedup_scope = PokePokemonMove
+          .select("DISTINCT pokemon_move.move_id, pokemon_move.pokemon_id")
+          .where(move_id: ids)
+
+        ranked_scope = PokePokemonMove
+          .from("(#{dedup_scope.to_sql}) dedup")
+          .select(<<~SQL.squish)
+            dedup.move_id,
+            dedup.pokemon_id,
+            ROW_NUMBER() OVER (
+              PARTITION BY dedup.move_id
+              ORDER BY dedup.pokemon_id ASC
             ) AS rn
-            FROM dedup
-          )
-          SELECT ranked.move_id, pokemon.id, pokemon.name
-          FROM ranked
-          INNER JOIN pokemon ON pokemon.id = ranked.pokemon_id
-          WHERE ranked.rn <= #{MAX_INCLUDED_POKEMON_PER_MOVE}
-          ORDER BY ranked.move_id ASC, pokemon.id ASC
-        SQL
-        rows = ActiveRecord::Base.connection.select_rows(sql)
+          SQL
+
+        rows = PokePokemonMove
+          .from("(#{ranked_scope.to_sql}) ranked")
+          .joins("INNER JOIN pokemon ON pokemon.id = ranked.pokemon_id")
+          .where("ranked.rn <= ?", MAX_INCLUDED_POKEMON_PER_MOVE)
+          .order(Arel.sql("ranked.move_id ASC, pokemon.id ASC"))
+          .pluck("ranked.move_id", "pokemon.id", "pokemon.name")
 
         rows.each_with_object({}) do |(move_id, pokemon_id, pokemon_name), acc|
           move_id = move_id.to_i

@@ -10,12 +10,13 @@ module Api
       include Sortable
 
       def index
+        characteristic_table = PokeCharacteristic.arel_table
         render_index_flow(
           scope: PokeCharacteristic.order(:id),
           cache_key: "v3/characteristic#index",
           sort_allowed: %i[id gene_mod_5 stat_id],
           sort_default: "id",
-          q_column: "id::text",
+          q_column: Arel.sql("CAST(#{characteristic_table.name}.id AS TEXT)"),
           filter_allowed: []
         )
       end

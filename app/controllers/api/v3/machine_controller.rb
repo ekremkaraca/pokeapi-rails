@@ -10,12 +10,16 @@ module Api
       include Sortable
 
       def index
+        machine_table = PokeMachine.arel_table
         render_index_flow(
           scope: PokeMachine.order(:id),
           cache_key: "v3/machine#index",
           sort_allowed: %i[id machine_number],
           sort_default: "id",
-          q_column: "CONCAT('machine-', machine.id)"
+          q_column: Arel::Nodes::NamedFunction.new(
+            "CONCAT",
+            [Arel::Nodes.build_quoted("machine-"), machine_table[:id]]
+          )
         )
       end
 
@@ -80,12 +84,13 @@ module Api
 
       def apply_filter_params(scope, allowed:)
         filters = normalized_filter_params(allowed: allowed)
+        table = scope.klass.arel_table
 
         filters.reduce(scope) do |current_scope, (field, value)|
           if field == "name"
             current_scope.where("CONCAT('machine-', machine.id) ILIKE ?", value)
           else
-            current_scope.where("#{field} ILIKE ?", value)
+            current_scope.where(table[field.to_sym].matches(value))
           end
         end
       end

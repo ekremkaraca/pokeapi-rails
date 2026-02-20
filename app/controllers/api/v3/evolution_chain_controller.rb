@@ -10,6 +10,7 @@ module Api
       include Sortable
 
       def index
+        species_table = PokePokemonSpecies.arel_table
         scope = PokeEvolutionChain
           .joins("LEFT JOIN pokemon_species ON pokemon_species.evolution_chain_id = evolution_chain.id")
           .select("evolution_chain.*")
@@ -21,7 +22,7 @@ module Api
           cache_key: "v3/evolution-chain#index",
           sort_allowed: %i[id],
           sort_default: "id",
-          q_column: "pokemon_species.name"
+          q_column: species_table[:name]
         )
       end
 
@@ -83,6 +84,19 @@ module Api
         }
         payload[:pokemon_species] = include_map.fetch(evolution_chain.id, []) if includes.include?(:pokemon_species)
         payload
+      end
+
+      def apply_filter_params(scope, allowed:)
+        filters = normalized_filter_params(allowed: allowed)
+        species_table = PokePokemonSpecies.arel_table
+
+        filters.reduce(scope) do |current_scope, (field, value)|
+          if field == "name"
+            current_scope.where(species_table[:name].matches(value))
+          else
+            current_scope
+          end
+        end
       end
     end
   end

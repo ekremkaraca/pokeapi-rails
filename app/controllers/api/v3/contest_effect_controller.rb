@@ -10,12 +10,16 @@ module Api
       include Sortable
 
       def index
+        contest_effect_table = PokeContestEffect.arel_table
         render_index_flow(
           scope: PokeContestEffect.order(:id),
           cache_key: "v3/contest_effect#index",
           sort_allowed: %i[id appeal jam],
           sort_default: "id",
-          q_column: "CONCAT('contest-effect-', contest_effect.id)"
+          q_column: Arel::Nodes::NamedFunction.new(
+            "CONCAT",
+            [Arel::Nodes.build_quoted("contest-effect-"), contest_effect_table[:id]]
+          )
         )
       end
 
@@ -86,12 +90,13 @@ module Api
 
       def apply_filter_params(scope, allowed:)
         filters = normalized_filter_params(allowed: allowed)
+        table = scope.klass.arel_table
 
         filters.reduce(scope) do |current_scope, (field, value)|
           if field == "name"
             current_scope.where("CONCAT('contest-effect-', contest_effect.id) ILIKE ?", value)
           else
-            current_scope.where("#{field} ILIKE ?", value)
+            current_scope.where(table[field.to_sym].matches(value))
           end
         end
       end

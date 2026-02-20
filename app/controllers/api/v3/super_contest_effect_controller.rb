@@ -10,12 +10,13 @@ module Api
       include Sortable
 
       def index
+        super_contest_effect_table = PokeSuperContestEffect.arel_table
         render_index_flow(
           scope: PokeSuperContestEffect.order(:id),
           cache_key: "v3/super_contest_effect#index",
           sort_allowed: %i[id appeal],
           sort_default: "id",
-          q_column: "id::text",
+          q_column: Arel.sql("CAST(#{super_contest_effect_table.name}.id AS TEXT)"),
           filter_allowed: []
         )
       end

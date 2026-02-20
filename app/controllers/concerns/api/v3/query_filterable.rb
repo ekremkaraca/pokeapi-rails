@@ -10,16 +10,26 @@ module Api
         return scope if query.empty?
 
         escaped_query = ActiveRecord::Base.sanitize_sql_like(query)
-        scope.where("#{column} ILIKE ?", "%#{escaped_query}%")
+        pattern = "%#{escaped_query}%"
+
+        case column
+        when Symbol
+          scope.where(scope.klass.arel_table[column].matches(pattern))
+        when Arel::Attributes::Attribute, Arel::Nodes::Node, Arel::Nodes::SqlLiteral
+          scope.where(Arel::Nodes::InfixOperation.new("ILIKE", column, Arel::Nodes.build_quoted(pattern)))
+        else
+          raise ArgumentError, "Unsupported q filter column: #{column.inspect}"
+        end
       end
 
       # Applies allowlisted exact-match filters from `filter[field]=value`.
       # Unknown filter fields raise InvalidQueryParameterError.
       def apply_filter_params(scope, allowed:)
         filters = normalized_filter_params(allowed: allowed)
+        table = scope.klass.arel_table
 
         filters.reduce(scope) do |current_scope, (field, value)|
-          current_scope.where("#{field} ILIKE ?", value)
+          current_scope.where(table[field.to_sym].matches(value))
         end
       end
 
