@@ -1,0 +1,49 @@
+name: Deploy Railway (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to deploy (branch, tag, or SHA)"
+        required: true
+        default: "master"
+      service:
+        description: "Railway service name"
+        required: true
+        default: "web"
+      allow_non_master:
+        description: "Allow deploy when ref is not master"
+        required: true
+        default: "false"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Validate deploy ref
+        run: |
+          if [ "${{ github.event.inputs.ref }}" != "master" ] && [ "${{ github.event.inputs.allow_non_master }}" != "true" ]; then
+            echo "Ref '${{ github.event.inputs.ref }}' is not master."
+            echo "Set allow_non_master=true to proceed intentionally."
+            exit 1
+          fi
+
+      - name: Deploy to Railway
+        run: railway up --service "${{ github.event.inputs.service }}" --detach
