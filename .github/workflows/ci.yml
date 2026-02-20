@@ -130,7 +130,7 @@ jobs:
 
       - name: Upload API reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: api-contract-parity-reports
           path: tmp/reports
