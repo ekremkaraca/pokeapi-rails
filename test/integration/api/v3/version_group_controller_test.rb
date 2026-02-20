@@ -87,7 +87,7 @@ class Api::V3::VersionGroupControllerTest < ActionDispatch::IntegrationTest
     result = payload.fetch("results").first
     assert_equal "red-blue", result["name"]
     assert_equal "generation-i", result.dig("generation", "name")
-    assert_match(%r{/api/v2/generation/\d+/$}, result.dig("generation", "url"))
+    assert_match(%r{/api/v3/generation/\d+/$}, result.dig("generation", "url"))
   end
 
   test "show returns version-group payload with standardized keys" do
@@ -111,7 +111,7 @@ class Api::V3::VersionGroupControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
 
     assert_equal "generation-i", payload.dig("generation", "name")
-    assert_match(%r{/api/v2/generation/\d+/$}, payload.dig("generation", "url"))
+    assert_match(%r{/api/v3/generation/\d+/$}, payload.dig("generation", "url"))
   end
 
   test "show returns standardized not found envelope for invalid token" do

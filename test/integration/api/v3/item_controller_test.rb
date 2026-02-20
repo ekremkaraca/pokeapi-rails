@@ -90,7 +90,7 @@ class Api::V3::ItemControllerTest < ActionDispatch::IntegrationTest
     result = payload.fetch("results").first
     assert_equal "potion", result["name"]
     assert_equal "medicine", result.dig("category", "name")
-    assert_match(%r{/api/v2/item-category/\d+/$}, result.dig("category", "url"))
+    assert_match(%r{/api/v3/item-category/\d+/$}, result.dig("category", "url"))
   end
 
   test "show returns item payload with standardized keys" do
@@ -115,7 +115,7 @@ class Api::V3::ItemControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
 
     assert_equal "medicine", payload.dig("category", "name")
-    assert_match(%r{/api/v2/item-category/\d+/$}, payload.dig("category", "url"))
+    assert_match(%r{/api/v3/item-category/\d+/$}, payload.dig("category", "url"))
   end
 
   test "show returns standardized not found envelope for invalid token" do

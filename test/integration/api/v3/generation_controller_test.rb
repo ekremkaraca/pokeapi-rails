@@ -89,7 +89,7 @@ class Api::V3::GenerationControllerTest < ActionDispatch::IntegrationTest
     result = payload.fetch("results").first
     assert_equal "generation-i", result["name"]
     assert_equal "kanto", result.dig("main_region", "name")
-    assert_match(%r{/api/v2/region/\d+/$}, result.dig("main_region", "url"))
+    assert_match(%r{/api/v3/region/\d+/$}, result.dig("main_region", "url"))
   end
 
   test "show returns generation payload with standardized keys" do
@@ -113,7 +113,7 @@ class Api::V3::GenerationControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
 
     assert_equal "kanto", payload.dig("main_region", "name")
-    assert_match(%r{/api/v2/region/\d+/$}, payload.dig("main_region", "url"))
+    assert_match(%r{/api/v3/region/\d+/$}, payload.dig("main_region", "url"))
   end
 
   test "show returns standardized not found envelope for invalid token" do

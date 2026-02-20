@@ -129,7 +129,7 @@ module Api
           acc[item_id] = {
             id: category_id,
             name: category_name,
-            url: canonical_url_for_id(category_id, :api_v2_item_category_url)
+            url: canonical_url_for_id(category_id, :api_v3_item_category_url)
           }
         end
       end
@@ -148,7 +148,7 @@ module Api
           acc[species_id] = {
             id: generation_id,
             name: generation_name,
-            url: canonical_url_for_id(generation_id, :api_v2_generation_url)
+            url: canonical_url_for_id(generation_id, :api_v3_generation_url)
           }
         end
       end
@@ -167,7 +167,7 @@ module Api
           acc[generation_id] = {
             id: region_id,
             name: region_name,
-            url: canonical_url_for_id(region_id, :api_v2_region_url)
+            url: canonical_url_for_id(region_id, :api_v3_region_url)
           }
         end
       end
@@ -186,7 +186,7 @@ module Api
           acc[version_group_id] = {
             id: generation_id,
             name: generation_name,
-            url: canonical_url_for_id(generation_id, :api_v2_generation_url)
+            url: canonical_url_for_id(generation_id, :api_v3_generation_url)
           }
         end
       end
@@ -287,7 +287,7 @@ module Api
           acc[flavor_id] = {
             id: contest_type_id,
             name: contest_type_name,
-            url: canonical_url_for_id(contest_type_id, :api_v2_contest_type_url)
+            url: canonical_url_for_id(contest_type_id, :api_v3_contest_type_url)
           }
         end
       end
@@ -348,7 +348,7 @@ module Api
           acc[category_id] = {
             id: pocket_id,
             name: pocket_name,
-            url: canonical_url_for_id(pocket_id, :api_v2_item_pocket_url)
+            url: canonical_url_for_id(pocket_id, :api_v3_item_pocket_url)
           }
         end
       end

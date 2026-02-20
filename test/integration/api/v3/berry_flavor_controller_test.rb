@@ -86,7 +86,7 @@ class Api::V3::BerryFlavorControllerTest < ActionDispatch::IntegrationTest
     result = payload.fetch("results").first
     assert_equal "spicy", result["name"]
     assert_equal "cool", result.dig("contest_type", "name")
-    assert_match(%r{/api/v2/contest-type/\d+/$}, result.dig("contest_type", "url"))
+    assert_match(%r{/api/v3/contest-type/\d+/$}, result.dig("contest_type", "url"))
   end
 
   test "show returns berry flavor payload with standardized keys" do
@@ -110,7 +110,7 @@ class Api::V3::BerryFlavorControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
 
     assert_equal "beauty", payload.dig("contest_type", "name")
-    assert_match(%r{/api/v2/contest-type/\d+/$}, payload.dig("contest_type", "url"))
+    assert_match(%r{/api/v3/contest-type/\d+/$}, payload.dig("contest_type", "url"))
   end
 
   test "show returns standardized not found envelope for invalid token" do
