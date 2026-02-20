@@ -39,7 +39,7 @@ class Api::V2::MoveCategoryControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["field-effect"], names
+    assert_equal [ "field-effect" ], names
   end
 
   test "show supports retrieval by id and name" do

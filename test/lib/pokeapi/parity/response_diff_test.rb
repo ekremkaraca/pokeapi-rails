@@ -20,10 +20,10 @@ class Pokeapi::Parity::ResponseDiffTest < ActiveSupport::TestCase
 
   test "normalizes explicit paths and preserves uniqueness" do
     paths = Pokeapi::Parity::ResponseDiff.resolve_paths(
-      paths: ["api/v2/pokemon/1/", " /api/v2/pokemon/1/ ", "/api/v2", "/api/v2/ability/1/"]
+      paths: [ "api/v2/pokemon/1/", " /api/v2/pokemon/1/ ", "/api/v2", "/api/v2/ability/1/" ]
     )
 
-    assert_equal ["/api/v2/pokemon/1/", "/api/v2/", "/api/v2/ability/1/"], paths
+    assert_equal [ "/api/v2/pokemon/1/", "/api/v2/", "/api/v2/ability/1/" ], paths
   end
 
   test "normalizes base urls and produces no diff for equivalent payloads" do

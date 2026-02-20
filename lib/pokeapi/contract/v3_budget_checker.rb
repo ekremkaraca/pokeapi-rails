@@ -50,7 +50,7 @@ module Pokeapi
       end
 
       def budget_for(scenario)
-        key = [scenario.fetch(:kind), scenario.fetch(:include)]
+        key = [ scenario.fetch(:kind), scenario.fetch(:include) ]
         budgets.fetch(key)
       end
 

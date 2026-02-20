@@ -274,19 +274,19 @@ namespace :pokeapi do
       ]
 
       budgets = {
-        [:list, false] => {
+        [ :list, false ] => {
           query_max: ENV.fetch("V3_BUDGET_LIST_QUERY_MAX", "8").to_i,
           response_ms_max: ENV.fetch("V3_BUDGET_LIST_RESPONSE_MS_MAX", "150").to_f
         },
-        [:detail, false] => {
+        [ :detail, false ] => {
           query_max: ENV.fetch("V3_BUDGET_DETAIL_QUERY_MAX", "6").to_i,
           response_ms_max: ENV.fetch("V3_BUDGET_DETAIL_RESPONSE_MS_MAX", "120").to_f
         },
-        [:list, true] => {
+        [ :list, true ] => {
           query_max: ENV.fetch("V3_BUDGET_LIST_INCLUDE_QUERY_MAX", "12").to_i,
           response_ms_max: ENV.fetch("V3_BUDGET_LIST_INCLUDE_RESPONSE_MS_MAX", "220").to_f
         },
-        [:detail, true] => {
+        [ :detail, true ] => {
           query_max: ENV.fetch("V3_BUDGET_DETAIL_INCLUDE_QUERY_MAX", "10").to_i,
           response_ms_max: ENV.fetch("V3_BUDGET_DETAIL_INCLUDE_RESPONSE_MS_MAX", "180").to_f
         }

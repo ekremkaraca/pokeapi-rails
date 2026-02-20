@@ -18,7 +18,7 @@ module Api
           sort_default: "id",
           q_column: Arel::Nodes::NamedFunction.new(
             "CONCAT",
-            [Arel::Nodes.build_quoted("machine-"), machine_table[:id]]
+            [ Arel::Nodes.build_quoted("machine-"), machine_table[:id] ]
           )
         )
       end

@@ -338,7 +338,7 @@ module Api
         lookup_id = normalized_id(id, allow_zero: allow_zero)
         return nil unless lookup_id
 
-        records_by_id(model_class, [lookup_id], allow_zero: allow_zero)[lookup_id]
+        records_by_id(model_class, [ lookup_id ], allow_zero: allow_zero)[lookup_id]
       end
 
       def lookup_cache_for(model_class)

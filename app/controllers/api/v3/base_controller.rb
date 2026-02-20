@@ -74,7 +74,7 @@ module Api
         normalized_variation = variation.to_h.sort.to_h
 
         stale?(
-          etag: [cache_key, normalized_variation, scope.count, last_modified&.utc&.to_i],
+          etag: [ cache_key, normalized_variation, scope.count, last_modified&.utc&.to_i ],
           last_modified: last_modified,
           public: true
         )
@@ -84,7 +84,7 @@ module Api
         normalized_variation = variation.to_h.sort.to_h
 
         stale?(
-          etag: [cache_key, normalized_variation, record.cache_key_with_version],
+          etag: [ cache_key, normalized_variation, record.cache_key_with_version ],
           last_modified: record.updated_at,
           public: true
         )

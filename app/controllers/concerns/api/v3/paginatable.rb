@@ -15,7 +15,7 @@ module Api
         total_count = scope.count
 
         paginated_scope = scope.limit(limit).offset(offset)
-        [paginated_scope, pagination_meta(total_count: total_count, limit: limit, offset: offset)]
+        [ paginated_scope, pagination_meta(total_count: total_count, limit: limit, offset: offset) ]
       end
 
       # Normalizes `limit` and clamps it to MAX_LIMIT.
@@ -23,7 +23,7 @@ module Api
         value = params[:limit].to_i
         return DEFAULT_LIMIT if value <= 0
 
-        [value, MAX_LIMIT].min
+        [ value, MAX_LIMIT ].min
       end
 
       # Normalizes `offset`, never allowing negative values.
@@ -55,7 +55,7 @@ module Api
       def previous_page_url(limit:, offset:)
         return nil if offset <= 0
 
-        previous_offset = [offset - limit, 0].max
+        previous_offset = [ offset - limit, 0 ].max
         build_page_url(limit: limit, offset: previous_offset)
       end
 

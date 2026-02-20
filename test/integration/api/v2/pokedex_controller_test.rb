@@ -42,7 +42,7 @@ class Api::V2::PokedexControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["original-johto"], names
+    assert_equal [ "original-johto" ], names
   end
 
   test "show supports retrieval by id and name" do

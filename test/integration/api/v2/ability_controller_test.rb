@@ -42,7 +42,7 @@ class Api::V2::AbilityControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["swift-swim"], names
+    assert_equal [ "swift-swim" ], names
   end
 
   test "show supports retrieval by id and name" do
@@ -93,6 +93,6 @@ class Api::V2::AbilityControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
 
-    assert_equal ["alpha-mon", "beta-mon"], payload["pokemon"].map { |row| row.dig("pokemon", "name") }
+    assert_equal [ "alpha-mon", "beta-mon" ], payload["pokemon"].map { |row| row.dig("pokemon", "name") }
   end
 end

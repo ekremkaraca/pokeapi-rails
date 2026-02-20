@@ -41,7 +41,7 @@ class Api::V3::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
 
     assert_equal 1, payload["count"]
-    assert_equal [PokeEvolutionChain.order(:id).first.id], payload.fetch("results").map { |item| item["id"] }
+    assert_equal [ PokeEvolutionChain.order(:id).first.id ], payload.fetch("results").map { |item| item["id"] }
   end
 
   test "list supports filter by species name" do
@@ -79,7 +79,7 @@ class Api::V3::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     payload = JSON.parse(response.body)
-    assert_equal ["url"], payload["results"].first.keys.sort
+    assert_equal [ "url" ], payload["results"].first.keys.sort
   end
 
   test "list supports include pokemon_species" do
@@ -138,7 +138,7 @@ class Api::V3::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "fields", payload.dig("error", "details", "param")
-    assert_equal ["unknown"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid include parameter" do
@@ -149,7 +149,7 @@ class Api::V3::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "include", payload.dig("error", "details", "param")
-    assert_equal ["unknown"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid sort parameter" do
@@ -160,7 +160,7 @@ class Api::V3::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "sort", payload.dig("error", "details", "param")
-    assert_equal ["name"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "name" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid filter parameter" do
@@ -171,7 +171,7 @@ class Api::V3::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "filter", payload.dig("error", "details", "param")
-    assert_equal ["id"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "id" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "list and show accept trailing slash" do

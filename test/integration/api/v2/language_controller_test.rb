@@ -42,7 +42,7 @@ class Api::V2::LanguageControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["ja"], names
+    assert_equal [ "ja" ], names
   end
 
   test "show supports retrieval by id and name" do

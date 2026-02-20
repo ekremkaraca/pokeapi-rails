@@ -36,7 +36,7 @@ class Api::V2::ItemControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal 3, payload["count"]
-    assert_equal ["master-ball", "ultra-ball", "great-ball"].sort, payload["results"].map { |record| record["name"] }.sort
+    assert_equal [ "master-ball", "ultra-ball", "great-ball" ].sort, payload["results"].map { |record| record["name"] }.sort
   end
 
   test "show supports retrieval by id and name" do

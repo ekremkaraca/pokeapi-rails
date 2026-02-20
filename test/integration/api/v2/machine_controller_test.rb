@@ -20,7 +20,7 @@ class Api::V2::MachineControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
     assert_equal 3, payload["count"]
     assert_equal 2, payload["results"].length
-    assert_equal ["url"], payload["results"].first.keys.sort
+    assert_equal [ "url" ], payload["results"].first.keys.sort
     assert_match(%r{/api/v2/machine/\d+/$}, payload["results"].first["url"])
   end
 

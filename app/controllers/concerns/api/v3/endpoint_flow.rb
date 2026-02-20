@@ -97,7 +97,7 @@ module Api
       def include_map_for_resource(record:, includes:, include_key:, loader:)
         return {} unless includes.include?(include_key)
 
-        send(loader, [record.id])
+        send(loader, [ record.id ])
       end
     end
   end

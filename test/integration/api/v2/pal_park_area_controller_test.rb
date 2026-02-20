@@ -30,7 +30,7 @@ class Api::V2::PalParkAreaControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal 1, payload["count"]
-    assert_equal ["mountain"], payload["results"].map { |record| record["name"] }
+    assert_equal [ "mountain" ], payload["results"].map { |record| record["name"] }
   end
 
   test "show supports retrieval by id and name" do

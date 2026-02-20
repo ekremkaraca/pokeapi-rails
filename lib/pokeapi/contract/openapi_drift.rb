@@ -6,7 +6,7 @@ module Pokeapi
     class OpenapiDrift
       HTTP_METHODS = %w[get post put patch delete options head].freeze
       DEFAULT_API_PREFIX = "/api/v2".freeze
-      DEFAULT_IGNORED_PATHS = ["/api/v2"].freeze
+      DEFAULT_IGNORED_PATHS = [ "/api/v2" ].freeze
 
       def initialize(source_openapi_path:, rails_routes: Rails.application.routes.routes, api_prefix: DEFAULT_API_PREFIX, ignored_paths: nil)
         @source_openapi_path = source_openapi_path

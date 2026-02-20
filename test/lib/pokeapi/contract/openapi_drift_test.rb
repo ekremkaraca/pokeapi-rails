@@ -107,7 +107,7 @@ class Pokeapi::Contract::OpenapiDriftTest < ActiveSupport::TestCase
     ).run
 
     assert_equal false, result[:matches]
-    assert_equal ["GET /api/v2/custom-only"], result[:extra_in_rails]
+    assert_equal [ "GET /api/v2/custom-only" ], result[:extra_in_rails]
     assert_equal [], result[:missing_in_rails]
   end
 
@@ -119,7 +119,7 @@ class Pokeapi::Contract::OpenapiDriftTest < ActiveSupport::TestCase
           - invalid
       YAML
     )
-    routes = [route("GET", "/api/v2/pokemon(.:format)")]
+    routes = [ route("GET", "/api/v2/pokemon(.:format)") ]
 
     error = assert_raises(ArgumentError) do
       Pokeapi::Contract::OpenapiDrift.new(

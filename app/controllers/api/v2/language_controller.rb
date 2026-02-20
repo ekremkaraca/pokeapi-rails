@@ -13,7 +13,6 @@ module Api
           official: language.official
         }
       end
-
     end
   end
 end

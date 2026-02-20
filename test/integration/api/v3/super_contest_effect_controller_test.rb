@@ -3,7 +3,7 @@ require "test_helper"
 class Api::V3::SuperContestEffectControllerTest < ActionDispatch::IntegrationTest
   setup do
     PokeSuperContestEffect.delete_all
-    [2, 3, 4].each { |appeal| PokeSuperContestEffect.create!(appeal: appeal) }
+    [ 2, 3, 4 ].each { |appeal| PokeSuperContestEffect.create!(appeal: appeal) }
   end
 
   test "list returns paginated summary data" do

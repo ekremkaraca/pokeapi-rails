@@ -30,7 +30,7 @@ class Api::V2::ItemPocketControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal 1, payload["count"]
-    assert_equal ["medicine"], payload["results"].map { |record| record["name"] }
+    assert_equal [ "medicine" ], payload["results"].map { |record| record["name"] }
   end
 
   test "show supports retrieval by id and name" do

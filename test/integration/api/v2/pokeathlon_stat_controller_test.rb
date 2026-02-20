@@ -26,7 +26,7 @@ class Api::V2::PokeathlonStatControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal 1, payload["count"]
-    assert_equal ["stamina"], payload["results"].map { |r| r["name"] }
+    assert_equal [ "stamina" ], payload["results"].map { |r| r["name"] }
   end
 
   test "show supports retrieval by id and name" do

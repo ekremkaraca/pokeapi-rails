@@ -7,7 +7,7 @@ class Pokeapi::Parity::ReportFormatterTest < ActiveSupport::TestCase
       total: 3,
       passes: 2,
       failures: [
-        { path: "/api/v2/pokemon/1/", reason: "json_diff", diff_count: 1, diffs: ["$.name: expected=\"a\" actual=\"b\""] }
+        { path: "/api/v2/pokemon/1/", reason: "json_diff", diff_count: 1, diffs: [ "$.name: expected=\"a\" actual=\"b\"" ] }
       ]
     }
 

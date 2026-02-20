@@ -17,8 +17,8 @@ class Pokeapi::Contract::V3BudgetCheckerTest < ActiveSupport::TestCase
   end
 
   test "passes when all scenarios are within budget" do
-    scenarios = [{ name: "pokemon_list", path: "/api/v3/pokemon", kind: :list, include: false }]
-    budgets = { [:list, false] => { query_max: 8, response_ms_max: 150.0 } }
+    scenarios = [ { name: "pokemon_list", path: "/api/v3/pokemon", kind: :list, include: false } ]
+    budgets = { [ :list, false ] => { query_max: 8, response_ms_max: 150.0 } }
     session = FakeSession.new(
       "/api/v3/pokemon" => FakeResponse.new(status: 200, headers: { "X-Query-Count" => "5", "X-Response-Time-Ms" => "40.12" })
     )
@@ -31,8 +31,8 @@ class Pokeapi::Contract::V3BudgetCheckerTest < ActiveSupport::TestCase
   end
 
   test "fails when query count exceeds budget" do
-    scenarios = [{ name: "pokemon_list", path: "/api/v3/pokemon", kind: :list, include: false }]
-    budgets = { [:list, false] => { query_max: 8, response_ms_max: 150.0 } }
+    scenarios = [ { name: "pokemon_list", path: "/api/v3/pokemon", kind: :list, include: false } ]
+    budgets = { [ :list, false ] => { query_max: 8, response_ms_max: 150.0 } }
     session = FakeSession.new(
       "/api/v3/pokemon" => FakeResponse.new(status: 200, headers: { "X-Query-Count" => "9", "X-Response-Time-Ms" => "40.12" })
     )
@@ -45,8 +45,8 @@ class Pokeapi::Contract::V3BudgetCheckerTest < ActiveSupport::TestCase
   end
 
   test "fails when observability headers are missing" do
-    scenarios = [{ name: "pokemon_list", path: "/api/v3/pokemon", kind: :list, include: false }]
-    budgets = { [:list, false] => { query_max: 8, response_ms_max: 150.0 } }
+    scenarios = [ { name: "pokemon_list", path: "/api/v3/pokemon", kind: :list, include: false } ]
+    budgets = { [ :list, false ] => { query_max: 8, response_ms_max: 150.0 } }
     session = FakeSession.new(
       "/api/v3/pokemon" => FakeResponse.new(status: 200, headers: {})
     )

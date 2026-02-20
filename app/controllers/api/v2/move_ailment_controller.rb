@@ -5,7 +5,6 @@ module Api
 
       MODEL_CLASS = PokeMoveAilment
       RESOURCE_URL_HELPER = :api_v2_move_ailment_url
-
     end
   end
 end

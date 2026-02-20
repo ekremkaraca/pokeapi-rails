@@ -25,7 +25,7 @@ class Api::V2::CharacteristicControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, payload["results"].length
     assert_not_nil payload["next"]
     assert_not_nil payload["previous"]
-    assert_equal ["url"], payload["results"].first.keys.sort
+    assert_equal [ "url" ], payload["results"].first.keys.sort
     assert_match(%r{/api/v2/characteristic/\d+/$}, payload["results"].first["url"])
     refute_match(%r{/api/v2/characteristic/\d+//$}, payload["results"].first["url"])
   end

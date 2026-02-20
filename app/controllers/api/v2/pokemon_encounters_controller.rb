@@ -71,7 +71,7 @@ module Api
       end
 
       def encounter_details_payload(version_rows, slots_by_id, methods_by_id, condition_rows_by_encounter, condition_values_by_id)
-        version_rows.sort_by { |row| [row.encounter_slot_id, row.id] }.filter_map do |row|
+        version_rows.sort_by { |row| [ row.encounter_slot_id, row.id ] }.filter_map do |row|
           slot = slots_by_id[row.encounter_slot_id]
           next unless slot
 

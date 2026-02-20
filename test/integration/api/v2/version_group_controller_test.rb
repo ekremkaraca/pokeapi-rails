@@ -36,7 +36,7 @@ class Api::V2::VersionGroupControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["gold-silver"], names
+    assert_equal [ "gold-silver" ], names
   end
 
   test "show supports retrieval by id and name" do

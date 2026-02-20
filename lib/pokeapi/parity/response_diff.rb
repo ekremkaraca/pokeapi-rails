@@ -8,7 +8,7 @@ module Pokeapi
       PROFILE_SMOKE = "smoke".freeze
       PROFILE_CORE = "core".freeze
       PROFILE_FULL = "full".freeze
-      VALID_PROFILES = [PROFILE_SMOKE, PROFILE_CORE, PROFILE_FULL].freeze
+      VALID_PROFILES = [ PROFILE_SMOKE, PROFILE_CORE, PROFILE_FULL ].freeze
 
       ROOT_PATH = "/api/v2/".freeze
       RESOURCE_SLUGS = [
@@ -81,7 +81,7 @@ module Pokeapi
           ]
         end
 
-        [ROOT_PATH, *resource_paths, "/api/v2/pokemon/1/encounters"].freeze
+        [ ROOT_PATH, *resource_paths, "/api/v2/pokemon/1/encounters" ].freeze
       end
       CORE_PATHS = begin
         resource_paths = CORE_SLUGS.flat_map do |slug|
@@ -91,7 +91,7 @@ module Pokeapi
           ]
         end
 
-        [ROOT_PATH, *resource_paths, "/api/v2/pokemon/1/encounters"].freeze
+        [ ROOT_PATH, *resource_paths, "/api/v2/pokemon/1/encounters" ].freeze
       end
 
       PATH_PROFILES = {

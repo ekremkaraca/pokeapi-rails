@@ -37,7 +37,7 @@ class Api::V2::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["level-up"], names
+    assert_equal [ "level-up" ], names
   end
 
   test "show supports retrieval by id and name" do

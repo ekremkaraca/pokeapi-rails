@@ -31,7 +31,7 @@ class Api::V2::MoveControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
     assert_equal 1, payload["count"]
-    assert_equal ["double-slap"], payload["results"].map { |r| r["name"] }
+    assert_equal [ "double-slap" ], payload["results"].map { |r| r["name"] }
   end
 
   test "show supports retrieval by id and name" do

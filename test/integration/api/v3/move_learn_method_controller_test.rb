@@ -98,7 +98,7 @@ class Api::V3::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
     assert_equal "fields", payload.dig("error", "details", "param")
-    assert_equal ["unknown"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid include parameter" do
@@ -107,7 +107,7 @@ class Api::V3::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
     assert_equal "include", payload.dig("error", "details", "param")
-    assert_equal ["anything"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "anything" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid sort parameter" do
@@ -116,7 +116,7 @@ class Api::V3::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
     assert_equal "sort", payload.dig("error", "details", "param")
-    assert_equal ["url"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "url" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid filter parameter" do
@@ -125,7 +125,7 @@ class Api::V3::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
     assert_equal "filter", payload.dig("error", "details", "param")
-    assert_equal ["id"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "id" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "list and show accept trailing slash" do

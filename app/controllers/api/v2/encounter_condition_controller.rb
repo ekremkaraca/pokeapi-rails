@@ -5,7 +5,6 @@ module Api
 
       MODEL_CLASS = PokeEncounterCondition
       RESOURCE_URL_HELPER = :api_v2_encounter_condition_url
-
     end
   end
 end

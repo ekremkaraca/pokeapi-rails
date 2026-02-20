@@ -19,7 +19,7 @@ class Pokeapi::Importers::MachineImporterTest < ActiveSupport::TestCase
       importer = Pokeapi::Importers::MachineImporter.new(source_root: dir)
       assert_equal 2, importer.run!
       assert_equal 2, PokeMachine.count
-      assert_equal [1, 2], PokeMachine.order(:id).pluck(:id)
+      assert_equal [ 1, 2 ], PokeMachine.order(:id).pluck(:id)
       assert_equal 0, PokeMachine.find(1).machine_number
       assert_equal 13, PokeMachine.find(2).move_id
 

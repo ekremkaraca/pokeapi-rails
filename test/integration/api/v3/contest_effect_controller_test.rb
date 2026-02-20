@@ -87,7 +87,7 @@ class Api::V3::ContestEffectControllerTest < ActionDispatch::IntegrationTest
 
     result = payload.fetch("results").first
     assert_equal contest_effect.id, result["id"]
-    assert_equal ["pound"], result.fetch("moves").map { |move| move.fetch("name") }
+    assert_equal [ "pound" ], result.fetch("moves").map { |move| move.fetch("name") }
     assert_match(%r{/api/v3/move/\d+/$}, result.dig("moves", 0, "url"))
   end
 
@@ -112,7 +112,7 @@ class Api::V3::ContestEffectControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = JSON.parse(response.body)
 
-    assert_equal ["karate-chop"], payload.fetch("moves").map { |move| move.fetch("name") }
+    assert_equal [ "karate-chop" ], payload.fetch("moves").map { |move| move.fetch("name") }
     assert_match(%r{/api/v3/move/\d+/$}, payload.dig("moves", 0, "url"))
   end
 
@@ -136,7 +136,7 @@ class Api::V3::ContestEffectControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "fields", payload.dig("error", "details", "param")
-    assert_equal ["unknown"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid include parameter" do
@@ -147,7 +147,7 @@ class Api::V3::ContestEffectControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "include", payload.dig("error", "details", "param")
-    assert_equal ["unknown"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid sort parameter" do
@@ -158,7 +158,7 @@ class Api::V3::ContestEffectControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "sort", payload.dig("error", "details", "param")
-    assert_equal ["name"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "name" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "returns bad request for invalid filter parameter" do
@@ -169,7 +169,7 @@ class Api::V3::ContestEffectControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "invalid_query", payload.dig("error", "code")
     assert_equal "filter", payload.dig("error", "details", "param")
-    assert_equal ["appeal"], payload.dig("error", "details", "invalid_values")
+    assert_equal [ "appeal" ], payload.dig("error", "details", "invalid_values")
   end
 
   test "list and show accept trailing slash" do

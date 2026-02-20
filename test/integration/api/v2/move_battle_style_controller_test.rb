@@ -36,7 +36,7 @@ class Api::V2::MoveBattleStyleControllerTest < ActionDispatch::IntegrationTest
     names = payload["results"].map { |record| record["name"] }
 
     assert_equal 1, payload["count"]
-    assert_equal ["support"], names
+    assert_equal [ "support" ], names
   end
 
   test "show supports retrieval by id and name" do

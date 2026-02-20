@@ -68,7 +68,6 @@ module Api
         payload[:abilities] = include_map.fetch(pokemon.id, []) if includes.include?(:abilities)
         payload
       end
-
     end
   end
 end

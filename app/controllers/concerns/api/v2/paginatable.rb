@@ -47,7 +47,7 @@ module Api
       def previous_page_url(limit:, offset:)
         return nil if offset <= 0
 
-        previous_offset = [offset - limit, 0].max
+        previous_offset = [ offset - limit, 0 ].max
         build_page_url(limit: limit, offset: previous_offset)
       end
 

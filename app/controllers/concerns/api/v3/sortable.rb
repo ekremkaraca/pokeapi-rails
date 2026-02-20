@@ -8,12 +8,12 @@ module Api
       # Returns [sorted_scope, canonical_sort_key] for cache variation.
       def apply_sort(scope, allowed:, default:)
         raw_sort = params[:sort].to_s.strip
-        terms = raw_sort.empty? ? [default] : raw_sort.split(",").map(&:strip).reject(&:empty?)
+        terms = raw_sort.empty? ? [ default ] : raw_sort.split(",").map(&:strip).reject(&:empty?)
 
         sort_pairs = terms.map do |term|
           direction = term.start_with?("-") ? :desc : :asc
           field = term.sub(/\A-/, "")
-          [field, direction]
+          [ field, direction ]
         end
 
         allowed_names = allowed.map(&:to_s)
@@ -27,7 +27,7 @@ module Api
         end
 
         order_hash = sort_pairs.to_h.transform_keys(&:to_sym)
-        [scope.reorder(order_hash), terms.join(",")]
+        [ scope.reorder(order_hash), terms.join(",") ]
       end
     end
   end
