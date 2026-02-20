@@ -2,6 +2,8 @@
 
 ## Status
 - Proposed
+- `/api/v3` is experimental and not yet recommended as the default public API.
+- `/api/v2` is active, supported, and not deprecated.
 - Owner: `pokeapi-rails` maintainers
 - Scope: New `/api/v3` REST surface; `/api/v2` remains frozen and supported
 
@@ -184,3 +186,76 @@ Exit criteria:
 1. Approve this RFC and lock must list.
 2. Add `/api/v3` OpenAPI skeleton file and CI validation.
 3. Implement Phase 1 foundation with one pilot endpoint.
+
+## Progress Notes
+- RFC Action #2 complete:
+  - `/api/v3` OpenAPI skeleton added at `public/openapi-v3.yml`
+  - validation task added: `bin/rails pokeapi:contract:validate_v3_openapi`
+- Versioning/adoption docs added:
+  - version/deprecation policy: `docs/api-versioning-policy.md`
+  - pilot migration guide: `docs/api-v3-migration-guide.md`
+  - pilot performance budgets: `docs/api-v3-performance-budgets.md`
+  - v3 changelog: `docs/api-v3-changelog.md`
+- Phase 1 pilot foundation started:
+  - implemented `GET /api/v3/pokemon`
+  - implemented `GET /api/v3/pokemon/{id}`
+  - implemented `GET /api/v3/ability`
+  - implemented `GET /api/v3/ability/{id}`
+  - implemented `GET /api/v3/type`
+  - implemented `GET /api/v3/type/{id}`
+  - implemented conditional GET (`ETag` + `If-None-Match`) for v3 pilot list/detail endpoints
+  - implemented allowlist-based sparse field selection via `fields=` for v3 pilot list/detail endpoints
+  - implemented allowlist-based include parsing via `include=` (with `pokemon` support for `abilities`)
+  - implemented allowlist-based include parsing via `include=` (with `ability` support for `pokemon`)
+  - implemented allowlist-based include parsing via `include=` (with `type` support for `pokemon`)
+  - implemented allowlist-based list sorting via `sort=` for v3 pilot resources
+  - implemented allowlist-based list filtering via `filter[name]=value` for v3 pilot resources
+  - documented `q` as legacy list search and defined `q` + `filter[name]` as AND semantics
+  - added `/api/v3` OpenAPI-vs-routes drift check task: `bin/rails pokeapi:contract:drift_v3`
+  - added `/api/v3` budget check task: `bin/rails pokeapi:contract:check_v3_budgets`
+  - CI now runs `/api/v3` budget check and publishes JSON artifact
+  - `/api/v3` now returns `X-API-Stability: experimental` header on all responses
+  - `/api/v3` now returns `X-Query-Count` response header for lightweight query observability
+  - `/api/v3` now returns `X-Response-Time-Ms` response header for lightweight latency observability
+  - `/api/v3` OpenAPI documents `X-API-Stability: experimental` response headers
+  - `/api/v3` OpenAPI documents `X-Query-Count` response headers
+  - standardized v3 not-found envelope in `Api::V3::BaseController`
+  - implemented `GET /api/v3/move`
+  - implemented `GET /api/v3/move/{id}`
+  - implemented `GET /api/v3/item`
+  - implemented `GET /api/v3/item/{id}`
+  - implemented `GET /api/v3/pokemon-species`
+  - implemented `GET /api/v3/pokemon-species/{id}`
+  - implemented `GET /api/v3/generation`
+  - implemented `GET /api/v3/generation/{id}`
+  - implemented `GET /api/v3/version-group`
+  - implemented `GET /api/v3/version-group/{id}`
+  - implemented `GET /api/v3/region`
+  - implemented `GET /api/v3/region/{id}`
+  - implemented `GET /api/v3/version`
+  - implemented `GET /api/v3/version/{id}`
+  - implemented `GET /api/v3/evolution-chain`
+  - implemented `GET /api/v3/evolution-chain/{id}`
+  - implemented `GET /api/v3/evolution-trigger`
+  - implemented `GET /api/v3/evolution-trigger/{id}`
+  - implemented `GET /api/v3/growth-rate`
+  - implemented `GET /api/v3/growth-rate/{id}`
+  - implemented `GET /api/v3/nature`
+  - implemented `GET /api/v3/nature/{id}`
+  - implemented `GET /api/v3/gender`
+  - implemented `GET /api/v3/gender/{id}`
+  - implemented `GET /api/v3/egg-group`
+  - implemented `GET /api/v3/egg-group/{id}`
+  - implemented `GET /api/v3/encounter-method`
+  - implemented `GET /api/v3/encounter-method/{id}`
+  - implemented `GET /api/v3/encounter-condition`
+  - implemented `GET /api/v3/encounter-condition/{id}`
+  - implemented `GET /api/v3/encounter-condition-value`
+  - implemented `GET /api/v3/encounter-condition-value/{id}`
+  - implemented `GET /api/v3/berry`
+  - implemented `GET /api/v3/berry/{id}`
+  - `/api/v3` root endpoint now includes `move` and `item` collections
+  - `/api/v3` root endpoint now includes `generation`, `version-group`, `region`, `version`, and `pokemon-species` collections
+  - `/api/v3` root endpoint now includes `evolution-chain`, `evolution-trigger`, `growth-rate`, `nature`, `gender`, `egg-group`, `encounter-method`, `encounter-condition`, `encounter-condition-value`, and `berry` collections
+  - v3 budget check scenarios expanded to include `move`, `item`, `pokemon-species`, `generation`, `version-group`, `region`, `version`, `evolution-chain`, `evolution-trigger`, `growth-rate`, `nature`, `gender`, `egg-group`, `encounter-method`, `encounter-condition`, `encounter-condition-value`, and `berry` paths
+  - v3 resource controllers refactored to reduce duplication using shared concern helpers for include-map loading and canonical URL generation

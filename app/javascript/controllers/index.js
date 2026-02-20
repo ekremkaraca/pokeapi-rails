@@ -4,5 +4,7 @@
 
 import { application } from "./application"
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
+import ApiExplorerController from "./api_explorer_controller"
+import ThemeController from "./theme_controller"
+application.register("api-explorer", ApiExplorerController)
+application.register("theme", ThemeController)

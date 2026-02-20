@@ -1,8 +1,8 @@
 # PokeAPI Rails
 
-`pokeapi-rails` is the Rails implementation effort for PokeAPI v2.
+`pokeapi-rails` is a Rails implementation of the PokeAPI platform.
 
-The goal of this project is to adopt the existing Python/Django PokeAPI codebase into Rails while preserving API behavior and contract compatibility for `/api/v2`.
+It keeps `/api/v2` behavior compatible with the existing ecosystem while building and stabilizing a normalized `/api/v3` surface with stronger contracts, performance checks, and generated OpenAPI docs.
 
 ## Docs
 
@@ -10,4 +10,7 @@ The goal of this project is to adopt the existing Python/Django PokeAPI codebase
 - Implementation status: [`docs/implementation-status.md`](docs/implementation-status.md)
 - Import guide: [`docs/importing.md`](docs/importing.md)
 - Parity diff guide: [`docs/parity-diff.md`](docs/parity-diff.md)
-- Next checkpoint: [`docs/next-target.md`](docs/next-target.md)
+
+## Thanks
+
+- Thanks to Codex for implementation support, debugging help, and migration iteration assistance.

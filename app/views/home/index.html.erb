@@ -1,0 +1,140 @@
+<main
+  class="min-h-screen bg-[radial-gradient(1200px_600px_at_10%_-10%,#fde68a_0%,transparent_55%),radial-gradient(1000px_500px_at_100%_0%,#a7f3d0_0%,transparent_50%),linear-gradient(180deg,#f8fafc_0%,#ecfeff_100%)] text-slate-900 dark:bg-[radial-gradient(1200px_600px_at_10%_-10%,#3f3f46_0%,transparent_55%),radial-gradient(1000px_500px_at_100%_0%,#0f766e_0%,transparent_50%),linear-gradient(180deg,#020617_0%,#111827_100%)] dark:text-slate-100"
+  data-controller="api-explorer theme"
+  data-api-explorer-v2-samples-value="<%= @sample_paths.fetch("v2").join("|") %>"
+  data-api-explorer-v3-samples-value="<%= @sample_paths.fetch("v3").join("|") %>"
+>
+  <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <header class="mb-12 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">PokeAPI Rails</p>
+        <h1 class="text-3xl font-black tracking-tight sm:text-4xl">Explore Pokemon Data Fast</h1>
+      </div>
+      <nav class="flex items-center gap-2 text-sm font-semibold">
+        <button type="button" data-action="theme#toggle" class="rounded-full border border-slate-300 bg-white/80 px-4 py-2 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-700">
+          <span data-theme-target="label">Switch to Dark</span>
+        </button>
+        <a class="rounded-full border border-slate-300 bg-white/80 px-4 py-2 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-700" href="/api/v2/">API v2 Root</a>
+        <a class="rounded-full border border-slate-300 bg-white/80 px-4 py-2 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-700" href="/api/v3/">API v3 Root</a>
+      </nav>
+    </header>
+
+    <section class="mb-10 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8 dark:border-slate-700 dark:bg-slate-900/70">
+      <p class="max-w-3xl text-lg leading-relaxed text-slate-700 dark:text-slate-300">
+        Test live endpoints from this page. Pick API version, type a relative path, and inspect JSON plus response headers.
+      </p>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-5">
+      <div class="lg:col-span-2">
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-900">
+          <h2 class="mb-4 text-xl font-bold">Try Endpoints</h2>
+
+          <form data-turbo="false" data-action="submit->api-explorer#submit" class="space-y-4">
+            <fieldset>
+              <legend class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">Version</legend>
+              <div class="flex gap-2">
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-sm font-semibold dark:border-slate-600">
+                  <input data-api-explorer-target="versionInput" data-action="change->api-explorer#versionChanged" class="accent-cyan-700" type="radio" name="api_version" value="v2" checked>
+                  v2
+                </label>
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-sm font-semibold dark:border-slate-600">
+                  <input data-api-explorer-target="versionInput" data-action="change->api-explorer#versionChanged" class="accent-cyan-700" type="radio" name="api_version" value="v3">
+                  v3
+                </label>
+              </div>
+            </fieldset>
+
+            <div>
+              <label for="api-path" class="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">Endpoint Path</label>
+              <div class="rounded-xl border border-slate-300 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950">
+                <p class="mb-2 text-xs text-slate-600 dark:text-slate-300">
+                  Base:
+                  <code data-api-explorer-target="basePrefix">/api/v2/</code>
+                </p>
+                <input
+                  id="api-path"
+                  data-api-explorer-target="pathInput"
+                  data-action="input->api-explorer#syncUi change->api-explorer#syncUi"
+                  type="text"
+                  value="pokemon/ditto"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm shadow-inner outline-none ring-cyan-300 focus:ring dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  placeholder="pokemon/ditto"
+                >
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <button type="submit" class="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-bold text-white hover:bg-cyan-800">Fetch JSON</button>
+              <button data-action="api-explorer#copyUrl" type="button" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800">Copy URL</button>
+              <a data-api-explorer-target="openLink" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800" target="_blank" rel="noopener">Open</a>
+            </div>
+          </form>
+
+          <div class="mt-6">
+            <h3 class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">Examples</h3>
+            <div class="flex flex-wrap gap-2" data-api-explorer-target="samples"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-3">
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-xl font-bold text-emerald-700 dark:text-emerald-300">Response</h2>
+            <p data-api-explorer-target="statusLine" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-900 dark:text-slate-300">Idle</p>
+          </div>
+          <div class="mb-3 grid gap-2 sm:grid-cols-2">
+            <p class="rounded-lg bg-slate-100 px-3 py-2 text-xs dark:bg-slate-900">URL: <code data-api-explorer-target="resolvedUrl">/api/v2/pokemon/ditto</code></p>
+            <p class="rounded-lg bg-slate-100 px-3 py-2 text-xs dark:bg-slate-900">Headers: <code data-api-explorer-target="headerLine">-</code></p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-black/40">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <p class="text-xs text-slate-700 dark:text-slate-300">Collapsible JSON Tree</p>
+              <label class="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+                <input data-api-explorer-target="rawToggle" data-action="change->api-explorer#toggleRawJson" type="checkbox" class="accent-cyan-500">
+                View raw JSON
+              </label>
+            </div>
+            <div data-api-explorer-target="jsonTree" class="max-h-[30rem] overflow-auto font-mono text-xs leading-relaxed text-slate-900 dark:text-slate-100">
+              Press "Fetch JSON" to load data.
+            </div>
+            <pre data-api-explorer-target="jsonOutput" class="hidden max-h-[30rem] overflow-auto font-mono text-xs leading-relaxed text-slate-900 dark:text-slate-100"></pre>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-900">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-xl font-bold">Recent Requests</h2>
+            <button data-action="api-explorer#clearHistory" type="button" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800">
+              Clear
+            </button>
+          </div>
+          <p data-api-explorer-target="emptyHistory" class="text-sm text-slate-600 dark:text-slate-300">
+            No requests yet. Fetch an endpoint to build history.
+          </p>
+          <ul data-api-explorer-target="history" class="space-y-2"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-6 grid gap-4 md:grid-cols-2">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <h3 class="mb-2 text-lg font-bold">v2 Quick Notes</h3>
+        <ul class="space-y-1 text-sm text-slate-700 dark:text-slate-300">
+          <li><code>limit</code> and <code>offset</code> on list endpoints.</li>
+          <li>Lookup accepts id or name in most resources.</li>
+          <li>Example: <code>/api/v2/pokemon/ditto</code></li>
+        </ul>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <h3 class="mb-2 text-lg font-bold">v3 Quick Notes</h3>
+        <ul class="space-y-1 text-sm text-slate-700 dark:text-slate-300">
+          <li>Supports <code>fields</code>, <code>include</code>, <code>sort</code>, <code>filter[name]</code>.</li>
+          <li>Returns <code>X-Query-Count</code> and <code>X-Response-Time-Ms</code>.</li>
+          <li>Example: <code>/api/v3/move?include=pokemon&amp;limit=20</code></li>
+        </ul>
+      </article>
+    </section>
+  </div>
+</main>

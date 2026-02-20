@@ -1,0 +1,413 @@
+# /api/v3 Changelog
+
+`/api/v3` is currently experimental.
+
+## 2026-02-19
+
+- Added Phase 3 resource family:
+  - `move` list/detail
+- Added second Phase 3 resource family:
+  - `item` list/detail
+- Added third Phase 3 resource family:
+  - `pokemon-species` list/detail
+- Added fourth Phase 3 resource family:
+  - `generation` list/detail
+- Added fifth Phase 3 resource family:
+  - `version-group` list/detail
+- Added sixth Phase 3 resource family:
+  - `region` list/detail
+- Added seventh Phase 3 resource family:
+  - `version` list/detail
+- Added eighth Phase 3 resource family:
+  - `evolution-chain` list/detail
+- Added ninth Phase 3 resource family:
+  - `evolution-trigger` list/detail
+- Added tenth Phase 3 resource family:
+  - `growth-rate` list/detail
+- Added eleventh Phase 3 resource family:
+  - `nature` list/detail
+- Added twelfth Phase 3 resource family:
+  - `gender` list/detail
+- Added thirteenth Phase 3 resource family:
+  - `egg-group` list/detail
+- Added fourteenth Phase 3 resource family:
+  - `encounter-method` list/detail
+- Added fifteenth Phase 3 resource family:
+  - `encounter-condition` list/detail
+- Added sixteenth Phase 3 resource family:
+  - `encounter-condition-value` list/detail
+- Added seventeenth Phase 3 resource family:
+  - `berry` list/detail
+- Added `/api/v3/move` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/item` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/generation` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/version-group` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/region` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/version` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokemon-species` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/evolution-chain` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/evolution-trigger` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/growth-rate` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/nature` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/gender` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/egg-group` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/encounter-method` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/encounter-condition` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/encounter-condition-value` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/berry` to `/api/v3` root endpoint discovery payload.
+- Added query controls for `move` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=pokemon`
+- Added conditional GET support for `move` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `move` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `item` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=category`
+- Added conditional GET support for `item` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `item` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `pokemon-species` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=generation`
+- Added conditional GET support for `pokemon-species` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `pokemon-species` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `generation` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=main_region`
+- Added conditional GET support for `generation` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `generation` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `version-group` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=generation`
+- Added conditional GET support for `version-group` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `version-group` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `region` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=generations`
+- Added conditional GET support for `region` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `region` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `version` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - `include=version_group`
+- Added conditional GET support for `version` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `version` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `evolution-chain` list/detail endpoints:
+  - `q` (applies to linked species names)
+  - `filter[name]=...` (list, applies to linked species names)
+  - `sort=...` (list; allowlisted to `id`)
+  - `fields=...`
+  - `include=pokemon_species`
+- Added conditional GET support for `evolution-chain` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `evolution-chain` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `evolution-trigger` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `evolution-trigger` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `evolution-trigger` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `growth-rate` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `growth-rate` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `growth-rate` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `nature` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `nature` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `nature` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `gender` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `gender` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `gender` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `egg-group` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `egg-group` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `egg-group` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `encounter-method` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `encounter-method` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `encounter-method` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `encounter-condition` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `encounter-condition` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `encounter-condition` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `encounter-condition-value` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `encounter-condition-value` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `encounter-condition-value` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added query controls for `berry` list/detail endpoints:
+  - `q`
+  - `filter[name]=...` (list)
+  - `sort=...` (list)
+  - `fields=...`
+  - include allowlist is empty (unsupported include values are rejected)
+- Added conditional GET support for `berry` list/detail:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added contract/test coverage for `berry` endpoints in `docs/openapi-v3.yml` and integration tests.
+- Added eighteenth Phase 3 resource family:
+  - `berry-firmness` list/detail (`include=berries`)
+- Added nineteenth Phase 3 resource family:
+  - `berry-flavor` list/detail (`include=contest_type`)
+- Added twentieth Phase 3 resource family:
+  - `contest-type` list/detail (`include=berry_flavors`)
+- Added twenty-first Phase 3 resource family:
+  - `contest-effect` list/detail (`include=moves`)
+  - list query semantics use synthetic canonical `name` (`contest-effect-{id}`) for `q` + `filter[name]`
+- Added `/api/v3/berry-firmness` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/berry-flavor` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/contest-type` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/contest-effect` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/item-category` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/item-pocket` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/item-attribute` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/item-fling-effect` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/language` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/location` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/location-area` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/machine` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/move-ailment` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/move-battle-style` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/move-category` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/move-damage-class` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/move-learn-method` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/move-target` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/characteristic` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/stat` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/super-contest-effect` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pal-park-area` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokeathlon-stat` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokedex` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokemon-color` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokemon-form` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokemon-habitat` to `/api/v3` root endpoint discovery payload.
+- Added `/api/v3/pokemon-shape` to `/api/v3` root endpoint discovery payload.
+- Added twenty-second Phase 3 resource family:
+  - `item-category` list/detail (`include=pocket`)
+- Added twenty-third Phase 3 resource family:
+  - `item-pocket` list/detail (`include=item_categories`)
+- Added twenty-fourth Phase 3 resource family:
+  - `item-attribute` list/detail (`include=items`)
+- Added twenty-fifth Phase 3 resource family:
+  - `item-fling-effect` list/detail (`include=items`)
+- Added twenty-sixth Phase 3 resource family:
+  - `language` list/detail (no include expansions)
+- Added twenty-seventh Phase 3 resource family:
+  - `location` list/detail (`include=region`)
+- Added twenty-eighth Phase 3 resource family:
+  - `location-area` list/detail (`include=location`)
+- Added twenty-ninth Phase 3 resource family:
+  - `machine` list/detail (`include=item`)
+- Added thirtieth Phase 3 resource family:
+  - `move-ailment` list/detail (signed IDs including negatives; no include expansions)
+- Added thirty-first Phase 3 resource family:
+  - `move-battle-style` list/detail (no include expansions)
+- Added thirty-second Phase 3 resource family:
+  - `move-category` list/detail (no include expansions)
+- Added thirty-third Phase 3 resource family:
+  - `move-damage-class` list/detail (no include expansions)
+- Added thirty-fourth Phase 3 resource family:
+  - `move-learn-method` list/detail (no include expansions)
+- Added thirty-fifth Phase 3 resource family:
+  - `move-target` list/detail (no include expansions)
+- Added thirty-sixth Phase 3 resource family:
+  - `characteristic` list/detail (no include expansions)
+- Added thirty-seventh Phase 3 resource family:
+  - `stat` list/detail (no include expansions)
+- Added thirty-eighth Phase 3 resource family:
+  - `super-contest-effect` list/detail (no include expansions)
+- Added thirty-ninth Phase 3 resource family:
+  - `pal-park-area` list/detail (no include expansions)
+- Added fortieth Phase 3 resource family:
+  - `pokeathlon-stat` list/detail (no include expansions)
+- Added forty-first Phase 3 resource family:
+  - `pokedex` list/detail (no include expansions)
+- Added forty-second Phase 3 resource family:
+  - `pokemon-color` list/detail (no include expansions)
+- Added forty-third Phase 3 resource family:
+  - `pokemon-form` list/detail (no include expansions)
+- Added forty-fourth Phase 3 resource family:
+  - `pokemon-habitat` list/detail (no include expansions)
+- Added forty-fifth Phase 3 resource family:
+  - `pokemon-shape` list/detail (no include expansions)
+- Extended v3 budget-check task scenarios to include:
+  - `berry-firmness` baseline/include list/detail paths
+  - `berry-flavor` baseline/include list/detail paths
+  - `contest-type` baseline/include list/detail paths
+  - `contest-effect` baseline/include list/detail paths
+  - `item-category` baseline/include list/detail paths
+  - `item-pocket` baseline/include list/detail paths
+  - `item-attribute` baseline/include list/detail paths
+  - `item-fling-effect` baseline/include list/detail paths
+  - `language` baseline/detail paths
+  - `location` baseline/include list/detail paths
+  - `location-area` baseline/include list/detail paths
+  - `machine` baseline/include list/detail paths
+  - `move-ailment` baseline/detail paths
+  - `move-battle-style` baseline/detail paths
+  - `move-category` baseline/detail paths
+  - `move-damage-class` baseline/detail paths
+  - `move-learn-method` baseline/detail paths
+  - `move-target` baseline/detail paths
+  - `characteristic` baseline/detail paths
+  - `stat` baseline/detail paths
+  - `super-contest-effect` baseline/detail paths
+  - `pal-park-area` baseline/detail paths
+  - `pokeathlon-stat` baseline/detail paths
+  - `pokedex` baseline/detail paths
+  - `pokemon-color` baseline/detail paths
+  - `pokemon-form` baseline/detail paths
+  - `pokemon-habitat` baseline/detail paths
+  - `pokemon-shape` baseline/detail paths
+- Updated homepage explorer UX:
+  - added light/dark mode toggle with localStorage persistence
+  - added pre-paint no-flash theme script in `app/views/layouts/application.html.erb`
+  - response panel + JSON tree colors now react to theme changes
+- Extended v3 budget-check task scenarios to include `move` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `item` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `pokemon-species` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `generation` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `version-group` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `region` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `version` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `evolution-chain` baseline/include list/detail paths.
+- Extended v3 budget-check task scenarios to include `evolution-trigger` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `growth-rate` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `nature` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `gender` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `egg-group` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `encounter-method` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `encounter-condition` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `encounter-condition-value` baseline/detail paths.
+- Extended v3 budget-check task scenarios to include `berry` baseline/detail paths.
+- Refactored v3 resource controllers to reduce duplication:
+  - added shared include-map helpers in `app/controllers/concerns/api/v3/endpoint_flow.rb`
+  - switched controllers to use shared canonical URL helper from `app/controllers/concerns/api/v3/include_loaders.rb`
+  - preserved endpoint behavior and kept integration suite passing
+
+## 2026-02-18
+
+- Added `/api/v3` pilot resources:
+  - `pokemon` list/detail
+  - `ability` list/detail
+  - `type` list/detail
+- Added `/api/v3` root endpoint.
+- Added standardized v3 error envelope (`code`, `message`, `details`, `request_id`).
+- Added query controls for pilot list/detail endpoints:
+  - `fields=...`
+  - `include=...` (resource-specific allowlists)
+  - `sort=...` (list)
+  - `filter[name]=...` (list)
+- Added conditional GET support:
+  - `ETag`
+  - `If-None-Match`
+  - `304 Not Modified`
+- Added runtime stability header:
+  - `X-API-Stability: experimental`
+- Added lightweight query observability header:
+  - `X-Query-Count`
+- Added lightweight latency observability header:
+  - `X-Response-Time-Ms`
+- Added v3 contract checks:
+  - `bin/rails pokeapi:contract:validate_v3_openapi`
+  - `bin/rails pokeapi:contract:drift_v3`
+- Added v3 performance budget check:
+  - `bin/rails pokeapi:contract:check_v3_budgets`
+- CI now runs v3 budget check and uploads JSON report artifact.

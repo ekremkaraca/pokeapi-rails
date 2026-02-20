@@ -53,6 +53,9 @@ jobs:
       - name: Validate /api/v3 OpenAPI skeleton
         run: bin/rails pokeapi:contract:validate_v3_openapi
 
+      - name: Check /api/v3 contract drift
+        run: bin/rails pokeapi:contract:drift_v3
+
   api_contract_parity:
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -120,6 +123,10 @@ jobs:
       - name: Run contract drift (JSON report)
         run: |
           OUTPUT_FORMAT=json SOURCE_OPENAPI_PATH=tmp/reports/source-openapi.yml bin/rails pokeapi:contract:drift | tee tmp/reports/contract-drift.json
+
+      - name: Run v3 budget check (JSON report)
+        run: |
+          OUTPUT_FORMAT=json bin/rails pokeapi:contract:check_v3_budgets | tee tmp/reports/v3-budgets.json
 
       - name: Upload API reports
         if: always()

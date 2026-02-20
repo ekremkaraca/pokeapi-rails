@@ -3,9 +3,10 @@ require "json"
 module Pokeapi
   module Contract
     class ReportFormatter
-      def initialize(result:, max_items:)
+      def initialize(result:, max_items:, task_name: "pokeapi:contract:drift")
         @result = result
         @max_items = max_items
+        @task_name = task_name
       end
 
       def text
@@ -41,7 +42,7 @@ module Pokeapi
 
       def as_json
         {
-          task: "pokeapi:contract:drift",
+          task: @task_name,
           source_openapi_path: @result[:source_openapi_path],
           source_count: @result[:source_count],
           rails_count: @result[:rails_count],

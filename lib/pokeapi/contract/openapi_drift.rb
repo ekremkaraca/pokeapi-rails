@@ -5,11 +5,14 @@ module Pokeapi
   module Contract
     class OpenapiDrift
       HTTP_METHODS = %w[get post put patch delete options head].freeze
-      IGNORED_PATHS = ["/api/v2"].freeze
+      DEFAULT_API_PREFIX = "/api/v2".freeze
+      DEFAULT_IGNORED_PATHS = ["/api/v2"].freeze
 
-      def initialize(source_openapi_path:, rails_routes: Rails.application.routes.routes)
+      def initialize(source_openapi_path:, rails_routes: Rails.application.routes.routes, api_prefix: DEFAULT_API_PREFIX, ignored_paths: nil)
         @source_openapi_path = source_openapi_path
         @rails_routes = rails_routes
+        @api_prefix = api_prefix
+        @ignored_paths = Array(ignored_paths.nil? ? default_ignored_paths_for(api_prefix) : ignored_paths)
       end
 
       def run
@@ -31,7 +34,7 @@ module Pokeapi
 
       private
 
-      attr_reader :source_openapi_path, :rails_routes
+      attr_reader :source_openapi_path, :rails_routes, :api_prefix, :ignored_paths
 
       def openapi_operations
         data = YAML.safe_load(File.read(source_openapi_path), aliases: true) || {}
@@ -68,7 +71,7 @@ module Pokeapi
         rails_routes.each do |route|
           path = normalize_rails_path(route.path.spec.to_s)
           next unless path
-          next if IGNORED_PATHS.include?(path)
+          next if ignored_paths.include?(path)
 
           parse_route_verbs(route.verb.to_s).each do |verb|
             operations << operation_key(verb, path)
@@ -88,7 +91,7 @@ module Pokeapi
       def normalize_rails_path(raw_path)
         path = raw_path.to_s.sub(/\(\.:format\)\z/, "")
         path = path.sub(/\(\/\)\z/, "")
-        return nil unless path.start_with?("/api/v2")
+        return nil unless path.start_with?(api_prefix)
 
         path = path.gsub(/:([a-zA-Z_]\w*)/, '{\1}')
         path = normalize_path_parameters(path)
@@ -97,7 +100,7 @@ module Pokeapi
 
       def normalize_openapi_path(raw_path)
         path = raw_path.to_s
-        return nil unless path.start_with?("/api/v2")
+        return nil unless path.start_with?(api_prefix)
 
         path = normalize_path_parameters(path)
         canonical_path(path)
@@ -114,6 +117,10 @@ module Pokeapi
 
       def operation_key(method, path)
         "#{method.to_s.upcase} #{path}"
+      end
+
+      def default_ignored_paths_for(prefix)
+        prefix == DEFAULT_API_PREFIX ? DEFAULT_IGNORED_PATHS : []
       end
     end
   end
