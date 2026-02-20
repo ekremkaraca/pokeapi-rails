@@ -131,6 +131,35 @@ class Pokeapi::Contract::OpenapiDriftTest < ActiveSupport::TestCase
     assert_match(/invalid OpenAPI paths section/, error.message)
   end
 
+  test "supports configurable api prefix without default root ignore" do
+    openapi = write_openapi(
+      <<~YAML
+        openapi: "3.0.0"
+        paths:
+          /api/v3:
+            get: {}
+          /api/v3/pokemon:
+            get: {}
+      YAML
+    )
+
+    routes = [
+      route("GET", "/api/v3(/)(.:format)"),
+      route("GET", "/api/v3/pokemon(.:format)")
+    ]
+
+    result = Pokeapi::Contract::OpenapiDrift.new(
+      source_openapi_path: openapi.path,
+      rails_routes: routes,
+      api_prefix: "/api/v3",
+      ignored_paths: []
+    ).run
+
+    assert_equal true, result[:matches]
+    assert_equal [], result[:missing_in_rails]
+    assert_equal [], result[:extra_in_rails]
+  end
+
   private
 
   def route(verb, path)

@@ -16,30 +16,24 @@ gem "solid_cable"
 gem "bootsnap", require: false
 gem "kamal", require: false
 gem "oj"
-# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "prosopite", "~> 2.1", ">= 2.1.2"
+gem "pg_query", "~> 6.2", ">= 6.2.2"
 gem "image_processing", "~> 1.2"
+gem "csv", "~> 3.3"
+gem "oas_rails", "~> 1.3", ">= 1.3.4"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
 
 group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "annotaterb"
   gem "web-console"
   gem "rails-pg-extras"
+  gem "solargraph-rails", require: false
+  gem "ruby-lsp-rails", require: false
 end
-
-gem "csv", "~> 3.3"

@@ -7,8 +7,17 @@ This document tracks what has already been implemented in `pokeapi-rails` during
 - API root endpoint implemented:
   - `GET /api/v2` and `GET /api/v2/`
   - Lists currently available endpoints (similar to Django/DRF API root behavior).
-- App root redirect implemented:
-  - `GET /` -> `301 /api/v2/`
+- App root landing page implemented:
+  - `GET /` serves a human-focused homepage with an interactive API explorer.
+  - Root page includes:
+    - v2/v3 quick links
+    - light/dark theme toggle with persisted preference
+    - pre-paint theme bootstrapping to avoid flash on load
+    - endpoint path input + version selector
+    - sample endpoint shortcuts
+    - live JSON fetch + response header/status display
+    - recent request history
+    - collapsible JSON tree with raw JSON toggle
 - Shared API behavior implemented and reused across resources:
   - ID-or-name retrieval
   - `q` filter on `name`
@@ -37,6 +46,71 @@ This document tracks what has already been implemented in `pokeapi-rails` during
   - grouped failure output by endpoint/path
   - clearer status mismatch diagnostics (including connectivity issues)
   - redirect/trailing-slash normalization improvements for stable comparisons
+- N+1/query-fingerprint tooling wired:
+  - `prosopite` and `pg_query` gems installed and runtime-smoke-tested
+  - `config/initializers/prosopite.rb` added for env-driven setup
+    (`PROSOPITE_ENABLED`, `PROSOPITE_MIN_N_QUERIES`, `PROSOPITE_RAILS_LOGGER`, `PROSOPITE_RAISE`)
+  - development middleware hook enabled by default (`PROSOPITE_RACK_MIDDLEWARE=1`)
+  - optional test-suite scanning hooks added in `test/test_helper.rb`
+    (`PROSOPITE_TEST_SCAN=1`)
+  - smoke coverage added in `test/lib/gem_runtime_smoke_test.rb`
+
+## /api/v3 Rollout Status
+
+- `/api/v3` foundation is implemented:
+  - root endpoint + standardized error envelope
+  - `fields`, `include` allowlists, `sort`, `filter[name]`, legacy `q`
+  - `ETag`/conditional GET + observability headers (`X-API-Stability`, `X-Query-Count`, `X-Response-Time-Ms`)
+  - OpenAPI validation/drift checks + budget-check task
+- Implemented `/api/v3` resources (list + detail):
+  - `pokemon`
+  - `ability`
+  - `type`
+  - `move`
+  - `item`
+  - `pokemon-species`
+  - `generation`
+  - `version-group`
+  - `region`
+  - `version`
+  - `evolution-chain`
+  - `evolution-trigger`
+  - `growth-rate`
+  - `nature`
+  - `gender`
+  - `egg-group`
+  - `encounter-method`
+  - `encounter-condition`
+  - `encounter-condition-value`
+  - `berry`
+  - `berry-firmness`
+  - `berry-flavor`
+  - `contest-type`
+  - `contest-effect`
+  - `item-category`
+  - `item-pocket`
+  - `item-attribute`
+  - `item-fling-effect`
+  - `language`
+  - `location`
+  - `location-area`
+  - `machine`
+  - `move-ailment`
+  - `move-battle-style`
+  - `move-category`
+  - `move-damage-class`
+  - `move-learn-method`
+  - `move-target`
+  - `characteristic`
+  - `stat`
+  - `super-contest-effect`
+  - `pal-park-area`
+  - `pokeathlon-stat`
+  - `pokedex`
+  - `pokemon-color`
+  - `pokemon-form`
+  - `pokemon-habitat`
+  - `pokemon-shape`
 
 ## Implemented API Endpoints
 
