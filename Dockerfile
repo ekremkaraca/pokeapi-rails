@@ -40,18 +40,23 @@ ENV PATH=/usr/local/bun/bin:$PATH
 ARG BUN_VERSION=1.3.9
 RUN curl -fsSL https://bun.sh/install | bash -s -- "bun-v${BUN_VERSION}"
 
+# Keep Bundler aligned with Gemfile.lock to avoid auto-installing a different version on each build.
+ARG BUNDLER_VERSION=4.0.6
+RUN gem install bundler -v "${BUNDLER_VERSION}" --no-document
+
 # Install application gems
-COPY vendor/ ./vendor/
 COPY Gemfile Gemfile.lock ./
 
-RUN bundle install && \
+RUN --mount=type=cache,id=s/0f3b7bdf-3267-4efc-a8ce-57492829ef18/usr/local/bundle/cache,target=/usr/local/bundle/cache \
+    bundle _${BUNDLER_VERSION}_ install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
     bundle exec bootsnap precompile -j 1 --gemfile
 
 # Install node modules
 COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile
+RUN --mount=type=cache,id=s/0f3b7bdf-3267-4efc-a8ce-57492829ef18/root/bun/install/cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
 
 # Copy application code
 COPY . .
