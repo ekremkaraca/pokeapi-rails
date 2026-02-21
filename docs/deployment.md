@@ -10,6 +10,22 @@ Required runtime environment variables:
 - `RAILS_MASTER_KEY`
 - `SECRET_KEY_BASE`
 
+Optional Rack::Attack tuning:
+
+- `RACK_ATTACK_ENABLED` (`true`/`false`, defaults to enabled in production)
+- `RACK_ATTACK_API_LIMIT` (default: `300`)
+- `RACK_ATTACK_API_PERIOD` in seconds (default: `300`)
+- `RACK_ATTACK_API_BURST_LIMIT` (default: `60`)
+- `RACK_ATTACK_API_BURST_PERIOD` in seconds (default: `60`)
+
+API responses include informational limit headers:
+
+- `X-RateLimit-Limit`
+- `X-RateLimit-Period`
+- `X-RateLimit-Burst-Limit`
+- `X-RateLimit-Burst-Period`
+- `X-RateLimit-Policy`
+
 Recommended post-deploy commands (manual):
 
 ```bash

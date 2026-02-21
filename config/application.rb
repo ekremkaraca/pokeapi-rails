@@ -38,5 +38,8 @@ module App1771241683
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Protect API routes from abusive traffic patterns.
+    config.middleware.use Rack::Attack
   end
 end

@@ -1,6 +1,7 @@
 module Api
   module V3
     class BaseController < ActionController::API
+      include Api::RateLimitHeaders
       class InvalidQueryParameterError < StandardError
         attr_reader :details
 
