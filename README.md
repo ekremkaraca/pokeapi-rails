@@ -10,8 +10,9 @@ It keeps `/api/v2` behavior compatible with the existing ecosystem while buildin
 - Implementation status: [`docs/implementation-status.md`](docs/implementation-status.md)
 - Import guide: [`docs/importing.md`](docs/importing.md)
 - Parity diff guide: [`docs/parity-diff.md`](docs/parity-diff.md)
+- Deployment guide: [`docs/deployment.md`](docs/deployment.md)
 
-# License
+## License
 
 See [LICENSE](./LICENSE)
 
