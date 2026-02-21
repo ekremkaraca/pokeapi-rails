@@ -16,4 +16,15 @@
 #
 class PokeMoveName < ApplicationRecord
   self.table_name = "move_name"
+
+  belongs_to :move,
+             class_name: "PokeMove",
+             foreign_key: :move_id,
+             inverse_of: :move_names,
+             optional: true
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :move_names,
+             optional: true
 end

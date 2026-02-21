@@ -16,4 +16,15 @@
 #
 class PokePokemonDexNumber < ApplicationRecord
   self.table_name = "pokemon_dex_number"
+
+  belongs_to :pokemon_species,
+             class_name: "PokePokemonSpecies",
+             foreign_key: :species_id,
+             inverse_of: :pokemon_dex_numbers,
+             optional: true
+  belongs_to :pokedex,
+             class_name: "PokePokedex",
+             foreign_key: :pokedex_id,
+             inverse_of: :pokemon_dex_numbers,
+             optional: true
 end

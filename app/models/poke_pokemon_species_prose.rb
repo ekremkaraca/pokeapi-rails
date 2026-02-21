@@ -16,4 +16,15 @@
 #
 class PokePokemonSpeciesProse < ApplicationRecord
   self.table_name = "pokemon_species_prose"
+
+  belongs_to :pokemon_species,
+             class_name: "PokePokemonSpecies",
+             foreign_key: :pokemon_species_id,
+             inverse_of: :pokemon_species_proses,
+             optional: true
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :pokemon_species_proses,
+             optional: true
 end

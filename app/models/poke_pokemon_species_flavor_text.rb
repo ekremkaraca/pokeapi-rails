@@ -18,4 +18,20 @@
 #
 class PokePokemonSpeciesFlavorText < ApplicationRecord
   self.table_name = "pokemon_species_flavor_text"
+
+  belongs_to :pokemon_species,
+             class_name: "PokePokemonSpecies",
+             foreign_key: :species_id,
+             inverse_of: :pokemon_species_flavor_texts,
+             optional: true
+  belongs_to :version,
+             class_name: "PokeVersion",
+             foreign_key: :version_id,
+             inverse_of: :pokemon_species_flavor_texts,
+             optional: true
+  belongs_to :language,
+             class_name: "PokeLanguage",
+             foreign_key: :language_id,
+             inverse_of: :pokemon_species_flavor_texts,
+             optional: true
 end

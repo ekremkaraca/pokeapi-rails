@@ -14,5 +14,11 @@
 class PokeEncounterCondition < ApplicationRecord
   self.table_name = "encounter_condition"
 
+  has_many :encounter_condition_values,
+           class_name: "PokeEncounterConditionValue",
+           foreign_key: :encounter_condition_id,
+           inverse_of: :encounter_condition,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

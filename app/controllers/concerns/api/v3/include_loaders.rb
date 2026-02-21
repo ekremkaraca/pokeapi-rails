@@ -12,12 +12,11 @@ module Api
         ids = pokemon_ids.uniq
         return {} if ids.empty?
 
-        rows = PokePokemonAbility.where(pokemon_id: ids).order(:pokemon_id, :slot, :ability_id)
-        abilities_by_id = Ability.where(id: rows.map(&:ability_id).uniq).index_by(&:id)
+        rows = PokePokemonAbility.includes(:ability).where(pokemon_id: ids).order(:pokemon_id, :slot, :ability_id)
 
         rows.group_by(&:pokemon_id).transform_values do |ability_rows|
           ability_rows.filter_map do |row|
-            ability = abilities_by_id[row.ability_id]
+            ability = row.ability
             next unless ability
 
             {
@@ -34,12 +33,11 @@ module Api
         ids = ability_ids.uniq
         return {} if ids.empty?
 
-        rows = PokePokemonAbility.where(ability_id: ids).order(:ability_id, :slot, :pokemon_id)
-        pokemon_by_id = Pokemon.where(id: rows.map(&:pokemon_id).uniq).index_by(&:id)
+        rows = PokePokemonAbility.includes(:pokemon).where(ability_id: ids).order(:ability_id, :slot, :pokemon_id)
 
         rows.group_by(&:ability_id).transform_values do |pokemon_rows|
           pokemon_rows.filter_map do |row|
-            pokemon = pokemon_by_id[row.pokemon_id]
+            pokemon = row.pokemon
             next unless pokemon
 
             {
@@ -56,12 +54,11 @@ module Api
         ids = type_ids.uniq
         return {} if ids.empty?
 
-        rows = PokePokemonType.where(type_id: ids).order(:type_id, :slot, :pokemon_id)
-        pokemon_by_id = Pokemon.where(id: rows.map(&:pokemon_id).uniq).index_by(&:id)
+        rows = PokePokemonType.includes(:pokemon).where(type_id: ids).order(:type_id, :slot, :pokemon_id)
 
         rows.group_by(&:type_id).transform_values do |pokemon_rows|
           pokemon_rows.filter_map do |row|
-            pokemon = pokemon_by_id[row.pokemon_id]
+            pokemon = row.pokemon
             next unless pokemon
 
             {
@@ -120,16 +117,15 @@ module Api
         ids = item_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeItem
-          .joins("INNER JOIN item_category ON item_category.id = item.category_id")
-          .where(id: ids)
-          .pluck("item.id", "item_category.id", "item_category.name")
+        PokeItem.where(id: ids).includes(:category).each_with_object({}) do |item, acc|
+          category = item.category
+          next unless category
 
-        rows.each_with_object({}) do |(item_id, category_id, category_name), acc|
+          item_id = item.id
           acc[item_id] = {
-            id: category_id,
-            name: category_name,
-            url: canonical_url_for_id(category_id, :api_v3_item_category_url)
+            id: category.id,
+            name: category.name,
+            url: canonical_url_for_id(category.id, :api_v3_item_category_url)
           }
         end
       end
@@ -139,16 +135,15 @@ module Api
         ids = species_ids.uniq
         return {} if ids.empty?
 
-        rows = PokePokemonSpecies
-          .joins("INNER JOIN generation ON generation.id = pokemon_species.generation_id")
-          .where(id: ids)
-          .pluck("pokemon_species.id", "generation.id", "generation.name")
+        PokePokemonSpecies.where(id: ids).includes(:generation).each_with_object({}) do |species, acc|
+          generation = species.generation
+          next unless generation
 
-        rows.each_with_object({}) do |(species_id, generation_id, generation_name), acc|
+          species_id = species.id
           acc[species_id] = {
-            id: generation_id,
-            name: generation_name,
-            url: canonical_url_for_id(generation_id, :api_v3_generation_url)
+            id: generation.id,
+            name: generation.name,
+            url: canonical_url_for_id(generation.id, :api_v3_generation_url)
           }
         end
       end
@@ -158,16 +153,15 @@ module Api
         ids = generation_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeGeneration
-          .joins("INNER JOIN region ON region.id = generation.main_region_id")
-          .where(id: ids)
-          .pluck("generation.id", "region.id", "region.name")
+        PokeGeneration.where(id: ids).includes(:main_region).each_with_object({}) do |generation, acc|
+          region = generation.main_region
+          next unless region
 
-        rows.each_with_object({}) do |(generation_id, region_id, region_name), acc|
+          generation_id = generation.id
           acc[generation_id] = {
-            id: region_id,
-            name: region_name,
-            url: canonical_url_for_id(region_id, :api_v3_region_url)
+            id: region.id,
+            name: region.name,
+            url: canonical_url_for_id(region.id, :api_v3_region_url)
           }
         end
       end
@@ -177,16 +171,15 @@ module Api
         ids = version_group_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeVersionGroup
-          .joins("INNER JOIN generation ON generation.id = version_group.generation_id")
-          .where(id: ids)
-          .pluck("version_group.id", "generation.id", "generation.name")
+        PokeVersionGroup.where(id: ids).includes(:generation).each_with_object({}) do |version_group, acc|
+          generation = version_group.generation
+          next unless generation
 
-        rows.each_with_object({}) do |(version_group_id, generation_id, generation_name), acc|
+          version_group_id = version_group.id
           acc[version_group_id] = {
-            id: generation_id,
-            name: generation_name,
-            url: canonical_url_for_id(generation_id, :api_v3_generation_url)
+            id: generation.id,
+            name: generation.name,
+            url: canonical_url_for_id(generation.id, :api_v3_generation_url)
           }
         end
       end
@@ -217,16 +210,15 @@ module Api
         ids = version_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeVersion
-          .joins("INNER JOIN version_group ON version_group.id = version.version_group_id")
-          .where(id: ids)
-          .pluck("version.id", "version_group.id", "version_group.name")
+        PokeVersion.where(id: ids).includes(:version_group).each_with_object({}) do |version, acc|
+          version_group = version.version_group
+          next unless version_group
 
-        rows.each_with_object({}) do |(version_id, version_group_id, version_group_name), acc|
+          version_id = version.id
           acc[version_id] = {
-            id: version_group_id,
-            name: version_group_name,
-            url: canonical_url_for_id(version_group_id, :api_v3_version_group_url)
+            id: version_group.id,
+            name: version_group.name,
+            url: canonical_url_for_id(version_group.id, :api_v3_version_group_url)
           }
         end
       end
@@ -278,16 +270,16 @@ module Api
         ids = flavor_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeBerryFlavor
-          .joins("INNER JOIN contest_type ON contest_type.id = berry_flavor.contest_type_id")
-          .where(id: ids)
-          .pluck("berry_flavor.id", "contest_type.id", "contest_type.name")
+        rows = PokeBerryFlavor.where(id: ids).includes(:contest_type)
 
-        rows.each_with_object({}) do |(flavor_id, contest_type_id, contest_type_name), acc|
-          acc[flavor_id] = {
-            id: contest_type_id,
-            name: contest_type_name,
-            url: canonical_url_for_id(contest_type_id, :api_v3_contest_type_url)
+        rows.each_with_object({}) do |flavor, acc|
+          contest_type = flavor.contest_type
+          next unless contest_type
+
+          acc[flavor.id] = {
+            id: contest_type.id,
+            name: contest_type.name,
+            url: canonical_url_for_id(contest_type.id, :api_v3_contest_type_url)
           }
         end
       end
@@ -339,16 +331,15 @@ module Api
         ids = category_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeItemCategory
-          .joins("INNER JOIN item_pocket ON item_pocket.id = item_category.pocket_id")
-          .where(id: ids)
-          .pluck("item_category.id", "item_pocket.id", "item_pocket.name")
+        PokeItemCategory.where(id: ids).includes(:pocket).each_with_object({}) do |category, acc|
+          pocket = category.pocket
+          next unless pocket
 
-        rows.each_with_object({}) do |(category_id, pocket_id, pocket_name), acc|
+          category_id = category.id
           acc[category_id] = {
-            id: pocket_id,
-            name: pocket_name,
-            url: canonical_url_for_id(pocket_id, :api_v3_item_pocket_url)
+            id: pocket.id,
+            name: pocket.name,
+            url: canonical_url_for_id(pocket.id, :api_v3_item_pocket_url)
           }
         end
       end
@@ -423,16 +414,15 @@ module Api
         ids = location_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeLocation
-          .joins("INNER JOIN region ON region.id = location.region_id")
-          .where(id: ids)
-          .pluck("location.id", "region.id", "region.name")
+        PokeLocation.where(id: ids).includes(:region).each_with_object({}) do |location, acc|
+          region = location.region
+          next unless region
 
-        rows.each_with_object({}) do |(location_id, region_id, region_name), acc|
+          location_id = location.id
           acc[location_id] = {
-            id: region_id,
-            name: region_name,
-            url: canonical_url_for_id(region_id, :api_v3_region_url)
+            id: region.id,
+            name: region.name,
+            url: canonical_url_for_id(region.id, :api_v3_region_url)
           }
         end
       end
@@ -442,16 +432,15 @@ module Api
         ids = area_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeLocationArea
-          .joins("INNER JOIN location ON location.id = location_area.location_id")
-          .where(id: ids)
-          .pluck("location_area.id", "location.id", "location.name")
+        PokeLocationArea.where(id: ids).includes(:location).each_with_object({}) do |area, acc|
+          location = area.location
+          next unless location
 
-        rows.each_with_object({}) do |(area_id, location_id, location_name), acc|
+          area_id = area.id
           acc[area_id] = {
-            id: location_id,
-            name: location_name,
-            url: canonical_url_for_id(location_id, :api_v3_location_url)
+            id: location.id,
+            name: location.name,
+            url: canonical_url_for_id(location.id, :api_v3_location_url)
           }
         end
       end
@@ -461,16 +450,15 @@ module Api
         ids = machine_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeMachine
-          .joins("INNER JOIN item ON item.id = machine.item_id")
-          .where(id: ids)
-          .pluck("machine.id", "item.id", "item.name")
+        PokeMachine.where(id: ids).includes(:item).each_with_object({}) do |machine, acc|
+          item = machine.item
+          next unless item
 
-        rows.each_with_object({}) do |(machine_id, item_id, item_name), acc|
+          machine_id = machine.id
           acc[machine_id] = {
-            id: item_id,
-            name: item_name,
-            url: canonical_url_for_id(item_id, :api_v3_item_url)
+            id: item.id,
+            name: item.name,
+            url: canonical_url_for_id(item.id, :api_v3_item_url)
           }
         end
       end

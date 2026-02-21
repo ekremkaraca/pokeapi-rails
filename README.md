@@ -8,6 +8,8 @@ It keeps `/api/v2` behavior compatible with the existing ecosystem while buildin
 
 - Plan: [`docs/rails-adoption-plan.md`](docs/rails-adoption-plan.md)
 - Implementation status: [`docs/implementation-status.md`](docs/implementation-status.md)
+- Recent changes timeline: [`docs/recent-changes.md`](docs/recent-changes.md)
+- Model association audit: [`docs/model-association-audit.md`](docs/model-association-audit.md)
 - Import guide: [`docs/importing.md`](docs/importing.md)
 - Parity diff guide: [`docs/parity-diff.md`](docs/parity-diff.md)
 - Deployment guide: [`docs/deployment.md`](docs/deployment.md)

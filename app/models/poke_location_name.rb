@@ -17,4 +17,15 @@
 #
 class PokeLocationName < ApplicationRecord
   self.table_name = "location_name"
+
+  belongs_to :location,
+             class_name: "PokeLocation",
+             foreign_key: :location_id,
+             inverse_of: :location_names,
+             optional: true
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :location_names,
+             optional: true
 end

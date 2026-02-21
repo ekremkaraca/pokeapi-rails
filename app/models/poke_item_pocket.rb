@@ -14,5 +14,11 @@
 class PokeItemPocket < ApplicationRecord
   self.table_name = "item_pocket"
 
+  has_many :item_categories,
+           class_name: "PokeItemCategory",
+           foreign_key: :pocket_id,
+           inverse_of: :pocket,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

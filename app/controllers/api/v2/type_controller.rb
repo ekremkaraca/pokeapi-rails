@@ -11,15 +11,15 @@ module Api
       def detail_payload(type)
         {
           damage_relations: damage_relations_for(type.id),
-          game_indices: game_indices_for(type.id),
-          generation: generation_payload(type.generation_id),
+          game_indices: game_indices_for(type),
+          generation: generation_payload(type),
           id: type.id,
-          move_damage_class: move_damage_class_payload(type.damage_class_id),
-          moves: moves_for(type.id),
+          move_damage_class: move_damage_class_payload(type),
+          moves: moves_for(type),
           name: type.name,
-          names: names_for(type.id),
+          names: names_for(type),
           past_damage_relations: past_damage_relations_for(type.id),
-          pokemon: pokemon_for(type.id),
+          pokemon: pokemon_for(type),
           sprites: sprites_payload(type.id)
         }
       end
@@ -80,7 +80,7 @@ module Api
 
         rows.group_by(&:generation_id).sort.map do |generation_id, generation_rows|
           {
-            generation: generation_payload(generation_id),
+            generation: generation_resource_payload(generation_id),
             damage_relations: {
               no_damage_to: relation_targets(generation_rows, source_key: "damage_type_id", source_id: type_id, target_key: "target_type_id", factor: 0),
               half_damage_to: relation_targets(generation_rows, source_key: "damage_type_id", source_id: type_id, target_key: "target_type_id", factor: 50),
@@ -93,12 +93,11 @@ module Api
         end
       end
 
-      def game_indices_for(type_id)
-        rows = PokeTypeGameIndex.where(type_id: type_id)
-        generations_by_id = records_by_id(PokeGeneration, rows.map(&:generation_id))
+      def game_indices_for(type)
+        rows = type.type_game_indices.includes(:generation)
 
         rows.filter_map do |row|
-          generation = generations_by_id[row.generation_id]
+          generation = row.generation
           next unless generation
 
           {
@@ -108,12 +107,11 @@ module Api
         end
       end
 
-      def names_for(type_id)
-        rows = PokeTypeName.where(type_id: type_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
+      def names_for(type)
+        rows = type.type_names.includes(:local_language)
 
         rows.filter_map do |row|
-          language = languages_by_id[row.local_language_id]
+          language = row.local_language
           next unless language
 
           {
@@ -123,18 +121,15 @@ module Api
         end
       end
 
-      def moves_for(type_id)
-        PokeMove.where(type_id: type_id).order(:id).map do |move|
+      def moves_for(type)
+        type.moves.order(:id).map do |move|
           resource_payload(move, :api_v2_move_url)
         end
       end
 
-      def pokemon_for(type_id)
-        rows = PokePokemonType.where(type_id: type_id).order(:pokemon_id, :slot)
-        pokemons_by_id = records_by_id(Pokemon, rows.map(&:pokemon_id))
-
-        rows.filter_map do |row|
-          pokemon = pokemons_by_id[row.pokemon_id]
+      def pokemon_for(type)
+        type.pokemon_types.includes(:pokemon).order(:pokemon_id, :slot).filter_map do |row|
+          pokemon = row.pokemon
           next unless pokemon
 
           {
@@ -144,15 +139,22 @@ module Api
         end
       end
 
-      def generation_payload(generation_id)
+      def generation_payload(type)
+        generation = type.generation
+        return nil unless generation
+
+        resource_payload(generation, :api_v2_generation_url)
+      end
+
+      def generation_resource_payload(generation_id)
         generation = PokeGeneration.find_by(id: generation_id)
         return nil unless generation
 
         resource_payload(generation, :api_v2_generation_url)
       end
 
-      def move_damage_class_payload(damage_class_id)
-        damage_class = PokeMoveDamageClass.find_by(id: damage_class_id)
+      def move_damage_class_payload(type)
+        damage_class = type.damage_class
         return nil unless damage_class
 
         resource_payload(damage_class, :api_v2_move_damage_class_url)

@@ -17,4 +17,15 @@
 #
 class PokePalPark < ApplicationRecord
   self.table_name = "pal_park"
+
+  belongs_to :area,
+             class_name: "PokePalParkArea",
+             foreign_key: :area_id,
+             inverse_of: :pal_parks,
+             optional: true
+  belongs_to :pokemon_species,
+             class_name: "PokePokemonSpecies",
+             foreign_key: :species_id,
+             inverse_of: :pal_parks,
+             optional: true
 end

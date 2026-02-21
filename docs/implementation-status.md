@@ -2,6 +2,8 @@
 
 This document tracks what has already been implemented in `pokeapi-rails` during the Django -> Rails adoption.
 
+Recent consolidated updates are tracked in `docs/recent-changes.md`.
+
 ## Completed Foundations
 
 - API root endpoint implemented:
@@ -24,6 +26,8 @@ This document tracks what has already been implemented in `pokeapi-rails` during
   - limit/offset pagination with `count`, `next`, `previous`, `results`
   - 404 handling for invalid lookups
   - canonical URL output with exactly one trailing slash
+  - API namespace now defaults to JSON format and API base controllers force JSON responses
+  - `/favicon.ico` now resolves to app icon route to avoid noisy routing errors during API browsing
 - CSV import pattern implemented:
   - one importer class per resource, backed by a shared generic importer base
   - rebuild strategy (`delete_all` + `insert_all!`)
@@ -39,6 +43,16 @@ This document tracks what has already been implemented in `pokeapi-rails` during
   - shared concern for name-searchable resources (`id` or `name` + `q` filter)
   - shared concern for ID-only resources
   - per-resource controllers keep only resource-specific detail fields and routing helpers
+  - relation-heavy payload paths are being refactored to use ActiveRecord associations (`includes` + model relations) instead of manual ID maps where safe
+- Recent model relationship fixes:
+  - corrected `Ability` association mapping (`has_many :pokemon, through: :pokemon_abilities`)
+  - fixed `PokeAbilityChangelog`/`PokeAbilityChangelogProse` foreign-key wiring (`ability_changelog_id`)
+  - added `PokeAbilityChangelogProse -> local_language (PokeLanguage)` relationship
+  - added `PokeAbilityFlavorText` relationships to `ability`, `version_group`, and `language`
+  - added focused model tests for these association paths
+  - completed broader model association normalization across ability/pokemon/move/item/language/berry/region domains
+  - verified that FK-backed models have explicit association mappings
+  - documented association decisions and standalone lookup models in `docs/model-association-audit.md`
 - Parity tooling implemented:
   - `pokeapi:parity:diff` task compares sampled Django vs Rails responses
   - normalized base-URL handling to avoid false positives on host differences
@@ -63,6 +77,8 @@ This document tracks what has already been implemented in `pokeapi-rails` during
   - `ETag`/conditional GET + observability headers (`X-API-Stability`, `X-Query-Count`, `X-Response-Time-Ms`)
   - OpenAPI validation/drift checks + budget-check task
 - `/api/v3` include expansion canonical links now consistently point to `/api/v3/*` URLs.
+- `/api/v3` include loaders for `ability` and `pokemon` now use association-backed eager loading.
+- `/api/v3` include loaders were further normalized to association-backed lookups for item/category, species/generation, generation/region, version/version-group, location/region, location-area/location, and machine/item include paths.
 - API abuse controls are wired:
   - `rack-attack` middleware installed with sustained + burst per-IP throttles on `/api/*`
   - healthcheck safelist for `/up`

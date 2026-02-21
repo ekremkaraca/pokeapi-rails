@@ -10,47 +10,44 @@ module Api
 
       def detail_payload(version_group)
         {
-          generation: generation_payload(version_group.generation_id),
+          generation: generation_payload(version_group),
           id: version_group.id,
-          move_learn_methods: move_learn_methods_payload(version_group.id),
+          move_learn_methods: move_learn_methods_payload(version_group),
           name: version_group.name,
           order: version_group.sort_order,
-          pokedexes: pokedexes_payload(version_group.id),
-          regions: regions_payload(version_group.id),
-          versions: versions_payload(version_group.id)
+          pokedexes: pokedexes_payload(version_group),
+          regions: regions_payload(version_group),
+          versions: versions_payload(version_group)
         }
       end
 
-      def generation_payload(generation_id)
-        generation = PokeGeneration.find_by(id: generation_id)
+      def generation_payload(version_group)
+        generation = version_group.generation
         return nil unless generation
 
         resource_payload(generation, :api_v2_generation_url)
       end
 
-      def move_learn_methods_payload(version_group_id)
-        method_ids = PokeVersionGroupPokemonMoveMethod.where(version_group_id: version_group_id).pluck(:pokemon_move_method_id).uniq
-        PokeMoveLearnMethod.where(id: method_ids).order(:id).map do |move_learn_method|
+      def move_learn_methods_payload(version_group)
+        version_group.move_learn_methods.order(:id).map do |move_learn_method|
           resource_payload(move_learn_method, :api_v2_move_learn_method_url)
         end
       end
 
-      def pokedexes_payload(version_group_id)
-        pokedex_ids = PokePokedexVersionGroup.where(version_group_id: version_group_id).pluck(:pokedex_id).uniq
-        PokePokedex.where(id: pokedex_ids).order(:id).map do |pokedex|
+      def pokedexes_payload(version_group)
+        version_group.pokedexes.order(:id).map do |pokedex|
           resource_payload(pokedex, :api_v2_pokedex_url)
         end
       end
 
-      def regions_payload(version_group_id)
-        region_ids = PokeVersionGroupRegion.where(version_group_id: version_group_id).pluck(:region_id).uniq
-        PokeRegion.where(id: region_ids).order(:id).map do |region|
+      def regions_payload(version_group)
+        version_group.regions.order(:id).map do |region|
           resource_payload(region, :api_v2_region_url)
         end
       end
 
-      def versions_payload(version_group_id)
-        PokeVersion.where(version_group_id: version_group_id).order(:id).map do |version|
+      def versions_payload(version_group)
+        version_group.versions.order(:id).map do |version|
           resource_payload(version, :api_v2_version_url)
         end
       end

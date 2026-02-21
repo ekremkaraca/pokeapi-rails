@@ -14,5 +14,11 @@
 class PokePokemonColor < ApplicationRecord
   self.table_name = "pokemon_color"
 
+  has_many :pokemon_species,
+           class_name: "PokePokemonSpecies",
+           foreign_key: :color_id,
+           inverse_of: :color,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

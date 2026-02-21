@@ -15,4 +15,15 @@
 #
 class PokePokedexVersionGroup < ApplicationRecord
   self.table_name = "pokedex_version_group"
+
+  belongs_to :pokedex,
+             class_name: "PokePokedex",
+             foreign_key: :pokedex_id,
+             inverse_of: :pokedex_version_groups,
+             optional: true
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :pokedex_version_groups,
+             optional: true
 end

@@ -15,4 +15,16 @@
 #
 class PokeMoveEffectChangelog < ApplicationRecord
   self.table_name = "move_effect_changelog"
+
+  belongs_to :changed_in_version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :changed_in_version_group_id,
+             inverse_of: :move_effect_changelogs,
+             optional: true
+
+  has_many :proses,
+           class_name: "PokeMoveEffectChangelogProse",
+           foreign_key: :move_effect_changelog_id,
+           inverse_of: :move_effect_changelog,
+           dependent: :restrict_with_exception
 end

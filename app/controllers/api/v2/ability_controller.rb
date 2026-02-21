@@ -18,21 +18,18 @@ module Api
 
       def detail_extras(ability)
         {
-          effect_changes: effect_changes_for(ability.id),
-          effect_entries: effect_entries_for(ability.id),
-          flavor_text_entries: flavor_text_entries_for(ability.id),
-          generation: generation_payload(ability.generation_id),
-          names: names_for(ability.id),
-          pokemon: pokemon_for(ability.id)
+          effect_changes: effect_changes_for(ability),
+          effect_entries: effect_entries_for(ability),
+          flavor_text_entries: flavor_text_entries_for(ability),
+          generation: generation_payload(ability),
+          names: names_for(ability),
+          pokemon: pokemon_for(ability)
         }
       end
 
-      def names_for(ability_id)
-        rows = PokeAbilityName.where(ability_id: ability_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
-
-        rows.filter_map do |row|
-          language = languages_by_id[row.local_language_id]
+      def names_for(ability)
+        ability.ability_names.includes(:local_language).filter_map do |row|
+          language = row.local_language
           next unless language
 
           {
@@ -42,12 +39,9 @@ module Api
         end
       end
 
-      def effect_entries_for(ability_id)
-        rows = PokeAbilityProse.where(ability_id: ability_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
-
-        rows.filter_map do |row|
-          language = languages_by_id[row.local_language_id]
+      def effect_entries_for(ability)
+        ability.ability_proses.includes(:local_language).filter_map do |row|
+          language = row.local_language
           next unless language
 
           {
@@ -58,19 +52,15 @@ module Api
         end
       end
 
-      def effect_changes_for(ability_id)
-        changelogs = PokeAbilityChangelog.where(ability_id: ability_id)
-        version_groups_by_id = records_by_id(PokeVersionGroup, changelogs.map(&:changed_in_version_group_id))
-        prose_rows = PokeAbilityChangelogProse.where(ability_changelog_id: changelogs.map(&:id))
-        prose_by_changelog_id = prose_rows.group_by(&:ability_changelog_id)
-        languages_by_id = records_by_id(PokeLanguage, prose_rows.map(&:local_language_id))
+      def effect_changes_for(ability)
+        changelogs = ability.changelogs.includes(:changed_in_version_group, ability_changelog_proses: :local_language).order(:changed_in_version_group_id, :id)
 
         changelogs.filter_map do |changelog|
-          version_group = version_groups_by_id[changelog.changed_in_version_group_id]
+          version_group = changelog.changed_in_version_group
           next unless version_group
 
-          entries = prose_by_changelog_id.fetch(changelog.id, []).filter_map do |row|
-            language = languages_by_id[row.local_language_id]
+          entries = changelog.ability_changelog_proses.filter_map do |row|
+            language = row.local_language
             next unless language
 
             {
@@ -86,14 +76,10 @@ module Api
         end
       end
 
-      def flavor_text_entries_for(ability_id)
-        rows = PokeAbilityFlavorText.where(ability_id: ability_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:language_id))
-        version_groups_by_id = records_by_id(PokeVersionGroup, rows.map(&:version_group_id))
-
-        rows.filter_map do |row|
-          language = languages_by_id[row.language_id]
-          version_group = version_groups_by_id[row.version_group_id]
+      def flavor_text_entries_for(ability)
+        ability.flavor_texts.includes(:language, :version_group).filter_map do |row|
+          language = row.language
+          version_group = row.version_group
           next unless language && version_group
 
           {
@@ -104,12 +90,9 @@ module Api
         end
       end
 
-      def pokemon_for(ability_id)
-        rows = PokePokemonAbility.where(ability_id: ability_id).order(:pokemon_id, :slot)
-        pokemons_by_id = records_by_id(Pokemon, rows.map(&:pokemon_id))
-
-        rows.filter_map do |row|
-          pokemon = pokemons_by_id[row.pokemon_id]
+      def pokemon_for(ability)
+        ability.pokemon_abilities.includes(:pokemon).order(:pokemon_id, :slot).filter_map do |row|
+          pokemon = row.pokemon
           next unless pokemon
 
           {
@@ -123,8 +106,8 @@ module Api
         end
       end
 
-      def generation_payload(generation_id)
-        generation = PokeGeneration.find_by(id: generation_id)
+      def generation_payload(ability)
+        generation = ability.generation
         return nil unless generation
 
         {
@@ -161,10 +144,6 @@ module Api
 
       def canonical_pokemon_url(pokemon)
         "#{api_v2_pokemon_url(pokemon).sub(%r{/+\z}, '')}/"
-      end
-
-      def records_by_id(model_class, ids)
-        model_class.where(id: ids.uniq).index_by(&:id)
       end
 
       def normalize_prose(value)

@@ -16,4 +16,15 @@
 #
 class PokeTypeName < ApplicationRecord
   self.table_name = "type_name"
+
+  belongs_to :type,
+             class_name: "PokeType",
+             foreign_key: :type_id,
+             inverse_of: :type_names,
+             optional: true
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :type_names,
+             optional: true
 end

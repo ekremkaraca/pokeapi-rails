@@ -15,4 +15,13 @@
 #
 class PokeItemFlagMap < ApplicationRecord
   self.table_name = "item_flag_map"
+
+  belongs_to :item,
+             class_name: "PokeItem",
+             foreign_key: :item_id,
+             inverse_of: :item_flag_maps
+  belongs_to :item_attribute,
+             class_name: "PokeItemAttribute",
+             foreign_key: :item_flag_id,
+             inverse_of: :item_flag_maps
 end

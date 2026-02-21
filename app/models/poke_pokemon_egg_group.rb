@@ -15,4 +15,15 @@
 #
 class PokePokemonEggGroup < ApplicationRecord
   self.table_name = "pokemon_egg_group"
+
+  belongs_to :pokemon_species,
+             class_name: "PokePokemonSpecies",
+             foreign_key: :species_id,
+             inverse_of: :pokemon_egg_groups,
+             optional: true
+  belongs_to :egg_group,
+             class_name: "PokeEggGroup",
+             foreign_key: :egg_group_id,
+             inverse_of: :pokemon_egg_groups,
+             optional: true
 end

@@ -48,7 +48,7 @@ class Rack::Attack
       "X-RateLimit-Reset" => (now.to_i + retry_after).to_s
     }
 
-    [429, headers, [ { error: { code: "rate_limited", message: "Too many requests" } }.to_json ]]
+    [ 429, headers, [ { error: { code: "rate_limited", message: "Too many requests" } }.to_json ] ]
   end
 
   ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, _id, payload|

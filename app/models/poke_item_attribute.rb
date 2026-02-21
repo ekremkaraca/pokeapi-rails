@@ -14,5 +14,11 @@
 class PokeItemAttribute < ApplicationRecord
   self.table_name = "item_attribute"
 
+  has_many :item_flag_maps,
+           class_name: "PokeItemFlagMap",
+           foreign_key: :item_flag_id,
+           inverse_of: :item_attribute,
+           dependent: :destroy
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

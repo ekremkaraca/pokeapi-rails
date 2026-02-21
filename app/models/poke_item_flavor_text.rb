@@ -18,4 +18,17 @@
 #
 class PokeItemFlavorText < ApplicationRecord
   self.table_name = "item_flavor_text"
+
+  belongs_to :item,
+             class_name: "PokeItem",
+             foreign_key: :item_id,
+             inverse_of: :item_flavor_texts
+  belongs_to :language,
+             class_name: "PokeLanguage",
+             foreign_key: :language_id,
+             inverse_of: :item_flavor_texts
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :item_flavor_texts
 end

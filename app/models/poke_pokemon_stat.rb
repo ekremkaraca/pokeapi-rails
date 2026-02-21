@@ -17,4 +17,13 @@
 #
 class PokePokemonStat < ApplicationRecord
   self.table_name = "pokemon_stat"
+
+  belongs_to :pokemon,
+             class_name: "Pokemon",
+             foreign_key: :pokemon_id,
+             inverse_of: :pokemon_stats
+  belongs_to :stat,
+             class_name: "PokeStat",
+             foreign_key: :stat_id,
+             inverse_of: :pokemon_stats
 end

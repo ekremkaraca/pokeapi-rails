@@ -14,5 +14,21 @@
 class PokeMoveDamageClass < ApplicationRecord
   self.table_name = "move_damage_class"
 
+  has_many :moves,
+           class_name: "PokeMove",
+           foreign_key: :damage_class_id,
+           inverse_of: :damage_class,
+           dependent: :nullify
+  has_many :stats,
+           class_name: "PokeStat",
+           foreign_key: :damage_class_id,
+           inverse_of: :damage_class,
+           dependent: :nullify
+  has_many :types,
+           class_name: "PokeType",
+           foreign_key: :damage_class_id,
+           inverse_of: :damage_class,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

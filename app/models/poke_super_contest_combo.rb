@@ -15,4 +15,15 @@
 #
 class PokeSuperContestCombo < ApplicationRecord
   self.table_name = "super_contest_combo"
+
+  belongs_to :first_move,
+             class_name: "PokeMove",
+             foreign_key: :first_move_id,
+             inverse_of: :super_contest_combos_as_first,
+             optional: true
+  belongs_to :second_move,
+             class_name: "PokeMove",
+             foreign_key: :second_move_id,
+             inverse_of: :super_contest_combos_as_second,
+             optional: true
 end

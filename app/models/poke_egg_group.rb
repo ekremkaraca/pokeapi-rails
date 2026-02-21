@@ -14,5 +14,11 @@
 class PokeEggGroup < ApplicationRecord
   self.table_name = "egg_group"
 
+  has_many :pokemon_egg_groups,
+           class_name: "PokePokemonEggGroup",
+           foreign_key: :egg_group_id,
+           inverse_of: :egg_group,
+           dependent: :restrict_with_exception
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

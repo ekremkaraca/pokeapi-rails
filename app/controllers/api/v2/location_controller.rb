@@ -10,17 +10,17 @@ module Api
 
       def detail_payload(location)
         {
-          areas: areas_payload(location.id),
-          game_indices: game_indices_payload(location.id),
+          areas: areas_payload(location),
+          game_indices: game_indices_payload(location),
           id: location.id,
           name: location.name,
-          names: names_payload(location.id),
-          region: region_payload(location.region_id)
+          names: names_payload(location),
+          region: region_payload(location)
         }
       end
 
-      def areas_payload(location_id)
-        PokeLocationArea.where(location_id: location_id).order(:id).map do |location_area|
+      def areas_payload(location)
+        location.location_areas.order(:id).map do |location_area|
           {
             name: location_area.name,
             url: canonical_location_area_url(location_area)
@@ -28,12 +28,9 @@ module Api
         end
       end
 
-      def game_indices_payload(location_id)
-        rows = PokeLocationGameIndex.where(location_id: location_id)
-        generations_by_id = records_by_id(PokeGeneration, rows.map(&:generation_id))
-
-        rows.filter_map do |row|
-          generation = generations_by_id[row.generation_id]
+      def game_indices_payload(location)
+        location.location_game_indices.includes(:generation).filter_map do |row|
+          generation = row.generation
           next unless generation
 
           {
@@ -46,12 +43,9 @@ module Api
         end
       end
 
-      def names_payload(location_id)
-        rows = PokeLocationName.where(location_id: location_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
-
-        rows.filter_map do |row|
-          language = languages_by_id[row.local_language_id]
+      def names_payload(location)
+        location.location_names.includes(:local_language).filter_map do |row|
+          language = row.local_language
           next unless language
 
           {
@@ -64,18 +58,14 @@ module Api
         end
       end
 
-      def region_payload(region_id)
-        region = PokeRegion.find_by(id: region_id)
+      def region_payload(location)
+        region = location.region
         return nil unless region
 
         {
           name: region.name,
           url: canonical_region_url(region)
         }
-      end
-
-      def records_by_id(model_class, ids)
-        model_class.where(id: ids.uniq).index_by(&:id)
       end
 
       def canonical_generation_url(generation)

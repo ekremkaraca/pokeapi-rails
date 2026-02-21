@@ -14,5 +14,11 @@
 class PokeItemFlingEffect < ApplicationRecord
   self.table_name = "item_fling_effect"
 
+  has_many :items,
+           class_name: "PokeItem",
+           foreign_key: :fling_effect_id,
+           inverse_of: :fling_effect,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

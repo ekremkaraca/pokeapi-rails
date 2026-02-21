@@ -17,4 +17,13 @@
 #
 class PokeItemProse < ApplicationRecord
   self.table_name = "item_prose"
+
+  belongs_to :item,
+             class_name: "PokeItem",
+             foreign_key: :item_id,
+             inverse_of: :item_proses
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :item_proses
 end

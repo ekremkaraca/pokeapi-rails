@@ -16,4 +16,13 @@
 #
 class PokeMoveMetaStatChange < ApplicationRecord
   self.table_name = "move_meta_stat_change"
+
+  belongs_to :move,
+             class_name: "PokeMove",
+             foreign_key: :move_id,
+             inverse_of: :move_meta_stat_changes
+  belongs_to :stat,
+             class_name: "PokeStat",
+             foreign_key: :stat_id,
+             inverse_of: :move_meta_stat_changes
 end

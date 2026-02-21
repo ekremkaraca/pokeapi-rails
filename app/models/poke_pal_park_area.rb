@@ -14,5 +14,11 @@
 class PokePalParkArea < ApplicationRecord
   self.table_name = "pal_park_area"
 
+  has_many :pal_parks,
+           class_name: "PokePalPark",
+           foreign_key: :area_id,
+           inverse_of: :area,
+           dependent: :restrict_with_exception
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

@@ -9,10 +9,10 @@ module Api
       private
 
       def detail_payload(pokemon)
-        species = PokePokemonSpecies.find_by(id: pokemon.species_id)
+        species = pokemon.species
 
         {
-          abilities: abilities_payload(pokemon.id),
+          abilities: abilities_payload(pokemon),
           base_experience: pokemon.base_experience,
           cries: cries_payload(pokemon.id),
           forms: forms_payload(pokemon.id),
@@ -36,12 +36,9 @@ module Api
         }
       end
 
-      def abilities_payload(pokemon_id)
-        rows = PokePokemonAbility.where(pokemon_id: pokemon_id).order(:slot, :ability_id)
-        abilities_by_id = records_by_id(Ability, rows.map(&:ability_id))
-
-        rows.filter_map do |row|
-          ability = abilities_by_id[row.ability_id]
+      def abilities_payload(pokemon)
+        pokemon.pokemon_abilities.includes(:ability).order(:slot, :ability_id).filter_map do |row|
+          ability = row.ability
           next unless ability
 
           {
@@ -207,8 +204,7 @@ module Api
           .compact
       end
 
-      def species_payload(species_or_id)
-        species = species_or_id.is_a?(PokePokemonSpecies) ? species_or_id : PokePokemonSpecies.find_by(id: species_or_id)
+      def species_payload(species)
         return nil unless species
 
         resource_payload(species, :api_v2_pokemon_species_url)
@@ -433,8 +429,7 @@ module Api
         }
       end
 
-      def female_sprite?(species_or_id)
-        species = species_or_id.is_a?(PokePokemonSpecies) ? species_or_id : PokePokemonSpecies.find_by(id: species_or_id)
+      def female_sprite?(species)
         species&.has_gender_differences || false
       end
 

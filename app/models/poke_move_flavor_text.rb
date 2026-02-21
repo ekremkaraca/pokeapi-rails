@@ -19,4 +19,20 @@
 #
 class PokeMoveFlavorText < ApplicationRecord
   self.table_name = "move_flavor_text"
+
+  belongs_to :move,
+             class_name: "PokeMove",
+             foreign_key: :move_id,
+             inverse_of: :move_flavor_texts,
+             optional: true
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :move_flavor_texts,
+             optional: true
+  belongs_to :language,
+             class_name: "PokeLanguage",
+             foreign_key: :language_id,
+             inverse_of: :move_flavor_texts,
+             optional: true
 end

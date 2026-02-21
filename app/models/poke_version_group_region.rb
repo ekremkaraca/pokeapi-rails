@@ -15,4 +15,15 @@
 #
 class PokeVersionGroupRegion < ApplicationRecord
   self.table_name = "version_group_region"
+
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :version_group_regions,
+             optional: true
+  belongs_to :region,
+             class_name: "PokeRegion",
+             foreign_key: :region_id,
+             inverse_of: :version_group_regions,
+             optional: true
 end

@@ -16,4 +16,13 @@
 #
 class PokeTypeGameIndex < ApplicationRecord
   self.table_name = "type_game_index"
+
+  belongs_to :type,
+             class_name: "PokeType",
+             foreign_key: :type_id,
+             inverse_of: :type_game_indices
+  belongs_to :generation,
+             class_name: "PokeGeneration",
+             foreign_key: :generation_id,
+             inverse_of: :type_game_indices
 end

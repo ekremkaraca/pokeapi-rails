@@ -15,4 +15,15 @@
 #
 class PokeAbilityChangelog < ApplicationRecord
   self.table_name = "ability_changelog"
+
+  has_many :ability_changelog_proses,
+           class_name: "PokeAbilityChangelogProse",
+           foreign_key: :ability_changelog_id,
+           inverse_of: :ability_changelog,
+           dependent: :destroy
+  belongs_to :ability, inverse_of: :changelogs
+  belongs_to :changed_in_version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :changed_in_version_group_id,
+             inverse_of: :ability_changelogs
 end

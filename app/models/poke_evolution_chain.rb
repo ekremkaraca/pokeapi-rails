@@ -13,4 +13,16 @@
 #
 class PokeEvolutionChain < ApplicationRecord
   self.table_name = "evolution_chain"
+
+  belongs_to :baby_trigger_item,
+             class_name: "PokeItem",
+             foreign_key: :baby_trigger_item_id,
+             inverse_of: :baby_triggered_evolution_chains,
+             optional: true
+
+  has_many :pokemon_species,
+           class_name: "PokePokemonSpecies",
+           foreign_key: :evolution_chain_id,
+           inverse_of: :evolution_chain,
+           dependent: :nullify
 end

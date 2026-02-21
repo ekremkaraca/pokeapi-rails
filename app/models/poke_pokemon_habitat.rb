@@ -14,5 +14,11 @@
 class PokePokemonHabitat < ApplicationRecord
   self.table_name = "pokemon_habitat"
 
+  has_many :pokemon_species,
+           class_name: "PokePokemonSpecies",
+           foreign_key: :habitat_id,
+           inverse_of: :habitat,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

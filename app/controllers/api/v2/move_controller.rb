@@ -11,37 +11,37 @@ module Api
       def detail_payload(move)
         {
           accuracy: move.accuracy,
-          contest_combos: contest_combos_payload(move.id),
-          contest_effect: contest_effect_payload(move.contest_effect_id),
-          contest_type: contest_type_payload(move.contest_type_id),
-          damage_class: damage_class_payload(move.damage_class_id),
+          contest_combos: contest_combos_payload(move),
+          contest_effect: contest_effect_payload(move),
+          contest_type: contest_type_payload(move),
+          damage_class: damage_class_payload(move),
           effect_chance: move.effect_chance,
-          effect_changes: effect_changes_payload(move.effect_id),
-          effect_entries: effect_entries_payload(move.effect_id),
-          flavor_text_entries: flavor_text_entries_payload(move.id),
-          generation: generation_payload(move.generation_id),
+          effect_changes: effect_changes_payload(move),
+          effect_entries: effect_entries_payload(move),
+          flavor_text_entries: flavor_text_entries_payload(move),
+          generation: generation_payload(move),
           id: move.id,
-          learned_by_pokemon: learned_by_pokemon_payload(move.id),
-          machines: machines_payload(move.id),
-          meta: meta_payload(move.id),
+          learned_by_pokemon: learned_by_pokemon_payload(move),
+          machines: machines_payload(move),
+          meta: meta_payload(move),
           name: move.name,
-          names: names_payload(move.id),
-          past_values: past_values_payload(move.id),
+          names: names_payload(move),
+          past_values: past_values_payload(move),
           power: move.power,
           pp: move.pp,
           priority: move.priority,
-          stat_changes: stat_changes_payload(move.id),
-          super_contest_effect: super_contest_effect_payload(move.super_contest_effect_id),
-          target: target_payload(move.target_id),
-          type: type_payload(move.type_id)
+          stat_changes: stat_changes_payload(move),
+          super_contest_effect: super_contest_effect_payload(move),
+          target: target_payload(move),
+          type: type_payload(move)
         }
       end
 
-      def contest_combos_payload(move_id)
-        normal_rows = PokeContestCombo.where(first_move_id: move_id)
-        normal_reverse_rows = PokeContestCombo.where(second_move_id: move_id)
-        super_rows = PokeSuperContestCombo.where(first_move_id: move_id)
-        super_reverse_rows = PokeSuperContestCombo.where(second_move_id: move_id)
+      def contest_combos_payload(move)
+        normal_rows = move.contest_combos_as_first
+        normal_reverse_rows = move.contest_combos_as_second
+        super_rows = move.super_contest_combos_as_first
+        super_reverse_rows = move.super_contest_combos_as_second
 
         {
           normal: {
@@ -55,60 +55,57 @@ module Api
         }
       end
 
-      def contest_effect_payload(contest_effect_id)
-        contest_effect = record_by_id(PokeContestEffect, contest_effect_id)
+      def contest_effect_payload(move)
+        contest_effect = move.contest_effect
         return nil unless contest_effect
 
         { url: "#{api_v2_contest_effect_url(contest_effect).sub(%r{/+\z}, '')}/" }
       end
 
-      def contest_type_payload(contest_type_id)
-        contest_type = record_by_id(PokeContestType, contest_type_id)
+      def contest_type_payload(move)
+        contest_type = move.contest_type
         return nil unless contest_type
 
         resource_payload(contest_type, :api_v2_contest_type_url)
       end
 
-      def damage_class_payload(damage_class_id)
-        damage_class = record_by_id(PokeMoveDamageClass, damage_class_id)
+      def damage_class_payload(move)
+        damage_class = move.damage_class
         return nil unless damage_class
 
         resource_payload(damage_class, :api_v2_move_damage_class_url)
       end
 
-      def generation_payload(generation_id)
-        generation = record_by_id(PokeGeneration, generation_id)
+      def generation_payload(move)
+        generation = move.generation
         return nil unless generation
 
         resource_payload(generation, :api_v2_generation_url)
       end
 
-      def target_payload(target_id)
-        target = record_by_id(PokeMoveTarget, target_id)
+      def target_payload(move)
+        target = move.target
         return nil unless target
 
         resource_payload(target, :api_v2_move_target_url)
       end
 
-      def type_payload(type_id)
-        normalized_type_id = normalized_id(type_id)
-        return nil unless normalized_type_id
-
-        type = record_by_id(PokeType, normalized_type_id)
+      def type_payload(move)
+        type = move.type
         return nil unless type
 
         resource_payload(type, :api_v2_type_url)
       end
 
-      def super_contest_effect_payload(super_contest_effect_id)
-        effect = record_by_id(PokeSuperContestEffect, super_contest_effect_id)
+      def super_contest_effect_payload(move)
+        effect = move.super_contest_effect
         return nil unless effect
 
         { url: "#{api_v2_super_contest_effect_url(effect).sub(%r{/+\z}, '')}/" }
       end
 
-      def effect_entries_payload(effect_id)
-        rows = PokeMoveEffectProse.where(move_effect_id: effect_id)
+      def effect_entries_payload(move)
+        rows = move.move_effect_proses
         languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
 
         rows.filter_map do |row|
@@ -123,8 +120,8 @@ module Api
         end
       end
 
-      def effect_changes_payload(effect_id)
-        changelog_rows = PokeMoveEffectChangelog.where(effect_id: effect_id)
+      def effect_changes_payload(move)
+        changelog_rows = move.move_effect_changelogs
         version_groups_by_id = records_by_id(PokeVersionGroup, changelog_rows.map(&:changed_in_version_group_id))
         prose_rows = PokeMoveEffectChangelogProse.where(move_effect_changelog_id: changelog_rows.map(&:id))
         prose_by_changelog_id = prose_rows.group_by(&:move_effect_changelog_id)
@@ -151,8 +148,8 @@ module Api
         end
       end
 
-      def flavor_text_entries_payload(move_id)
-        rows = PokeMoveFlavorText.where(move_id: move_id)
+      def flavor_text_entries_payload(move)
+        rows = move.move_flavor_texts
         languages_by_id = records_by_id(PokeLanguage, rows.map(&:language_id))
         version_groups_by_id = records_by_id(PokeVersionGroup, rows.map(&:version_group_id))
 
@@ -169,15 +166,14 @@ module Api
         end
       end
 
-      def learned_by_pokemon_payload(move_id)
-        pokemon_ids = PokePokemonMove.where(move_id: move_id).distinct.pluck(:pokemon_id)
-        Pokemon.where(id: pokemon_ids).order(:id).map do |pokemon|
+      def learned_by_pokemon_payload(move)
+        move.pokemon_moves.includes(:pokemon).map(&:pokemon).compact.uniq.sort_by(&:id).map do |pokemon|
           resource_payload(pokemon, :api_v2_pokemon_url)
         end
       end
 
-      def machines_payload(move_id)
-        machines = PokeMachine.where(move_id: move_id).order(:id)
+      def machines_payload(move)
+        machines = move.machines.order(:id)
         version_groups_by_id = records_by_id(PokeVersionGroup, machines.map(&:version_group_id))
 
         machines.filter_map do |machine|
@@ -191,8 +187,8 @@ module Api
         end
       end
 
-      def meta_payload(move_id)
-        row = PokeMoveMeta.find_by(move_id: move_id)
+      def meta_payload(move)
+        row = move.move_meta
         return nil unless row
 
         {
@@ -231,8 +227,8 @@ module Api
         resource_payload(ailment, :api_v2_move_ailment_url)
       end
 
-      def names_payload(move_id)
-        rows = PokeMoveName.where(move_id: move_id)
+      def names_payload(move)
+        rows = move.move_names
         languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
 
         rows.filter_map do |row|
@@ -246,8 +242,8 @@ module Api
         end
       end
 
-      def past_values_payload(move_id)
-        rows = PokeMoveChangelog.where(move_id: move_id)
+      def past_values_payload(move)
+        rows = move.move_changelogs
         version_groups_by_id = records_by_id(PokeVersionGroup, rows.map(&:changed_in_version_group_id))
         type_ids = rows.map { |row| normalized_id(row.type_id) }.compact
         types_by_id = records_by_id(PokeType, type_ids)
@@ -257,7 +253,6 @@ module Api
           next unless version_group
 
           type_id = normalized_id(row.type_id)
-
           type_record = type_id ? types_by_id[type_id] : nil
 
           {
@@ -271,12 +266,11 @@ module Api
         end
       end
 
-      def stat_changes_payload(move_id)
-        rows = PokeMoveMetaStatChange.where(move_id: move_id)
-        stats_by_id = records_by_id(PokeStat, rows.map(&:stat_id))
+      def stat_changes_payload(move)
+        rows = move.move_meta_stat_changes.includes(:stat)
 
         rows.filter_map do |row|
-          stat = stats_by_id[row.stat_id]
+          stat = row.stat
           next unless stat
 
           {

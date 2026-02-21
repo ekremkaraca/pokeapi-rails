@@ -16,4 +16,13 @@
 #
 class PokeTypeEfficacy < ApplicationRecord
   self.table_name = "type_efficacy"
+
+  belongs_to :damage_type,
+             class_name: "PokeType",
+             foreign_key: :damage_type_id,
+             inverse_of: :type_efficacies_as_damage_type
+  belongs_to :target_type,
+             class_name: "PokeType",
+             foreign_key: :target_type_id,
+             inverse_of: :type_efficacies_as_target_type
 end

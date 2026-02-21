@@ -9,4 +9,10 @@
 #
 class PokeSuperContestEffect < ApplicationRecord
   self.table_name = "super_contest_effect"
+
+  has_many :moves,
+           class_name: "PokeMove",
+           foreign_key: :super_contest_effect_id,
+           inverse_of: :super_contest_effect,
+           dependent: :nullify
 end

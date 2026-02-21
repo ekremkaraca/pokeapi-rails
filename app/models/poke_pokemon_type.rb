@@ -16,4 +16,13 @@
 #
 class PokePokemonType < ApplicationRecord
   self.table_name = "pokemon_type"
+
+  belongs_to :pokemon,
+             class_name: "Pokemon",
+             foreign_key: :pokemon_id,
+             inverse_of: :pokemon_types
+  belongs_to :type,
+             class_name: "PokeType",
+             foreign_key: :type_id,
+             inverse_of: :pokemon_types
 end

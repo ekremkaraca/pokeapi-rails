@@ -18,4 +18,17 @@
 #
 class PokePokemonItem < ApplicationRecord
   self.table_name = "pokemon_item"
+
+  belongs_to :item,
+             class_name: "PokeItem",
+             foreign_key: :item_id,
+             inverse_of: :pokemon_items
+  belongs_to :pokemon,
+             class_name: "Pokemon",
+             foreign_key: :pokemon_id,
+             inverse_of: :pokemon_items
+  belongs_to :version,
+             class_name: "PokeVersion",
+             foreign_key: :version_id,
+             inverse_of: :pokemon_items
 end

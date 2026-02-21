@@ -18,4 +18,17 @@
 #
 class PokeTypeEfficacyPast < ApplicationRecord
   self.table_name = "type_efficacy_past"
+
+  belongs_to :damage_type,
+             class_name: "PokeType",
+             foreign_key: :damage_type_id,
+             inverse_of: :type_efficacy_pasts_as_damage_type
+  belongs_to :target_type,
+             class_name: "PokeType",
+             foreign_key: :target_type_id,
+             inverse_of: :type_efficacy_pasts_as_target_type
+  belongs_to :generation,
+             class_name: "PokeGeneration",
+             foreign_key: :generation_id,
+             inverse_of: :type_efficacy_pasts
 end

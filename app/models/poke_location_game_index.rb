@@ -16,4 +16,15 @@
 #
 class PokeLocationGameIndex < ApplicationRecord
   self.table_name = "location_game_index"
+
+  belongs_to :location,
+             class_name: "PokeLocation",
+             foreign_key: :location_id,
+             inverse_of: :location_game_indices,
+             optional: true
+  belongs_to :generation,
+             class_name: "PokeGeneration",
+             foreign_key: :generation_id,
+             inverse_of: :location_game_indices,
+             optional: true
 end

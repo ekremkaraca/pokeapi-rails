@@ -16,4 +16,13 @@
 #
 class PokeItemName < ApplicationRecord
   self.table_name = "item_name"
+
+  belongs_to :item,
+             class_name: "PokeItem",
+             foreign_key: :item_id,
+             inverse_of: :item_names
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :item_names
 end

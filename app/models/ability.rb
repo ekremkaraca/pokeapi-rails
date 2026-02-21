@@ -18,5 +18,37 @@
 class Ability < ApplicationRecord
   self.table_name = "ability"
 
+  belongs_to :generation,
+             class_name: "PokeGeneration",
+             foreign_key: :generation_id,
+             inverse_of: :abilities,
+             optional: true
+
+  has_many :pokemon_abilities, class_name: "PokePokemonAbility"
+  has_many :changelogs,
+           class_name: "PokeAbilityChangelog",
+           foreign_key: :ability_id,
+           inverse_of: :ability,
+           dependent: :destroy
+  has_many :flavor_texts,
+           class_name: "PokeAbilityFlavorText",
+           foreign_key: :ability_id,
+           inverse_of: :ability,
+           dependent: :destroy
+
+  has_many :ability_names,
+            class_name: "PokeAbilityName",
+            foreign_key: :ability_id,
+            inverse_of: :ability,
+            dependent: :destroy
+
+  has_many :ability_proses,
+            class_name: "PokeAbilityProse",
+            foreign_key: :ability_id,
+            inverse_of: :ability,
+            dependent: :destroy
+
+  has_many :pokemon, through: :pokemon_abilities
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

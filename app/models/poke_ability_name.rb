@@ -17,4 +17,11 @@
 #
 class PokeAbilityName < ApplicationRecord
   self.table_name = "ability_name"
+
+  belongs_to :ability, inverse_of: :ability_names
+
+  belongs_to :local_language,
+              class_name: "PokeLanguage",
+              foreign_key: :local_language_id,
+              inverse_of: :ability_names
 end

@@ -15,4 +15,10 @@
 #
 class PokeCharacteristic < ApplicationRecord
   self.table_name = "characteristic"
+
+  belongs_to :stat,
+             class_name: "PokeStat",
+             foreign_key: :stat_id,
+             inverse_of: :characteristics,
+             optional: true
 end

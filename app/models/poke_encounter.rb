@@ -21,4 +21,26 @@
 #
 class PokeEncounter < ApplicationRecord
   self.table_name = "encounter"
+
+  belongs_to :encounter_slot,
+             class_name: "PokeEncounterSlot",
+             foreign_key: :encounter_slot_id,
+             inverse_of: :encounters
+  belongs_to :location_area,
+             class_name: "PokeLocationArea",
+             foreign_key: :location_area_id,
+             inverse_of: :encounters
+  belongs_to :pokemon,
+             class_name: "Pokemon",
+             foreign_key: :pokemon_id,
+             inverse_of: :encounters
+  belongs_to :version,
+             class_name: "PokeVersion",
+             foreign_key: :version_id,
+             inverse_of: :encounters
+  has_many :encounter_condition_value_maps,
+           class_name: "PokeEncounterConditionValueMap",
+           foreign_key: :encounter_id,
+           inverse_of: :encounter,
+           dependent: :destroy
 end

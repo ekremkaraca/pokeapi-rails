@@ -15,4 +15,15 @@
 #
 class PokeVersionGroupPokemonMoveMethod < ApplicationRecord
   self.table_name = "version_group_pokemon_move_method"
+
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :version_group_pokemon_move_methods,
+             optional: true
+  belongs_to :move_learn_method,
+             class_name: "PokeMoveLearnMethod",
+             foreign_key: :pokemon_move_method_id,
+             inverse_of: :version_group_pokemon_move_methods,
+             optional: true
 end

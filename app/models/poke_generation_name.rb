@@ -16,4 +16,15 @@
 #
 class PokeGenerationName < ApplicationRecord
   self.table_name = "generation_name"
+
+  belongs_to :generation,
+             class_name: "PokeGeneration",
+             foreign_key: :generation_id,
+             inverse_of: :generation_names,
+             optional: true
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :generation_names,
+             optional: true
 end

@@ -18,5 +18,16 @@
 class PokeEncounterConditionValue < ApplicationRecord
   self.table_name = "encounter_condition_value"
 
+  belongs_to :encounter_condition,
+             class_name: "PokeEncounterCondition",
+             foreign_key: :encounter_condition_id,
+             inverse_of: :encounter_condition_values,
+             optional: true
+  has_many :encounter_condition_value_maps,
+           class_name: "PokeEncounterConditionValueMap",
+           foreign_key: :encounter_condition_value_id,
+           inverse_of: :encounter_condition_value,
+           dependent: :destroy
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

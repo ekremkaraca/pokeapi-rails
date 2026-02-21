@@ -16,4 +16,15 @@
 #
 class PokeMoveEffectChangelogProse < ApplicationRecord
   self.table_name = "move_effect_changelog_prose"
+
+  belongs_to :move_effect_changelog,
+             class_name: "PokeMoveEffectChangelog",
+             foreign_key: :move_effect_changelog_id,
+             inverse_of: :proses,
+             optional: true
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :move_effect_changelog_proses,
+             optional: true
 end

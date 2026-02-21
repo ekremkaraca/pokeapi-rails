@@ -29,5 +29,16 @@
 class PokePokemonForm < ApplicationRecord
   self.table_name = "pokemon_form"
 
+  belongs_to :pokemon,
+             class_name: "Pokemon",
+             foreign_key: :pokemon_id,
+             inverse_of: :pokemon_forms,
+             optional: true
+  belongs_to :introduced_in_version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :introduced_in_version_group_id,
+             inverse_of: :pokemon_forms,
+             optional: true
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

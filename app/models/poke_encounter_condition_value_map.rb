@@ -15,4 +15,13 @@
 #
 class PokeEncounterConditionValueMap < ApplicationRecord
   self.table_name = "encounter_condition_value_map"
+
+  belongs_to :encounter,
+             class_name: "PokeEncounter",
+             foreign_key: :encounter_id,
+             inverse_of: :encounter_condition_value_maps
+  belongs_to :encounter_condition_value,
+             class_name: "PokeEncounterConditionValue",
+             foreign_key: :encounter_condition_value_id,
+             inverse_of: :encounter_condition_value_maps
 end

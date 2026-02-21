@@ -14,5 +14,11 @@
 class PokeMoveAilment < ApplicationRecord
   self.table_name = "move_ailment"
 
+  has_many :move_metas,
+           class_name: "PokeMoveMeta",
+           foreign_key: :meta_ailment_id,
+           inverse_of: :meta_ailment,
+           dependent: :nullify
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

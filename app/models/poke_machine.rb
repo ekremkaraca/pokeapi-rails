@@ -20,4 +20,20 @@
 #
 class PokeMachine < ApplicationRecord
   self.table_name = "machine"
+
+  belongs_to :item,
+             class_name: "PokeItem",
+             foreign_key: :item_id,
+             inverse_of: :machines,
+             optional: true
+  belongs_to :move,
+             class_name: "PokeMove",
+             foreign_key: :move_id,
+             inverse_of: :machines,
+             optional: true
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :machines,
+             optional: true
 end

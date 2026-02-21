@@ -12,18 +12,18 @@ module Api
         {
           base_happiness: species.base_happiness,
           capture_rate: species.capture_rate,
-          color: color_payload(species.color_id),
-          egg_groups: egg_groups_payload(species.id),
-          evolution_chain: evolution_chain_payload(species.evolution_chain_id),
-          evolves_from_species: evolves_from_species_payload(species.evolves_from_species_id),
-          flavor_text_entries: flavor_text_entries_payload(species.id),
-          form_descriptions: form_descriptions_payload(species.id),
+          color: color_payload(species),
+          egg_groups: egg_groups_payload(species),
+          evolution_chain: evolution_chain_payload(species),
+          evolves_from_species: evolves_from_species_payload(species),
+          flavor_text_entries: flavor_text_entries_payload(species),
+          form_descriptions: form_descriptions_payload(species),
           forms_switchable: species.forms_switchable,
           gender_rate: species.gender_rate,
-          genera: genera_payload(species.id),
-          generation: generation_payload(species.generation_id),
-          growth_rate: growth_rate_payload(species.growth_rate_id),
-          habitat: habitat_payload(species.habitat_id),
+          genera: genera_payload(species),
+          generation: generation_payload(species),
+          growth_rate: growth_rate_payload(species),
+          habitat: habitat_payload(species),
           has_gender_differences: species.has_gender_differences,
           hatch_counter: species.hatch_counter,
           id: species.id,
@@ -31,77 +31,80 @@ module Api
           is_legendary: species.is_legendary,
           is_mythical: species.is_mythical,
           name: species.name,
-          names: names_payload(species.id),
+          names: names_payload(species),
           order: species.sort_order,
-          pal_park_encounters: pal_park_encounters_payload(species.id),
-          pokedex_numbers: pokedex_numbers_payload(species.id),
-          shape: shape_payload(species.shape_id),
-          varieties: varieties_payload(species.id)
+          pal_park_encounters: pal_park_encounters_payload(species),
+          pokedex_numbers: pokedex_numbers_payload(species),
+          shape: shape_payload(species),
+          varieties: varieties_payload(species)
         }
       end
 
-      def color_payload(color_id)
-        color = PokePokemonColor.find_by(id: color_id)
+      def color_payload(species)
+        color = species.color
         return nil unless color
 
         resource_payload(color, :api_v2_pokemon_color_url)
       end
 
-      def generation_payload(generation_id)
-        generation = PokeGeneration.find_by(id: generation_id)
+      def generation_payload(species)
+        generation = species.generation
         return nil unless generation
 
         resource_payload(generation, :api_v2_generation_url)
       end
 
-      def growth_rate_payload(growth_rate_id)
-        growth_rate = PokeGrowthRate.find_by(id: growth_rate_id)
+      def growth_rate_payload(species)
+        growth_rate = species.growth_rate
         return nil unless growth_rate
 
         resource_payload(growth_rate, :api_v2_growth_rate_url)
       end
 
-      def habitat_payload(habitat_id)
-        habitat = PokePokemonHabitat.find_by(id: habitat_id)
+      def habitat_payload(species)
+        habitat = species.habitat
         return nil unless habitat
 
         resource_payload(habitat, :api_v2_pokemon_habitat_url)
       end
 
-      def shape_payload(shape_id)
-        shape = PokePokemonShape.find_by(id: shape_id)
+      def shape_payload(species)
+        shape = species.shape
         return nil unless shape
 
         resource_payload(shape, :api_v2_pokemon_shape_url)
       end
 
-      def evolution_chain_payload(evolution_chain_id)
-        chain = PokeEvolutionChain.find_by(id: evolution_chain_id)
+      def evolution_chain_payload(species)
+        chain = species.evolution_chain
         return nil unless chain
 
         { url: "#{api_v2_evolution_chain_url(chain).sub(%r{/+\z}, '')}/" }
       end
 
-      def evolves_from_species_payload(evolves_from_species_id)
-        parent = PokePokemonSpecies.find_by(id: evolves_from_species_id)
+      def evolves_from_species_payload(species)
+        parent = species.evolves_from_species
         return nil unless parent
 
         resource_payload(parent, :api_v2_pokemon_species_url)
       end
 
-      def egg_groups_payload(species_id)
-        egg_group_ids = PokePokemonEggGroup.where(species_id: species_id).pluck(:egg_group_id).uniq
-        PokeEggGroup.where(id: egg_group_ids).order(:id).map do |egg_group|
+      def egg_groups_payload(species)
+        rows = species.pokemon_egg_groups.includes(:egg_group).order(:egg_group_id)
+
+        rows.filter_map do |row|
+          egg_group = row.egg_group
+          next unless egg_group
+
           resource_payload(egg_group, :api_v2_egg_group_url)
         end
       end
 
-      def names_payload(species_id)
-        rows = PokePokemonSpeciesName.where(pokemon_species_id: species_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
+      def names_payload(species)
+        rows = species.pokemon_species_names.includes(:local_language)
 
         rows.filter_map do |row|
-          language = languages_by_id[row.local_language_id]
+          language = row.local_language
           next unless language
 
           {
@@ -111,14 +114,13 @@ module Api
         end
       end
 
-      def genera_payload(species_id)
-        rows = PokePokemonSpeciesName.where(pokemon_species_id: species_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
+      def genera_payload(species)
+        rows = species.pokemon_species_names.includes(:local_language)
 
         rows.filter_map do |row|
           next if row.genus.to_s.strip.empty?
 
-          language = languages_by_id[row.local_language_id]
+          language = row.local_language
           next unless language
 
           {
@@ -128,14 +130,12 @@ module Api
         end
       end
 
-      def flavor_text_entries_payload(species_id)
-        rows = PokePokemonSpeciesFlavorText.where(species_id: species_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:language_id))
-        versions_by_id = records_by_id(PokeVersion, rows.map(&:version_id))
+      def flavor_text_entries_payload(species)
+        rows = species.pokemon_species_flavor_texts.includes(:language, :version)
 
         rows.filter_map do |row|
-          language = languages_by_id[row.language_id]
-          version = versions_by_id[row.version_id]
+          language = row.language
+          version = row.version
           next unless language && version
 
           {
@@ -146,14 +146,13 @@ module Api
         end
       end
 
-      def form_descriptions_payload(species_id)
-        rows = PokePokemonSpeciesProse.where(pokemon_species_id: species_id)
-        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
+      def form_descriptions_payload(species)
+        rows = species.pokemon_species_proses.includes(:local_language)
 
         rows.filter_map do |row|
           next if row.form_description.to_s.strip.empty?
 
-          language = languages_by_id[row.local_language_id]
+          language = row.local_language
           next unless language
 
           {
@@ -163,12 +162,9 @@ module Api
         end
       end
 
-      def pal_park_encounters_payload(species_id)
-        rows = PokePalPark.where(species_id: species_id)
-        areas_by_id = records_by_id(PokePalParkArea, rows.map(&:area_id))
-
-        rows.filter_map do |row|
-          area = areas_by_id[row.area_id]
+      def pal_park_encounters_payload(species)
+        species.pal_parks.includes(:area).filter_map do |row|
+          area = row.area
           next unless area
 
           {
@@ -179,12 +175,9 @@ module Api
         end
       end
 
-      def pokedex_numbers_payload(species_id)
-        rows = PokePokemonDexNumber.where(species_id: species_id)
-        pokedexes_by_id = records_by_id(PokePokedex, rows.map(&:pokedex_id))
-
-        rows.filter_map do |row|
-          pokedex = pokedexes_by_id[row.pokedex_id]
+      def pokedex_numbers_payload(species)
+        species.pokemon_dex_numbers.includes(:pokedex).filter_map do |row|
+          pokedex = row.pokedex
           next unless pokedex
 
           {
@@ -194,8 +187,8 @@ module Api
         end
       end
 
-      def varieties_payload(species_id)
-        Pokemon.where(species_id: species_id).order(:id).map do |pokemon|
+      def varieties_payload(species)
+        species.pokemon.order(:id).map do |pokemon|
           {
             is_default: pokemon.is_default,
             pokemon: resource_payload(pokemon, :api_v2_pokemon_url)
@@ -208,10 +201,6 @@ module Api
           name: record.name,
           url: "#{public_send(route_helper, record).sub(%r{/+\z}, '')}/"
         }
-      end
-
-      def records_by_id(model_class, ids)
-        model_class.where(id: ids.uniq).index_by(&:id)
       end
 
       def normalize_text(value)

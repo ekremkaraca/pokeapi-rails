@@ -24,4 +24,25 @@
 #
 class PokeMoveChangelog < ApplicationRecord
   self.table_name = "move_changelog"
+
+  belongs_to :move,
+             class_name: "PokeMove",
+             foreign_key: :move_id,
+             inverse_of: :move_changelogs,
+             optional: true
+  belongs_to :changed_in_version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :changed_in_version_group_id,
+             inverse_of: :move_changelogs,
+             optional: true
+  belongs_to :target,
+             class_name: "PokeMoveTarget",
+             foreign_key: :target_id,
+             inverse_of: :move_changelogs,
+             optional: true
+  belongs_to :type,
+             class_name: "PokeType",
+             foreign_key: :type_id,
+             inverse_of: :move_changelogs,
+             optional: true
 end

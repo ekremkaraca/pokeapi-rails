@@ -16,5 +16,32 @@
 class PokeVersion < ApplicationRecord
   self.table_name = "version"
 
+  belongs_to :version_group,
+             class_name: "PokeVersionGroup",
+             foreign_key: :version_group_id,
+             inverse_of: :versions,
+             optional: true
+
+  has_many :pokemon_game_indices,
+           class_name: "PokePokemonGameIndex",
+           foreign_key: :version_id,
+           inverse_of: :version,
+           dependent: :restrict_with_exception
+  has_many :pokemon_species_flavor_texts,
+           class_name: "PokePokemonSpeciesFlavorText",
+           foreign_key: :version_id,
+           inverse_of: :version,
+           dependent: :restrict_with_exception
+  has_many :encounters,
+           class_name: "PokeEncounter",
+           foreign_key: :version_id,
+           inverse_of: :version,
+           dependent: :restrict_with_exception
+  has_many :pokemon_items,
+           class_name: "PokePokemonItem",
+           foreign_key: :version_id,
+           inverse_of: :version,
+           dependent: :restrict_with_exception
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

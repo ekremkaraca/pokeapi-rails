@@ -156,6 +156,14 @@ Exit criteria:
 - Import style: batched `insert_all`/bulk operations with explicit transaction boundaries.
 - API format: stable JSON shape matching source, not JSON:API.
 - Asset strategy (phase 1): keep URL references to existing sprite/cry repositories.
+- Association deletion policy (`dependent`):
+  - Use `dependent: :destroy` for true ownership where child rows are domain-owned by the parent
+    (for example prose/name rows, mapping rows that have no meaning without parent record).
+  - Use `dependent: :restrict_with_exception` for shared lookup/reference tables
+    (for example language/version/generation-like dimensions) to prevent accidental destructive cascades.
+  - Use `dependent: :nullify` only when foreign keys are optional and detaching relationships is valid
+    (for example nullable FK links where child rows can remain meaningful after parent removal).
+  - Prefer explicit `foreign_key` + `inverse_of` on non-standard table/model names to avoid incorrect key inference and extra queries.
 - Test strategy:
   - request specs for endpoint behavior
   - import tests for CSV correctness

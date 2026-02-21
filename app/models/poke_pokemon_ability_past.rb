@@ -19,4 +19,17 @@
 #
 class PokePokemonAbilityPast < ApplicationRecord
   self.table_name = "pokemon_ability_past"
+
+  belongs_to :pokemon,
+             class_name: "Pokemon",
+             foreign_key: :pokemon_id,
+             inverse_of: :pokemon_ability_pasts
+  belongs_to :generation,
+             class_name: "PokeGeneration",
+             foreign_key: :generation_id,
+             inverse_of: :pokemon_ability_pasts
+  belongs_to :ability,
+             class_name: "Ability",
+             foreign_key: :ability_id,
+             optional: true
 end

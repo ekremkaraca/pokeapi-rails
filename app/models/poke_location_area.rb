@@ -18,5 +18,16 @@
 class PokeLocationArea < ApplicationRecord
   self.table_name = "location_area"
 
+  belongs_to :location,
+             class_name: "PokeLocation",
+             foreign_key: :location_id,
+             inverse_of: :location_areas,
+             optional: true
+  has_many :encounters,
+           class_name: "PokeEncounter",
+           foreign_key: :location_area_id,
+           inverse_of: :location_area,
+           dependent: :restrict_with_exception
+
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

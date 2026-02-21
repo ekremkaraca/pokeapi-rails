@@ -18,6 +18,22 @@
   - `X-RateLimit-Policy`
 - Moved deployment runbook details out of `README.md` into `docs/deployment.md`.
 - Reduced GitHub Actions cost by removing heavy parity/budget checks from CI (kept available for local/manual runs).
+- Enforced JSON-only behavior on API endpoints:
+  - API routes now default to JSON format
+  - API base controllers force JSON request format
+- Added `/favicon.ico` route redirect to app icon to avoid API-browser routing noise.
+- Refactored `ability`/`pokemon` include loaders to use association-backed eager loading (`includes`) while preserving payload shape and ordering.
+- Refactored additional include loaders to association-backed eager loading (`includes`) for:
+  - `pokemon` by `type`
+  - `category` by `item`
+  - `generation` by `pokemon-species`
+  - `main_region` by `generation`
+  - `generation` by `version-group`
+  - `version_group` by `version`
+  - `pocket` by `item-category`
+  - `region` by `location`
+  - `location` by `location-area`
+  - `item` by `machine`
 
 ## 2026-02-19
 

@@ -16,4 +16,14 @@
 #
 class PokeAbilityChangelogProse < ApplicationRecord
   self.table_name = "ability_changelog_prose"
+
+  belongs_to :ability_changelog,
+             class_name: "PokeAbilityChangelog",
+             foreign_key: :ability_changelog_id,
+             inverse_of: :ability_changelog_proses
+
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :ability_changelog_proses
 end

@@ -17,4 +17,10 @@
 #
 class PokeMoveEffectProse < ApplicationRecord
   self.table_name = "move_effect_prose"
+
+  belongs_to :local_language,
+             class_name: "PokeLanguage",
+             foreign_key: :local_language_id,
+             inverse_of: :move_effect_proses,
+             optional: true
 end
