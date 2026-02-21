@@ -25,7 +25,10 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
-    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+    LD_PRELOAD="/usr/local/lib/libjemalloc.so" \
+    MALLOC_CONF="background_thread:true,narenas:2,dirty_decay_ms:1000,muzzy_decay_ms:1000" \
+    WEB_CONCURRENCY="1" \
+    RAILS_MAX_THREADS="2"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build

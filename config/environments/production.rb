@@ -47,8 +47,9 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Keep production independent from optional Solid Cache/Queue backends.
-  config.cache_store = :memory_store
-  config.active_job.queue_adapter = :async
+  cache_size_mb = ENV.fetch("RAILS_CACHE_SIZE_MB", "16").to_i
+  config.cache_store = :memory_store, { size: cache_size_mb.megabytes }
+  config.active_job.queue_adapter = ENV.fetch("ACTIVE_JOB_ADAPTER", "inline").to_sym
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
