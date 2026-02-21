@@ -96,4 +96,5 @@ Current CI checks include:
 
 - `pokeapi:contract:validate_v3_openapi`
 - `pokeapi:contract:drift_v3`
-- `pokeapi:contract:check_v3_budgets` (JSON artifact)
+
+`pokeapi:contract:check_v3_budgets` remains available for local/manual release checks.

@@ -197,10 +197,10 @@ Definition of done:
 - Operational dashboards and rollback path in place.
 
 ## Immediate Next Steps
-1. Expand parity sample coverage (move from a small fixed sample set toward one list/detail case per resource).
-2. Add response-shape checks for richer relational detail fields where Rails currently returns simplified payloads.
-3. Add automated OpenAPI diff reporting between source and Rails-generated contract output.
-4. Add targeted indexing/perf checks based on parity sample hot paths.
+1. Treat `drift_v3` and `check_v3_budgets` as manual release gates for each candidate deploy.
+2. Keep API docs generation/public serving (`oas_rails`) validated in staging/production smoke checks.
+3. Define and document cutover SLO triggers (latency, error rate, throttle rate) and rollback thresholds.
+4. Run a final endpoint smoke suite across `/api/v2` and `/api/v3` before merge-to-main and each production release.
 
 ## Reference Source Files
 - `~/Desktop/Tries/pokeapi/pokemon_v2/urls.py`

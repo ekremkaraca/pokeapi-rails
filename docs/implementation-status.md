@@ -62,6 +62,21 @@ This document tracks what has already been implemented in `pokeapi-rails` during
   - `fields`, `include` allowlists, `sort`, `filter[name]`, legacy `q`
   - `ETag`/conditional GET + observability headers (`X-API-Stability`, `X-Query-Count`, `X-Response-Time-Ms`)
   - OpenAPI validation/drift checks + budget-check task
+- `/api/v3` include expansion canonical links now consistently point to `/api/v3/*` URLs.
+- API abuse controls are wired:
+  - `rack-attack` middleware installed with sustained + burst per-IP throttles on `/api/*`
+  - healthcheck safelist for `/up`
+  - standardized rate-limit headers on API responses:
+    - `X-RateLimit-Limit`
+    - `X-RateLimit-Period`
+    - `X-RateLimit-Burst-Limit`
+    - `X-RateLimit-Burst-Period`
+    - `X-RateLimit-Policy`
+- Deployment/runtime hardening updates completed:
+  - docs moved to dedicated `docs/deployment.md`
+  - Dockerfile tuned for leaner runtime + safer dependency copying
+  - boot-time DB prepare made explicit/optional (manual one-off preferred)
+  - CI heavy parity/budget pipeline removed from GitHub Actions (kept for local/manual runs)
 - Implemented `/api/v3` resources (list + detail):
   - `pokemon`
   - `ability`
@@ -111,6 +126,23 @@ This document tracks what has already been implemented in `pokeapi-rails` during
   - `pokemon-form`
   - `pokemon-habitat`
   - `pokemon-shape`
+
+## Remaining Work (Pre-Merge / Pre-Cutover)
+
+- Finalize API docs publishing flow:
+  - verify `oas_rails` output path and public serving path in production
+  - smoke-check rendered Swagger/OpenAPI UI against deployed app
+- Keep heavy contract checks as release gates (manual/local):
+  - `bin/rails pokeapi:contract:drift_v3`
+  - `bin/rails pokeapi:contract:check_v3_budgets`
+  - archive JSON artifacts for each release candidate
+- Add deploy guardrails/runbook automation:
+  - explicit one-off `db:migrate` and `db:seed` steps for fresh environments
+  - verify production env var checklist from `docs/deployment.md`
+- Define cutover readiness signals:
+  - acceptable p95 latency and 429 rates after rate limiting
+  - endpoint error-rate threshold and rollback trigger
+  - post-deploy smoke checks for `/api/v2`, `/api/v3`, and `/docs`
 
 ## Implemented API Endpoints
 

@@ -2,6 +2,23 @@
 
 `/api/v3` is currently experimental.
 
+## 2026-02-21
+
+- Normalized v3 include expansion links so included resource URLs are consistently canonical `/api/v3/*`.
+- Added API abuse controls for v3 traffic (and other `/api/*` endpoints):
+  - Rack::Attack sustained per-IP throttling
+  - Rack::Attack burst per-IP throttling
+  - `/up` healthcheck safelist
+  - standardized 429 JSON error envelope for throttled responses
+- Added API rate-limit headers on normal responses:
+  - `X-RateLimit-Limit`
+  - `X-RateLimit-Period`
+  - `X-RateLimit-Burst-Limit`
+  - `X-RateLimit-Burst-Period`
+  - `X-RateLimit-Policy`
+- Moved deployment runbook details out of `README.md` into `docs/deployment.md`.
+- Reduced GitHub Actions cost by removing heavy parity/budget checks from CI (kept available for local/manual runs).
+
 ## 2026-02-19
 
 - Added Phase 3 resource family:

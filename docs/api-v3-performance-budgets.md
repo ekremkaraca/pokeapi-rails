@@ -1,6 +1,7 @@
 # /api/v3 Performance and Query Budgets
 
-This document defines baseline targets for currently implemented `/api/v3` resources (`pokemon`, `ability`, `type`, `move`, `item`, `generation`, `version-group`, `region`, `version`, `pokemon-species`, `evolution-chain`, `evolution-trigger`, `growth-rate`, `nature`, `gender`, `egg-group`, `encounter-method`, `encounter-condition`, `encounter-condition-value`, `berry`).
+This document defines baseline targets for currently implemented `/api/v3` resources.
+Resource coverage now mirrors all `/api/v2` list/detail resources currently implemented in this repo.
 
 ## Target Budgets
 
