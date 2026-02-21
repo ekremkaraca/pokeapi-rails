@@ -13,10 +13,15 @@ module Api
 
       rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
       rescue_from InvalidQueryParameterError, with: :render_invalid_query
+      before_action :force_json_format
       before_action :set_v3_stability_header
       around_action :set_observability_headers
 
       private
+
+      def force_json_format
+        request.format = :json
+      end
 
       def render_error(code:, message:, status:, details: {})
         render json: {

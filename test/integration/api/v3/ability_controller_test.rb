@@ -178,6 +178,13 @@ class Api::V3::AbilityControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "responds with json even when html format is requested" do
+    get "/api/v3/ability.html"
+
+    assert_response :success
+    assert_equal "application/json; charset=utf-8", response.headers["Content-Type"]
+  end
+
   test "list supports conditional get with etag" do
     get "/api/v3/ability", params: { limit: 3, offset: 0, q: "s" }
     assert_response :success

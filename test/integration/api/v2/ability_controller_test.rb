@@ -75,6 +75,13 @@ class Api::V2::AbilityControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "responds with json even when html format is requested" do
+    get "/api/v2/ability.html"
+
+    assert_response :success
+    assert_equal "application/json; charset=utf-8", response.headers["Content-Type"]
+  end
+
   test "show returns 404 for invalid lookup token" do
     get "/api/v2/ability/%2A%2A"
 
