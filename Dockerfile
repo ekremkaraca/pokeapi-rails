@@ -44,16 +44,14 @@ RUN curl -fsSL https://bun.sh/install | bash -s -- "bun-v${BUN_VERSION}"
 COPY vendor/ ./vendor/
 COPY Gemfile Gemfile.lock ./
 
-RUN --mount=type=cache,id=bundle-cache,target=/usr/local/bundle/cache \
-    bundle install && \
+RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
     bundle exec bootsnap precompile -j 1 --gemfile
 
 # Install node modules
 COPY package.json bun.lock* ./
-RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 # Copy application code
 COPY . .
