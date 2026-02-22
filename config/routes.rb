@@ -422,4 +422,6 @@ Rails.application.routes.draw do
   if Rails.env.development?
     mount RailsPgExtras::Web::Engine, at: "pg_extras"
   end
+
+  match "*unmatched", to: "errors#not_found", via: :all
 end
