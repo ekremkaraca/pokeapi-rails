@@ -2,6 +2,24 @@
 
 This file is a compact timeline of major updates made during the current migration and deployment hardening cycle.
 
+## 2026-02-22
+
+### Logging and request-noise reduction
+
+- Added lightweight catch-all unknown-route handling through `ErrorsController#not_found` with minimal plain-text `404` payload.
+- Added parameter filtering for GraphQL-style probe keys in logs:
+  - `query`
+  - `variables`
+  - `operationName`
+- Added gem-free structured request logging:
+  - single JSON event per request
+  - normalized path + `query_keys`
+  - request context fields (`host`, `remote_ip`, `ua_sha1`)
+  - slow-request warn threshold via env
+  - optional suppression for common noisy 404 scanner/static-miss paths
+- Added formatter tests in `test/lib/pokeapi/logging/request_event_test.rb`.
+- Documented full logging behavior and env controls in `docs/logging.md`.
+
 ## 2026-02-21
 
 ### API behavior and stability

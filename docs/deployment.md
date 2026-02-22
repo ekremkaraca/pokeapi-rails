@@ -26,6 +26,18 @@ API responses include informational limit headers:
 - `X-RateLimit-Burst-Period`
 - `X-RateLimit-Policy`
 
+Optional request logging tuning:
+
+- `SIMPLE_REQUEST_LOGS` (`1`/`0`, default enabled)
+- `SIMPLE_REQUEST_SLOW_MS` (default: `500`)
+- `SIMPLE_REQUEST_SUPPRESS_404_NOISE` (`1`/`0`, default enabled)
+
+Recommended production values:
+
+- `SIMPLE_REQUEST_LOGS=1`
+- `SIMPLE_REQUEST_SLOW_MS=500`
+- `SIMPLE_REQUEST_SUPPRESS_404_NOISE=1`
+
 Recommended post-deploy commands (manual):
 
 ```bash
@@ -43,3 +55,6 @@ railway run bin/rails pokeapi:import:all
 
 - Database setup is intentionally run as a manual one-off operation after deploy.
 - Keep release operations explicit to avoid accidental migrations on web boot.
+- For incident debugging, temporarily set:
+  - `SIMPLE_REQUEST_SUPPRESS_404_NOISE=0` to view all fallback `404` probes.
+  - `SIMPLE_REQUEST_LOGS=0` to revert quickly to default Rails request logging.

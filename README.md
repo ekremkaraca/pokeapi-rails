@@ -12,6 +12,7 @@ It keeps `/api/v2` behavior compatible with the existing ecosystem while buildin
 - Next targets: [`docs/next-targets.md`](docs/next-targets.md)
 - Model association audit: [`docs/model-association-audit.md`](docs/model-association-audit.md)
 - Import guide: [`docs/importing.md`](docs/importing.md)
+- Logging guide: [`docs/logging.md`](docs/logging.md)
 - Parity diff guide: [`docs/parity-diff.md`](docs/parity-diff.md)
 - Deployment guide: [`docs/deployment.md`](docs/deployment.md)
 

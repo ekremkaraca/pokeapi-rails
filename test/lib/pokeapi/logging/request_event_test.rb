@@ -4,13 +4,20 @@ require Rails.root.join("lib/pokeapi/logging/request_event")
 module Pokeapi
   module Logging
     class RequestEventTest < ActiveSupport::TestCase
-      Request = Struct.new(:request_id)
+      Request = Struct.new(:request_id, :path, :query_parameters, :host, :remote_ip, :user_agent, keyword_init: true)
 
       test "build returns compact structured request event" do
         payload = {
-          request: Request.new("req-123"),
+          request: Request.new(
+            request_id: "req-123",
+            path: "/api/v3/pokemon",
+            query_parameters: { "limit" => "20", "offset" => "0" },
+            host: "pokeapi.ekrem.dev",
+            remote_ip: "203.0.113.2",
+            user_agent: "curl/8.0"
+          ),
           method: "GET",
-          path: "/api/v3/pokemon",
+          path: "/api/v3/pokemon?limit=20&offset=0",
           status: 200,
           controller: "Api::V3::PokemonController",
           action: "index",
@@ -34,10 +41,14 @@ module Pokeapi
         assert_equal "req-123", event[:request_id]
         assert_equal "GET", event[:method]
         assert_equal "/api/v3/pokemon", event[:path]
+        assert_equal %w[limit offset], event[:query_keys]
         assert_equal 200, event[:status]
         assert_equal "Api::V3::PokemonController", event[:controller]
         assert_equal "index", event[:action]
         assert_equal "json", event[:format]
+        assert_equal "pokeapi.ekrem.dev", event[:host]
+        assert_equal "203.0.113.2", event[:remote_ip]
+        assert_equal Digest::SHA1.hexdigest("curl/8.0"), event[:ua_sha1]
         assert_equal 123.45, event[:duration_ms]
         assert_equal 4.21, event[:db_ms]
         assert_equal 0.0, event[:view_ms]
@@ -46,7 +57,14 @@ module Pokeapi
 
       test "build infers status 500 for exception payloads" do
         payload = {
-          request: Request.new("req-500"),
+          request: Request.new(
+            request_id: "req-500",
+            path: "/boom",
+            query_parameters: {},
+            host: "pokeapi.ekrem.dev",
+            remote_ip: "203.0.113.9",
+            user_agent: "Mozilla/5.0"
+          ),
           method: "GET",
           path: "/boom",
           controller: "ErrorsController",
@@ -62,6 +80,52 @@ module Pokeapi
 
         assert_equal 500, event[:status]
         assert_equal "RuntimeError", event[:exception_class]
+      end
+
+      test "build strips query string from payload path when request object is missing" do
+        payload = {
+          method: "GET",
+          path: "/api/v3/pokemon?limit=20&offset=20",
+          status: 200,
+          controller: "Api::V3::PokemonController",
+          action: "index"
+        }
+
+        event = RequestEvent.build(
+          payload: payload,
+          started_at: 2.0,
+          finished_at: 2.01
+        )
+
+        assert_equal "/api/v3/pokemon", event[:path]
+        refute event.key?(:query_keys)
+      end
+
+      test "build drops params for 404 fallback errors controller events" do
+        payload = {
+          request: Request.new(
+            request_id: "req-404",
+            path: "/.git/config",
+            query_parameters: {},
+            host: "pokeapi.ekrem.dev",
+            remote_ip: "203.0.113.19",
+            user_agent: "scanner"
+          ),
+          method: "GET",
+          path: "/.git/config",
+          status: 404,
+          controller: "ErrorsController",
+          action: "not_found",
+          params: { "unmatched" => ".git/config" }
+        }
+
+        event = RequestEvent.build(
+          payload: payload,
+          started_at: 5.0,
+          finished_at: 5.001
+        )
+
+        refute event.key?(:params)
       end
     end
   end
