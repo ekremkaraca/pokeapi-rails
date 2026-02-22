@@ -2,6 +2,18 @@
 
 This document tracks concrete follow-up work after the v2/v3 association normalization and include-loader refactors.
 
+Status: all listed targets (#1-#7) are completed.
+
+## Merge Readiness Summary
+
+- [x] Target #1: Placeholder prose sanitization at import time + importer tests.
+- [x] Target #2: `v2/move_controller` decomposition into focused payload concerns.
+- [x] Target #3: `v3/include_loaders` split into domain sub-concerns.
+- [x] Target #4: SQL/string-query hardening in selected v3 controllers.
+- [x] Target #5: Parity tooling rescue narrowed to expected fetch errors.
+- [x] Target #6: Include-heavy v3 query-budget regression coverage added.
+- [x] Target #7: Shared test-helper/assertion consolidation across suites.
+
 ## Priority Backlog
 
 1. Data quality cleanup for placeholder prose content
@@ -35,6 +47,10 @@ This document tracks concrete follow-up work after the v2/v3 association normali
 6. Expand performance regression coverage for include-heavy v3 endpoints
    - Add query-budget regression tests for include paths with higher fanout.
 
+7. Consolidate duplicated test assertions/helpers
+   - Move repeated helper logic into `test/support/*`.
+   - Prefer shared assertion helpers over copy/pasted assertion blocks.
+
 ## Current Focus
 
 - Completed: target #1 (placeholder prose sanitization at import time).
@@ -43,6 +59,7 @@ This document tracks concrete follow-up work after the v2/v3 association normali
 - Completed: target #4 (SQL/string-query hardening in selected v3 controllers).
 - Completed: target #5 (narrow broad rescue in parity tooling).
 - Completed: target #6 (include-heavy v3 performance regression coverage).
+- Completed: target #7 (cross-suite test helper consolidation).
 
 Implemented:
 - Added placeholder sanitizer in importer base (`sanitize_placeholder_text`).
@@ -122,3 +139,11 @@ Implemented (target #6):
   - `assert_invalid_query_error`
   - `with_env`
   - `capture_select_queries` and `capture_select_query_count`
+
+Implemented (target #7):
+- Applied shared assertion helpers broadly across v3 integration tests to replace repeated inline blocks.
+- Added/used shared support modules:
+  - `test/support/integration_query_assertions.rb`
+  - `test/support/env_helpers.rb`
+  - `test/support/sql_capture_helpers.rb`
+- Wired helpers centrally via `test/test_helper.rb` so integration/unit tests can reuse them consistently.
