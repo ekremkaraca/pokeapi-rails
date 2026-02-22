@@ -12,7 +12,7 @@ module Api
       def index
         species_table = PokePokemonSpecies.arel_table
         scope = PokeEvolutionChain
-          .joins("LEFT JOIN pokemon_species ON pokemon_species.evolution_chain_id = evolution_chain.id")
+          .left_outer_joins(:pokemon_species)
           .select("evolution_chain.*")
           .distinct
           .order(:id)

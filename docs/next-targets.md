@@ -39,6 +39,8 @@ This document tracks concrete follow-up work after the v2/v3 association normali
 
 - Completed: target #1 (placeholder prose sanitization at import time).
 - Completed: target #2 (`v2/move_controller` decomposition).
+- Completed: target #3 (`v3/include_loaders` split into domain modules).
+- Completed: target #4 (SQL/string-query hardening in selected v3 controllers).
 
 Implemented:
 - Added placeholder sanitizer in importer base (`sanitize_placeholder_text`).
@@ -75,3 +77,20 @@ Implemented (target #2, phase 3):
   - `app/controllers/concerns/api/v2/move_payload/meta_fields.rb`
 - Updated `MoveDetailPayload` to compose these modules while keeping the same external interface and response contract.
 - Re-validated behavior with existing integration tests and RuboCop.
+
+Implemented (target #3):
+- Split v3 include loaders by domain and composed from root concern:
+  - `app/controllers/concerns/api/v3/include_loaders/pokemon_loaders.rb`
+  - `app/controllers/concerns/api/v3/include_loaders/relation_loaders.rb`
+  - `app/controllers/concerns/api/v3/include_loaders/item_loaders.rb`
+  - `app/controllers/concerns/api/v3/include_loaders/location_loaders.rb`
+- Reduced `app/controllers/concerns/api/v3/include_loaders.rb` to composition + shared URL helper methods.
+- Re-validated with focused v3 integration tests and RuboCop.
+
+Implemented (target #4):
+- Replaced string-based special-name filters with Arel `ILIKE` expressions:
+  - `app/controllers/api/v3/contest_effect_controller.rb`
+  - `app/controllers/api/v3/machine_controller.rb`
+- Replaced raw join SQL with association join in:
+  - `app/controllers/api/v3/evolution_chain_controller.rb`
+- Re-validated with focused v3 integration tests and RuboCop.

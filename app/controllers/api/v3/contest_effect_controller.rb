@@ -91,10 +91,15 @@ module Api
       def apply_filter_params(scope, allowed:)
         filters = normalized_filter_params(allowed: allowed)
         table = scope.klass.arel_table
+        # Use Arel for computed-name filtering to avoid raw SQL string interpolation.
+        name_column = Arel::Nodes::NamedFunction.new(
+          "CONCAT",
+          [ Arel::Nodes.build_quoted("contest-effect-"), table[:id] ]
+        )
 
         filters.reduce(scope) do |current_scope, (field, value)|
           if field == "name"
-            current_scope.where("CONCAT('contest-effect-', contest_effect.id) ILIKE ?", value)
+            current_scope.where(Arel::Nodes::InfixOperation.new("ILIKE", name_column, Arel::Nodes.build_quoted(value)))
           else
             current_scope.where(table[field.to_sym].matches(value))
           end
