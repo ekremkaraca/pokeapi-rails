@@ -31,12 +31,14 @@ Optional request logging tuning:
 - `SIMPLE_REQUEST_LOGS` (`1`/`0`, default enabled)
 - `SIMPLE_REQUEST_SLOW_MS` (default: `500`)
 - `SIMPLE_REQUEST_SUPPRESS_404_NOISE` (`1`/`0`, default enabled)
+- `SIMPLE_REQUEST_SAMPLE_RATE` (`0.0..1.0`, default: `1.0`)
 
 Recommended production values:
 
 - `SIMPLE_REQUEST_LOGS=1`
 - `SIMPLE_REQUEST_SLOW_MS=500`
 - `SIMPLE_REQUEST_SUPPRESS_404_NOISE=1`
+- `SIMPLE_REQUEST_SAMPLE_RATE=1.0`
 
 Recommended post-deploy commands (manual):
 
@@ -57,4 +59,5 @@ railway run bin/rails pokeapi:import:all
 - Keep release operations explicit to avoid accidental migrations on web boot.
 - For incident debugging, temporarily set:
   - `SIMPLE_REQUEST_SUPPRESS_404_NOISE=0` to view all fallback `404` probes.
+  - `SIMPLE_REQUEST_SAMPLE_RATE=1.0` to disable sampling.
   - `SIMPLE_REQUEST_LOGS=0` to revert quickly to default Rails request logging.

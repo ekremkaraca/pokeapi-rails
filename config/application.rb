@@ -41,5 +41,10 @@ module App1771241683
 
     # Protect API routes from abusive traffic patterns.
     config.middleware.use Rack::Attack
+
+    # Keep request logging single-line and structured when SIMPLE_REQUEST_LOGS is enabled.
+    if ENV.fetch("SIMPLE_REQUEST_LOGS", "1") != "0"
+      config.middleware.delete Rails::Rack::Logger
+    end
   end
 end

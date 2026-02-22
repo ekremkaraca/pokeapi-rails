@@ -22,6 +22,7 @@ module Pokeapi
           controller: "Api::V3::PokemonController",
           action: "index",
           format: :json,
+          headers: { "X-Query-Count" => "4", "Content-Length" => "1234" },
           db_runtime: 4.2123,
           view_runtime: 0.0,
           params: {
@@ -34,7 +35,8 @@ module Pokeapi
         event = RequestEvent.build(
           payload: payload,
           started_at: 10.0,
-          finished_at: 10.12345
+          finished_at: 10.12345,
+          slow_threshold_ms: 500
         )
 
         assert_equal "request", event[:event]
@@ -50,8 +52,12 @@ module Pokeapi
         assert_equal "203.0.113.2", event[:remote_ip]
         assert_equal Digest::SHA1.hexdigest("curl/8.0"), event[:ua_sha1]
         assert_equal 123.45, event[:duration_ms]
+        assert_equal false, event[:slow]
+        assert_equal 500.0, event[:slow_threshold_ms]
         assert_equal 4.21, event[:db_ms]
         assert_equal 0.0, event[:view_ms]
+        assert_equal 4, event[:query_count]
+        assert_equal 1234, event[:response_bytes]
         assert_equal({ "limit" => "20" }, event[:params])
       end
 
@@ -75,11 +81,13 @@ module Pokeapi
         event = RequestEvent.build(
           payload: payload,
           started_at: 1.0,
-          finished_at: 1.001
+          finished_at: 1.001,
+          slow_threshold_ms: 500
         )
 
         assert_equal 500, event[:status]
         assert_equal "RuntimeError", event[:exception_class]
+        assert_equal false, event[:slow]
       end
 
       test "build strips query string from payload path when request object is missing" do
@@ -88,16 +96,20 @@ module Pokeapi
           path: "/api/v3/pokemon?limit=20&offset=20",
           status: 200,
           controller: "Api::V3::PokemonController",
-          action: "index"
+          action: "index",
+          format: "*/*"
         }
 
         event = RequestEvent.build(
           payload: payload,
           started_at: 2.0,
-          finished_at: 2.01
+          finished_at: 2.01,
+          slow_threshold_ms: 5
         )
 
         assert_equal "/api/v3/pokemon", event[:path]
+        assert_equal "unknown", event[:format]
+        assert_equal true, event[:slow]
         refute event.key?(:query_keys)
       end
 

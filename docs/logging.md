@@ -16,7 +16,9 @@ The logger subscribes to `process_action.action_controller` notifications and bu
 - Replaces noisy multi-line controller/view request logs with compact JSON events.
 - Normalizes `path` to exclude query string.
 - Exposes `query_keys` instead of full query text.
+- Adds `query_count` and `response_bytes` when available from response headers.
 - Logs slow requests at `warn` level.
+- Adds optional sampling for high-volume successful requests.
 - Supports suppression of noisy known 404 scanner/static-miss paths.
 - Keeps request context:
   - `request_id`
@@ -50,6 +52,12 @@ All toggles are optional.
     - `/server-info`
     - `/graphql` (when unmatched and routed to fallback)
 
+- `SIMPLE_REQUEST_SAMPLE_RATE`
+  - Default: `1.0` (no sampling)
+  - Range: `0.0..1.0`
+  - Applies only to non-slow, successful events (`status < 400`).
+  - Slow/error events are always logged.
+
 ## Event Shape
 
 Example:
@@ -69,8 +77,12 @@ Example:
   "remote_ip": "203.0.113.10",
   "ua_sha1": "f2a5...",
   "duration_ms": 43.79,
+  "slow": false,
+  "slow_threshold_ms": 500.0,
   "db_ms": 40.01,
-  "view_ms": 0.14
+  "view_ms": 0.14,
+  "query_count": 4,
+  "response_bytes": 1234
 }
 ```
 
@@ -90,8 +102,10 @@ Notes:
 
 - Keep `SIMPLE_REQUEST_SUPPRESS_404_NOISE=1` in production to reduce egress/log cost from scan noise.
 - Tune `SIMPLE_REQUEST_SLOW_MS` based on your SLO (for example, 300–700ms).
+- Use `SIMPLE_REQUEST_SAMPLE_RATE` (for example `0.25`) if log volume is still high.
 - For incident debugging, temporarily set:
   - `SIMPLE_REQUEST_SUPPRESS_404_NOISE=0` to see all 404 fallback events.
+  - `SIMPLE_REQUEST_SAMPLE_RATE=1.0` to disable sampling temporarily.
 
 ## Rollback
 
