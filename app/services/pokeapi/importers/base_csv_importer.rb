@@ -221,6 +221,15 @@ module Pokeapi
       def to_bool(value)
         value.to_s == "1"
       end
+
+      # Some upstream prose files contain placeholder values such as
+      # "XXX new effect for ...". Treat these as missing prose content.
+      def sanitize_placeholder_text(value)
+        text = value.to_s.strip
+        return value if text.empty?
+
+        text.start_with?("XXX ") ? nil : value
+      end
     end
   end
 end

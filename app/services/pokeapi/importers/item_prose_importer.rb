@@ -8,11 +8,14 @@ module Pokeapi
       private
 
       def normalize_row(csv_row)
+        short_effect = sanitize_placeholder_text(optional_value(csv_row, :short_effect))
+        effect = sanitize_placeholder_text(optional_value(csv_row, :effect))
+
         with_timestamps(
           item_id: required_value(csv_row, :item_id).to_i,
           local_language_id: required_value(csv_row, :local_language_id).to_i,
-          short_effect: optional_value(csv_row, :short_effect),
-          effect: optional_value(csv_row, :effect)
+          short_effect: short_effect,
+          effect: effect
         )
       end
     end
