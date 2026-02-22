@@ -118,20 +118,4 @@ class Api::V2::MoveControllerTest < ActionDispatch::IntegrationTest
     assert_equal "ailment-#{suffix}", payload.dig("meta", "ailment", "name")
     assert_equal "category-#{suffix}", payload.dig("meta", "category", "name")
   end
-
-  private
-
-  def capture_select_queries
-    queries = []
-    callback = lambda do |_name, _start, _finish, _id, payload|
-      sql = payload[:sql].to_s
-      next unless payload[:name] != "SCHEMA"
-      next unless sql.start_with?("SELECT")
-
-      queries << sql
-    end
-
-    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { yield }
-    queries
-  end
 end

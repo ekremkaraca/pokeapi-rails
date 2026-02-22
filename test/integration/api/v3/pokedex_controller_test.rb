@@ -83,10 +83,7 @@ class Api::V3::PokedexControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
     payload = JSON.parse(response.body)
-    assert_equal "not_found", payload.dig("error", "code")
-    assert_equal "Resource not found", payload.dig("error", "message")
-    assert_kind_of Hash, payload.dig("error", "details")
-    assert_kind_of String, payload.dig("error", "request_id")
+    assert_not_found_error_envelope(payload)
   end
 
   test "returns bad request for invalid fields/include/sort/filter parameters" do

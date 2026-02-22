@@ -40,7 +40,7 @@ class Api::V3::PokemonColorControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
     payload = JSON.parse(response.body)
-    assert_equal "not_found", payload.dig("error", "code")
+    assert_not_found_error_envelope(payload)
   end
 
   test "invalid query params return bad request" do

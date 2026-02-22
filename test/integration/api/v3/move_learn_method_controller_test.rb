@@ -88,8 +88,7 @@ class Api::V3::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     payload = JSON.parse(response.body)
 
-    assert_equal "not_found", payload.dig("error", "code")
-    assert_equal "Resource not found", payload.dig("error", "message")
+    assert_not_found_error_envelope(payload)
   end
 
   test "returns bad request for invalid fields parameter" do

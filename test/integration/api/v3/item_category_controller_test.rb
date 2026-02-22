@@ -117,10 +117,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     payload = JSON.parse(response.body)
 
-    assert_equal "not_found", payload.dig("error", "code")
-    assert_equal "Resource not found", payload.dig("error", "message")
-    assert_kind_of Hash, payload.dig("error", "details")
-    assert_kind_of String, payload.dig("error", "request_id")
+    assert_not_found_error_envelope(payload)
   end
 
   test "returns bad request for invalid fields parameter" do
@@ -129,9 +126,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
 
-    assert_equal "invalid_query", payload.dig("error", "code")
-    assert_equal "fields", payload.dig("error", "details", "param")
-    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
+    assert_invalid_query_error(payload, param: "fields", invalid_values: [ "unknown" ])
   end
 
   test "returns bad request for invalid include parameter" do
@@ -140,9 +135,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
 
-    assert_equal "invalid_query", payload.dig("error", "code")
-    assert_equal "include", payload.dig("error", "details", "param")
-    assert_equal [ "unknown" ], payload.dig("error", "details", "invalid_values")
+    assert_invalid_query_error(payload, param: "include", invalid_values: [ "unknown" ])
   end
 
   test "returns bad request for invalid sort parameter" do
@@ -151,9 +144,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
 
-    assert_equal "invalid_query", payload.dig("error", "code")
-    assert_equal "sort", payload.dig("error", "details", "param")
-    assert_equal [ "pocket_id" ], payload.dig("error", "details", "invalid_values")
+    assert_invalid_query_error(payload, param: "sort", invalid_values: [ "pocket_id" ])
   end
 
   test "returns bad request for invalid filter parameter" do
@@ -162,9 +153,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     payload = JSON.parse(response.body)
 
-    assert_equal "invalid_query", payload.dig("error", "code")
-    assert_equal "filter", payload.dig("error", "details", "param")
-    assert_equal [ "pocket_id" ], payload.dig("error", "details", "invalid_values")
+    assert_invalid_query_error(payload, param: "filter", invalid_values: [ "pocket_id" ])
   end
 
   test "list and show accept trailing slash" do
@@ -186,8 +175,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v3/item-category", params: { limit: 2, offset: 0, q: "medicine" }, headers: { "If-None-Match" => etag }
     assert_response :not_modified
-    assert_match(/\A\d+\z/, response.headers["X-Query-Count"])
-    assert_match(/\A\d+(\.\d+)?\z/, response.headers["X-Response-Time-Ms"])
+    assert_observability_headers
     assert_equal "", response.body
   end
 
@@ -202,8 +190,7 @@ class Api::V3::ItemCategoryControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v3/item-category/#{category.id}", headers: { "If-None-Match" => etag }
     assert_response :not_modified
-    assert_match(/\A\d+\z/, response.headers["X-Query-Count"])
-    assert_match(/\A\d+(\.\d+)?\z/, response.headers["X-Response-Time-Ms"])
+    assert_observability_headers
     assert_equal "", response.body
   end
 

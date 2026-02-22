@@ -42,6 +42,7 @@ This document tracks concrete follow-up work after the v2/v3 association normali
 - Completed: target #3 (`v3/include_loaders` split into domain modules).
 - Completed: target #4 (SQL/string-query hardening in selected v3 controllers).
 - Completed: target #5 (narrow broad rescue in parity tooling).
+- Completed: target #6 (include-heavy v3 performance regression coverage).
 
 Implemented:
 - Added placeholder sanitizer in importer base (`sanitize_placeholder_text`).
@@ -103,3 +104,21 @@ Implemented (target #5):
 - Left unexpected exceptions unrescued so regressions surface instead of being silently converted to status `0`.
 - Added tests in:
   - `test/lib/pokeapi/parity/response_diff_test.rb`
+
+Implemented (target #6):
+- Added query-budget regression assertions (`X-Query-Count`) for include-heavy list/detail paths in:
+  - `test/integration/api/v3/move_controller_test.rb`
+  - `test/integration/api/v3/ability_controller_test.rb`
+  - `test/integration/api/v3/type_controller_test.rb`
+  - `test/integration/api/v3/item_attribute_controller_test.rb`
+- Added shared test support helpers and reused them across integration tests:
+  - `test/support/integration_query_assertions.rb`
+  - `test/support/env_helpers.rb`
+  - `test/support/sql_capture_helpers.rb`
+- Centralized repeated assertion/helper logic:
+  - `assert_query_count_at_most`
+  - `assert_observability_headers`
+  - `assert_not_found_error_envelope`
+  - `assert_invalid_query_error`
+  - `with_env`
+  - `capture_select_queries` and `capture_select_query_count`

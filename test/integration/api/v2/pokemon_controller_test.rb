@@ -143,20 +143,4 @@ class Api::V2::PokemonControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal first_count, second_count
   end
-
-  private
-
-  def capture_select_query_count
-    count = 0
-    callback = lambda do |_name, _start, _finish, _id, payload|
-      sql = payload[:sql].to_s
-      next unless payload[:name] != "SCHEMA"
-      next unless sql.start_with?("SELECT")
-
-      count += 1
-    end
-
-    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { yield }
-    count
-  end
 end

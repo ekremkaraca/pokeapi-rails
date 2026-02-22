@@ -6,8 +6,7 @@ class Api::V3::RootControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal "experimental", response.headers["X-API-Stability"]
-    assert_match(/\A\d+\z/, response.headers["X-Query-Count"])
-    assert_match(/\A\d+(\.\d+)?\z/, response.headers["X-Response-Time-Ms"])
+    assert_observability_headers
     payload = JSON.parse(response.body)
 
     assert_equal %w[ability berry berry-firmness berry-flavor characteristic contest-effect contest-type egg-group encounter-condition encounter-condition-value encounter-method evolution-chain evolution-trigger gender generation growth-rate item item-attribute item-category item-fling-effect item-pocket language location location-area machine move move-ailment move-battle-style move-category move-damage-class move-learn-method move-target nature pal-park-area pokeathlon-stat pokedex pokemon pokemon-color pokemon-form pokemon-habitat pokemon-shape pokemon-species region stat super-contest-effect type version version-group], payload.keys.sort
@@ -69,13 +68,11 @@ class Api::V3::RootControllerTest < ActionDispatch::IntegrationTest
     get "/api/v3"
     assert_response :success
     assert_equal "experimental", response.headers["X-API-Stability"]
-    assert_match(/\A\d+\z/, response.headers["X-Query-Count"])
-    assert_match(/\A\d+(\.\d+)?\z/, response.headers["X-Response-Time-Ms"])
+    assert_observability_headers
 
     get "/api/v3/"
     assert_response :success
     assert_equal "experimental", response.headers["X-API-Stability"]
-    assert_match(/\A\d+\z/, response.headers["X-Query-Count"])
-    assert_match(/\A\d+(\.\d+)?\z/, response.headers["X-Response-Time-Ms"])
+    assert_observability_headers
   end
 end
