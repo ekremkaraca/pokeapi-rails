@@ -189,17 +189,15 @@ module Api
         ids = region_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeGeneration
-          .where(main_region_id: ids)
-          .order(:main_region_id, :id)
-          .pluck(:main_region_id, :id, :name)
+        PokeRegion.where(id: ids).includes(:main_generations).each_with_object({}) do |region, acc|
+          rows = region.main_generations.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |generation_rows|
-          generation_rows.map do |_region_id, generation_id, generation_name|
+          acc[region.id] = rows.map do |generation|
             {
-              id: generation_id,
-              name: generation_name,
-              url: canonical_url_for_id(generation_id, :api_v3_generation_url)
+              id: generation.id,
+              name: generation.name,
+              url: canonical_url_for_id(generation.id, :api_v3_generation_url)
             }
           end
         end
@@ -228,17 +226,15 @@ module Api
         ids = chain_ids.uniq
         return {} if ids.empty?
 
-        rows = PokePokemonSpecies
-          .where(evolution_chain_id: ids)
-          .order(:evolution_chain_id, :id)
-          .pluck(:evolution_chain_id, :id, :name)
+        PokeEvolutionChain.where(id: ids).includes(:pokemon_species).each_with_object({}) do |chain, acc|
+          rows = chain.pokemon_species.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |species_rows|
-          species_rows.map do |_chain_id, species_id, species_name|
+          acc[chain.id] = rows.map do |species|
             {
-              id: species_id,
-              name: species_name,
-              url: canonical_url_for_id(species_id, :api_v3_pokemon_species_url)
+              id: species.id,
+              name: species.name,
+              url: canonical_url_for_id(species.id, :api_v3_pokemon_species_url)
             }
           end
         end
@@ -249,17 +245,15 @@ module Api
         ids = firmness_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeBerry
-          .where(berry_firmness_id: ids)
-          .order(:berry_firmness_id, :id)
-          .pluck(:berry_firmness_id, :id, :name)
+        PokeBerryFirmness.where(id: ids).includes(:berries).each_with_object({}) do |firmness, acc|
+          rows = firmness.berries.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |berry_rows|
-          berry_rows.map do |_firmness_id, berry_id, berry_name|
+          acc[firmness.id] = rows.map do |berry|
             {
-              id: berry_id,
-              name: berry_name,
-              url: canonical_url_for_id(berry_id, :api_v3_berry_url)
+              id: berry.id,
+              name: berry.name,
+              url: canonical_url_for_id(berry.id, :api_v3_berry_url)
             }
           end
         end
@@ -289,17 +283,15 @@ module Api
         ids = contest_type_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeBerryFlavor
-          .where(contest_type_id: ids)
-          .order(:contest_type_id, :id)
-          .pluck(:contest_type_id, :id, :name)
+        PokeContestType.where(id: ids).includes(:berry_flavors).each_with_object({}) do |contest_type, acc|
+          rows = contest_type.berry_flavors.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |flavor_rows|
-          flavor_rows.map do |_contest_type_id, flavor_id, flavor_name|
+          acc[contest_type.id] = rows.map do |flavor|
             {
-              id: flavor_id,
-              name: flavor_name,
-              url: canonical_url_for_id(flavor_id, :api_v3_berry_flavor_url)
+              id: flavor.id,
+              name: flavor.name,
+              url: canonical_url_for_id(flavor.id, :api_v3_berry_flavor_url)
             }
           end
         end
@@ -310,17 +302,15 @@ module Api
         ids = contest_effect_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeMove
-          .where(contest_effect_id: ids)
-          .order(:contest_effect_id, :id)
-          .pluck(:contest_effect_id, :id, :name)
+        PokeContestEffect.where(id: ids).includes(:moves).each_with_object({}) do |effect, acc|
+          rows = effect.moves.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |move_rows|
-          move_rows.map do |_contest_effect_id, move_id, move_name|
+          acc[effect.id] = rows.map do |move|
             {
-              id: move_id,
-              name: move_name,
-              url: canonical_url_for_id(move_id, :api_v3_move_url)
+              id: move.id,
+              name: move.name,
+              url: canonical_url_for_id(move.id, :api_v3_move_url)
             }
           end
         end
@@ -349,17 +339,15 @@ module Api
         ids = pocket_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeItemCategory
-          .where(pocket_id: ids)
-          .order(:pocket_id, :id)
-          .pluck(:pocket_id, :id, :name)
+        PokeItemPocket.where(id: ids).includes(:item_categories).each_with_object({}) do |pocket, acc|
+          rows = pocket.item_categories.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |category_rows|
-          category_rows.map do |_pocket_id, category_id, category_name|
+          acc[pocket.id] = rows.map do |category|
             {
-              id: category_id,
-              name: category_name,
-              url: canonical_url_for_id(category_id, :api_v3_item_category_url)
+              id: category.id,
+              name: category.name,
+              url: canonical_url_for_id(category.id, :api_v3_item_category_url)
             }
           end
         end
@@ -371,18 +359,19 @@ module Api
         return {} if ids.empty?
 
         rows = PokeItemFlagMap
-          .joins("INNER JOIN item ON item.id = item_flag_map.item_id")
           .where(item_flag_id: ids)
-          .distinct
-          .order("item_flag_map.item_flag_id ASC, item.id ASC")
-          .pluck("item_flag_map.item_flag_id", "item.id", "item.name")
+          .includes(:item)
+          .order(:item_flag_id, :item_id)
 
-        rows.group_by(&:first).transform_values do |item_rows|
-          item_rows.map do |_attribute_id, item_id, item_name|
+        rows.group_by(&:item_flag_id).transform_values do |item_rows|
+          item_rows.filter_map do |row|
+            item = row.item
+            next unless item
+
             {
-              id: item_id,
-              name: item_name,
-              url: canonical_url_for_id(item_id, :api_v3_item_url)
+              id: item.id,
+              name: item.name,
+              url: canonical_url_for_id(item.id, :api_v3_item_url)
             }
           end
         end
@@ -393,17 +382,15 @@ module Api
         ids = effect_ids.uniq
         return {} if ids.empty?
 
-        rows = PokeItem
-          .where(fling_effect_id: ids)
-          .order(:fling_effect_id, :id)
-          .pluck(:fling_effect_id, :id, :name)
+        PokeItemFlingEffect.where(id: ids).includes(:items).each_with_object({}) do |effect, acc|
+          rows = effect.items.sort_by(&:id)
+          next if rows.empty?
 
-        rows.group_by(&:first).transform_values do |item_rows|
-          item_rows.map do |_effect_id, item_id, item_name|
+          acc[effect.id] = rows.map do |item|
             {
-              id: item_id,
-              name: item_name,
-              url: canonical_url_for_id(item_id, :api_v3_item_url)
+              id: item.id,
+              name: item.name,
+              url: canonical_url_for_id(item.id, :api_v3_item_url)
             }
           end
         end

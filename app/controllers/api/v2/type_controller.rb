@@ -63,7 +63,9 @@ module Api
       end
 
       def damage_relations_for(type_id)
-        rows = PokeTypeEfficacy.where("damage_type_id = ? OR target_type_id = ?", type_id, type_id)
+        rows = PokeTypeEfficacy
+          .where("damage_type_id = ? OR target_type_id = ?", type_id, type_id)
+          .includes(:damage_type, :target_type)
 
         {
           no_damage_to: relation_targets(rows, source_key: "damage_type_id", source_id: type_id, target_key: "target_type_id", factor: 0),
@@ -76,11 +78,15 @@ module Api
       end
 
       def past_damage_relations_for(type_id)
-        rows = PokeTypeEfficacyPast.where("damage_type_id = ? OR target_type_id = ?", type_id, type_id)
+        rows = PokeTypeEfficacyPast
+          .where("damage_type_id = ? OR target_type_id = ?", type_id, type_id)
+          .includes(:generation)
 
         rows.group_by(&:generation_id).sort.map do |generation_id, generation_rows|
+          generation = generation_rows.first&.generation
+
           {
-            generation: generation_resource_payload(generation_id),
+            generation: generation ? resource_payload(generation, :api_v2_generation_url) : nil,
             damage_relations: {
               no_damage_to: relation_targets(generation_rows, source_key: "damage_type_id", source_id: type_id, target_key: "target_type_id", factor: 0),
               half_damage_to: relation_targets(generation_rows, source_key: "damage_type_id", source_id: type_id, target_key: "target_type_id", factor: 50),
@@ -146,13 +152,6 @@ module Api
         resource_payload(generation, :api_v2_generation_url)
       end
 
-      def generation_resource_payload(generation_id)
-        generation = PokeGeneration.find_by(id: generation_id)
-        return nil unless generation
-
-        resource_payload(generation, :api_v2_generation_url)
-      end
-
       def move_damage_class_payload(type)
         damage_class = type.damage_class
         return nil unless damage_class
@@ -161,13 +160,13 @@ module Api
       end
 
       def relation_targets(rows, source_key:, source_id:, target_key:, factor:)
-        matching_target_ids = rows.select do |row|
-          row.public_send(source_key) == source_id && row.damage_factor == factor
-        end.map { |row| row.public_send(target_key) }.uniq
+        target_assoc = target_key == "target_type_id" ? :target_type : :damage_type
 
-        types_by_id = records_by_id(PokeType, matching_target_ids)
-        matching_target_ids.sort.filter_map do |type_id|
-          type = types_by_id[type_id]
+        rows.select do |row|
+          row.public_send(source_key) == source_id && row.damage_factor == factor
+        end.sort_by { |row| row.public_send(target_key) }
+          .filter_map do |row|
+          type = row.public_send(target_assoc)
           next unless type
 
           resource_payload(type, :api_v2_type_url)
@@ -187,10 +186,6 @@ module Api
         {
           "name_icon" => "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/#{generation_key}/#{version_key}/#{type_id}.png"
         }
-      end
-
-      def records_by_id(model_class, ids)
-        model_class.where(id: ids.uniq).index_by(&:id)
       end
     end
   end

@@ -192,9 +192,9 @@ module Api
         return nil unless row
 
         {
-          ailment: ailment_payload(row.meta_ailment_id),
+          ailment: ailment_payload(row),
           ailment_chance: row.ailment_chance,
-          category: meta_category_payload(row.meta_category_id),
+          category: meta_category_payload(row),
           crit_rate: row.crit_rate,
           drain: row.drain,
           flinch_chance: row.flinch_chance,
@@ -207,21 +207,15 @@ module Api
         }
       end
 
-      def meta_category_payload(category_id)
-        normalized_category_id = normalized_id(category_id, allow_zero: true)
-        return nil unless normalized_category_id
-
-        category = record_by_id(PokeMoveMetaCategory, normalized_category_id, allow_zero: true)
+      def meta_category_payload(move_meta)
+        category = move_meta.meta_category
         return nil unless category
 
         resource_payload(category, :api_v2_move_category_url)
       end
 
-      def ailment_payload(ailment_id)
-        normalized_ailment_id = normalized_id(ailment_id, allow_zero: true)
-        return nil unless normalized_ailment_id
-
-        ailment = record_by_id(PokeMoveAilment, normalized_ailment_id, allow_zero: true)
+      def ailment_payload(move_meta)
+        ailment = move_meta.meta_ailment
         return nil unless ailment
 
         resource_payload(ailment, :api_v2_move_ailment_url)
@@ -326,13 +320,6 @@ module Api
           record = cache[id]
           rows[id] = record if record
         end
-      end
-
-      def record_by_id(model_class, id, allow_zero: false)
-        lookup_id = normalized_id(id, allow_zero: allow_zero)
-        return nil unless lookup_id
-
-        records_by_id(model_class, [ lookup_id ], allow_zero: allow_zero)[lookup_id]
       end
 
       def lookup_cache_for(model_class)
