@@ -38,6 +38,7 @@ This document tracks concrete follow-up work after the v2/v3 association normali
 ## Current Focus
 
 - Completed: target #1 (placeholder prose sanitization at import time).
+- Completed: target #2 (`v2/move_controller` decomposition).
 
 Implemented:
 - Added placeholder sanitizer in importer base (`sanitize_placeholder_text`).
@@ -47,3 +48,30 @@ Implemented:
 - Added focused importer tests:
   - `test/services/pokeapi/importers/item_prose_importer_test.rb`
   - `test/services/pokeapi/importers/move_effect_prose_importer_test.rb`
+
+Implemented (target #2, phase 1):
+- Extracted move detail payload and helper logic into:
+  - `app/controllers/concerns/api/v2/move_detail_payload.rb`
+- Reduced `app/controllers/api/v2/move_controller.rb` to a thin wrapper that includes:
+  - `NameSearchableResource`
+  - `MoveDetailPayload`
+- Verified behavior parity with integration tests:
+  - `test/integration/api/v2/move_controller_test.rb`
+  - `test/integration/api/v2/pokemon_controller_test.rb`
+  - `test/integration/api/v2/type_controller_test.rb`
+
+Implemented (target #2, phase 2):
+- Restructured `MoveDetailPayload` internals into section builders:
+  - `core_fields`
+  - `relation_fields`
+  - `text_fields`
+  - `meta_fields`
+- Kept payload shape unchanged (`detail_payload` now merges these sections).
+
+Implemented (target #2, phase 3):
+- Split payload logic into focused sub-concerns:
+  - `app/controllers/concerns/api/v2/move_payload/relation_fields.rb`
+  - `app/controllers/concerns/api/v2/move_payload/text_fields.rb`
+  - `app/controllers/concerns/api/v2/move_payload/meta_fields.rb`
+- Updated `MoveDetailPayload` to compose these modules while keeping the same external interface and response contract.
+- Re-validated behavior with existing integration tests and RuboCop.
