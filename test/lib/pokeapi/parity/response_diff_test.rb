@@ -80,4 +80,39 @@ class Pokeapi::Parity::ResponseDiffTest < ActiveSupport::TestCase
 
     assert_equal [], diffs
   end
+
+  test "fetch_json returns structured error for expected fetch failures" do
+    engine = Pokeapi::Parity::ResponseDiff.new(
+      rails_base_url: "http://localhost:3000",
+      source_base_url: "http://localhost:8000",
+      paths: []
+    )
+
+    # Override only this test instance to simulate a transport timeout.
+    engine.define_singleton_method(:fetch_response) do |_uri, redirects_left:|
+      raise Timeout::Error, "timed out"
+    end
+
+    response = engine.send(:fetch_json, "http://localhost:3000", "/api/v2/pokemon/1/")
+    assert_equal 0, response[:status]
+    assert_nil response[:json]
+    assert_match(/timed out/, response[:error])
+  end
+
+  test "fetch_json re-raises unexpected errors" do
+    engine = Pokeapi::Parity::ResponseDiff.new(
+      rails_base_url: "http://localhost:3000",
+      source_base_url: "http://localhost:8000",
+      paths: []
+    )
+
+    # Override only this test instance so unexpected errors still bubble up.
+    engine.define_singleton_method(:fetch_response) do |_uri, redirects_left:|
+      raise NoMethodError, "unexpected"
+    end
+
+    assert_raises(NoMethodError) do
+      engine.send(:fetch_json, "http://localhost:3000", "/api/v2/pokemon/1/")
+    end
+  end
 end

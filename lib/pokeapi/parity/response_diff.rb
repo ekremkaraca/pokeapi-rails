@@ -5,6 +5,8 @@ require "uri"
 module Pokeapi
   module Parity
     class ResponseDiff
+      class RedirectError < StandardError; end
+
       PROFILE_SMOKE = "smoke".freeze
       PROFILE_CORE = "core".freeze
       PROFILE_FULL = "full".freeze
@@ -237,7 +239,7 @@ module Pokeapi
           status: response.code.to_i,
           json: parsed_json
         }
-      rescue StandardError => e
+      rescue *fetch_error_classes => e
         {
           status: 0,
           json: nil,
@@ -259,11 +261,28 @@ module Pokeapi
         end
 
         return response unless response.is_a?(Net::HTTPRedirection)
-        raise "Too many redirects for #{uri}" if redirects_left <= 0
-        raise "Redirect without location for #{uri}" if response["location"].to_s.strip.empty?
+        raise RedirectError, "Too many redirects for #{uri}" if redirects_left <= 0
+        raise RedirectError, "Redirect without location for #{uri}" if response["location"].to_s.strip.empty?
 
         next_uri = URI.join(uri.to_s, response["location"])
         fetch_response(next_uri, redirects_left: redirects_left - 1)
+      end
+
+      def fetch_error_classes
+        classes = [
+          RedirectError,
+          URI::InvalidURIError,
+          ArgumentError,
+          SocketError,
+          IOError,
+          EOFError,
+          SystemCallError,
+          Timeout::Error,
+          Net::OpenTimeout,
+          Net::ReadTimeout
+        ]
+        classes << OpenSSL::SSL::SSLError if defined?(OpenSSL::SSL::SSLError)
+        classes
       end
 
       def parse_json(body)

@@ -41,6 +41,7 @@ This document tracks concrete follow-up work after the v2/v3 association normali
 - Completed: target #2 (`v2/move_controller` decomposition).
 - Completed: target #3 (`v3/include_loaders` split into domain modules).
 - Completed: target #4 (SQL/string-query hardening in selected v3 controllers).
+- Completed: target #5 (narrow broad rescue in parity tooling).
 
 Implemented:
 - Added placeholder sanitizer in importer base (`sanitize_placeholder_text`).
@@ -94,3 +95,11 @@ Implemented (target #4):
 - Replaced raw join SQL with association join in:
   - `app/controllers/api/v3/evolution_chain_controller.rb`
 - Re-validated with focused v3 integration tests and RuboCop.
+
+Implemented (target #5):
+- Replaced broad rescue in parity fetch path with explicit expected exception classes in:
+  - `lib/pokeapi/parity/response_diff.rb`
+- Added `RedirectError` for redirect-related transport failures so they stay in structured parity output.
+- Left unexpected exceptions unrescued so regressions surface instead of being silently converted to status `0`.
+- Added tests in:
+  - `test/lib/pokeapi/parity/response_diff_test.rb`
