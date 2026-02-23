@@ -48,6 +48,7 @@ class Api::V2::PokemonControllerTest < ActionDispatch::IntegrationTest
     get "/api/v2/pokemon/#{pokemon.id}"
 
     assert_response :success
+    assert_observability_headers
     payload = JSON.parse(response.body)
     assert_equal "bulbasaur", payload["name"]
     assert_equal pokemon.id, payload["id"]
@@ -58,6 +59,7 @@ class Api::V2::PokemonControllerTest < ActionDispatch::IntegrationTest
     get "/api/v2/pokemon/BULBASAUR"
 
     assert_response :success
+    assert_observability_headers
     payload = JSON.parse(response.body)
     assert_equal "bulbasaur", payload["name"]
     assert_nil payload["url"]
@@ -70,6 +72,36 @@ class Api::V2::PokemonControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_operator query_count, :<=, 14
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/pokemon", params: { limit: 5, offset: 0, q: "saur" }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon", params: { limit: 5, offset: 0, q: "saur" }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    pokemon = Pokemon.find_by!(name: "bulbasaur")
+
+    get "/api/v2/pokemon/#{pokemon.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon/#{pokemon.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "list and show accept trailing slash" do

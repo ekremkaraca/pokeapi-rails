@@ -46,6 +46,15 @@ class Api::V2::PokemonShapeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+test "show query count stays within budget" do
+  query_count = capture_select_query_count do
+    get "/api/v2/pokemon-shape/ball"
+    assert_response :success
+  end
+
+  assert_operator query_count, :<=, 14
+end
+
   test "list and show accept trailing slash" do
     shape = PokePokemonShape.find_by!(name: "ball")
 
@@ -54,6 +63,35 @@ class Api::V2::PokemonShapeControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/pokemon-shape/#{shape.id}/"
     assert_response :success
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/pokemon-shape", params: { limit: 2, offset: 0 }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon-shape", params: { limit: 2, offset: 0 }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    shape = PokePokemonShape.find_by!(name: "ball")
+    get "/api/v2/pokemon-shape/#{shape.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon-shape/#{shape.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show returns 404 for invalid lookup token" do

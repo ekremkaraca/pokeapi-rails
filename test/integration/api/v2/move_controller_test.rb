@@ -39,6 +39,7 @@ class Api::V2::MoveControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/move/#{move.id}"
     assert_response :success
+    assert_observability_headers
     payload = JSON.parse(response.body)
     assert_equal %w[accuracy contest_combos contest_effect contest_type damage_class effect_chance effect_changes effect_entries flavor_text_entries generation id learned_by_pokemon machines meta name names past_values power pp priority stat_changes super_contest_effect target type], payload.keys.sort
     assert_equal "pound", payload["name"]
@@ -57,6 +58,7 @@ class Api::V2::MoveControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/move/POUND"
     assert_response :success
+    assert_observability_headers
   end
 
   test "show query count stays within budget" do
@@ -66,6 +68,36 @@ class Api::V2::MoveControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_operator query_count, :<=, 22
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/move", params: { limit: 2, offset: 0, q: "p" }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/move", params: { limit: 2, offset: 0, q: "p" }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    move = PokeMove.find_by!(name: "pound")
+
+    get "/api/v2/move/#{move.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/move/#{move.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show reuses language and version-group lookups across nested payload sections" do

@@ -11,6 +11,16 @@ module Api
 
       def index
         scope = apply_q_filter(base_scope, column: q_filter_column)
+        return unless stale_collection?(
+          scope: scope,
+          cache_key: "#{model_class.name.underscore}/index",
+          variation: {
+            q: params[:q].to_s.strip,
+            limit: normalized_limit,
+            offset: normalized_offset
+          }
+        )
+
         records, metadata = paginate(scope)
 
         render json: metadata.merge(results: records.map { |record| summary_payload(record) })
@@ -18,6 +28,8 @@ module Api
 
       def show
         record = find_by_id_or_name!(model_scope, params[:id])
+        return unless stale_resource?(record: record, cache_key: "#{model_class.name.underscore}/show")
+
         render json: detail_payload(record)
       end
 

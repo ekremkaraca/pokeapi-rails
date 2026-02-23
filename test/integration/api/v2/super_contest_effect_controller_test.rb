@@ -40,6 +40,17 @@ class Api::V2::SuperContestEffectControllerTest < ActionDispatch::IntegrationTes
     assert_equal super_contest_effect.appeal, payload["appeal"]
   end
 
+  test "show query count stays within budget" do
+    super_contest_effect = PokeSuperContestEffect.first
+
+    query_count = capture_select_query_count do
+      get "/api/v2/super-contest-effect/#{super_contest_effect.id}"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 14
+  end
+
   test "list and show accept trailing slash" do
     super_contest_effect = PokeSuperContestEffect.first
 

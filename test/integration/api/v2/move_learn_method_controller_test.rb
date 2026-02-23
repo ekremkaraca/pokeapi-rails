@@ -53,6 +53,15 @@ class Api::V2::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+test "show query count stays within budget" do
+  query_count = capture_select_query_count do
+    get "/api/v2/move-learn-method/level-up"
+    assert_response :success
+  end
+
+  assert_operator query_count, :<=, 14
+end
+
   test "list and show accept trailing slash" do
     method = PokeMoveLearnMethod.find_by!(name: "level-up")
 
@@ -61,6 +70,35 @@ class Api::V2::MoveLearnMethodControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/move-learn-method/#{method.id}/"
     assert_response :success
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/move-learn-method", params: { limit: 2, offset: 0 }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/move-learn-method", params: { limit: 2, offset: 0 }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    method = PokeMoveLearnMethod.find_by!(name: "level-up")
+    get "/api/v2/move-learn-method/#{method.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/move-learn-method/#{method.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show returns 404 for invalid lookup token" do

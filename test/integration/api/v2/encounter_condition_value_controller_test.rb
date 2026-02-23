@@ -53,6 +53,15 @@ class Api::V2::EncounterConditionValueControllerTest < ActionDispatch::Integrati
     assert_response :success
   end
 
+test "show query count stays within budget" do
+  query_count = capture_select_query_count do
+    get "/api/v2/encounter-condition-value/swarm-no"
+    assert_response :success
+  end
+
+  assert_operator query_count, :<=, 14
+end
+
   test "list and show accept trailing slash" do
     value = PokeEncounterConditionValue.find_by!(name: "swarm-no")
 
@@ -61,6 +70,35 @@ class Api::V2::EncounterConditionValueControllerTest < ActionDispatch::Integrati
 
     get "/api/v2/encounter-condition-value/#{value.id}/"
     assert_response :success
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/encounter-condition-value", params: { limit: 2, offset: 0 }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/encounter-condition-value", params: { limit: 2, offset: 0 }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    value = PokeEncounterConditionValue.find_by!(name: "swarm-no")
+    get "/api/v2/encounter-condition-value/#{value.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/encounter-condition-value/#{value.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show returns 404 for invalid lookup token" do

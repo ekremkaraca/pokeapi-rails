@@ -54,6 +54,15 @@ class Api::V2::PokemonFormControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+test "show query count stays within budget" do
+  query_count = capture_select_query_count do
+    get "/api/v2/pokemon-form/venusaur-mega"
+    assert_response :success
+  end
+
+  assert_operator query_count, :<=, 14
+end
+
   test "list and show accept trailing slash" do
     pokemon_form = PokePokemonForm.find_by!(name: "venusaur-mega")
 
@@ -62,6 +71,35 @@ class Api::V2::PokemonFormControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/pokemon-form/#{pokemon_form.id}/"
     assert_response :success
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/pokemon-form", params: { limit: 2, offset: 0 }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon-form", params: { limit: 2, offset: 0 }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    pokemon_form = PokePokemonForm.find_by!(name: "venusaur-mega")
+    get "/api/v2/pokemon-form/#{pokemon_form.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon-form/#{pokemon_form.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show returns 404 for invalid lookup token" do

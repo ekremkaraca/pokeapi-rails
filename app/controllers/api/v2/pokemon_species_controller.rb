@@ -101,7 +101,7 @@ module Api
       end
 
       def names_payload(species)
-        rows = species.pokemon_species_names.includes(:local_language)
+        rows = species_name_rows(species)
 
         rows.filter_map do |row|
           language = row.local_language
@@ -115,7 +115,7 @@ module Api
       end
 
       def genera_payload(species)
-        rows = species.pokemon_species_names.includes(:local_language)
+        rows = species_name_rows(species)
 
         rows.filter_map do |row|
           next if row.genus.to_s.strip.empty?
@@ -128,6 +128,11 @@ module Api
             language: resource_payload(language, :api_v2_language_url)
           }
         end
+      end
+
+      def species_name_rows(species)
+        @species_name_rows ||= {}
+        @species_name_rows[species.id] ||= species.pokemon_species_names.includes(:local_language).to_a
       end
 
       def flavor_text_entries_payload(species)

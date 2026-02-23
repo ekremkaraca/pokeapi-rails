@@ -41,6 +41,17 @@ class Api::V2::CharacteristicControllerTest < ActionDispatch::IntegrationTest
     assert_equal characteristic.gene_mod_5, payload["gene_mod_5"]
   end
 
+  test "show query count stays within budget" do
+    characteristic = PokeCharacteristic.first
+
+    query_count = capture_select_query_count do
+      get "/api/v2/characteristic/#{characteristic.id}"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 14
+  end
+
   test "list and show accept trailing slash" do
     characteristic = PokeCharacteristic.first
 

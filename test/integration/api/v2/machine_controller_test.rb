@@ -35,6 +35,17 @@ class Api::V2::MachineControllerTest < ActionDispatch::IntegrationTest
     assert_equal machine.move_id, payload["move_id"]
   end
 
+  test "show query count stays within budget" do
+    machine = PokeMachine.first
+
+    query_count = capture_select_query_count do
+      get "/api/v2/machine/#{machine.id}"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 14
+  end
+
   test "show returns 404 for invalid lookup token" do
     get "/api/v2/machine/abc"
 

@@ -38,6 +38,17 @@ class Api::V2::EvolutionChainControllerTest < ActionDispatch::IntegrationTest
     assert_equal 231, payload["baby_trigger_item_id"]
   end
 
+  test "show query count stays within budget" do
+    chain = PokeEvolutionChain.find_by!(baby_trigger_item_id: 231)
+
+    query_count = capture_select_query_count do
+      get "/api/v2/evolution-chain/#{chain.id}"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 14
+  end
+
   test "show returns 404 for invalid lookup token" do
     get "/api/v2/evolution-chain/abc"
 

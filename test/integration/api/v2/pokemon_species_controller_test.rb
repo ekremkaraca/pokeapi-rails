@@ -69,6 +69,15 @@ class Api::V2::PokemonSpeciesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "show query count stays within budget" do
+    query_count = capture_select_query_count do
+      get "/api/v2/pokemon-species/lugia"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 20
+  end
+
   test "list and show accept trailing slash" do
     species = PokePokemonSpecies.find_by!(name: "lugia")
 
@@ -77,6 +86,35 @@ class Api::V2::PokemonSpeciesControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/pokemon-species/#{species.id}/"
     assert_response :success
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/pokemon-species", params: { limit: 2, offset: 0 }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon-species", params: { limit: 2, offset: 0 }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    species = PokePokemonSpecies.find_by!(name: "lugia")
+    get "/api/v2/pokemon-species/#{species.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/pokemon-species/#{species.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show returns 404 for invalid lookup token" do

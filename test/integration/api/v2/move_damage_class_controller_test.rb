@@ -47,6 +47,15 @@ class Api::V2::MoveDamageClassControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+test "show query count stays within budget" do
+  query_count = capture_select_query_count do
+    get "/api/v2/move-damage-class/status"
+    assert_response :success
+  end
+
+  assert_operator query_count, :<=, 14
+end
+
   test "list and show accept trailing slash" do
     mdc = PokeMoveDamageClass.find_by!(name: "status")
 
@@ -55,6 +64,35 @@ class Api::V2::MoveDamageClassControllerTest < ActionDispatch::IntegrationTest
 
     get "/api/v2/move-damage-class/#{mdc.id}/"
     assert_response :success
+  end
+
+  test "list supports conditional get with etag" do
+    get "/api/v2/move-damage-class", params: { limit: 2, offset: 0 }
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/move-damage-class", params: { limit: 2, offset: 0 }, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
+  end
+
+  test "show supports conditional get with etag" do
+    mdc = PokeMoveDamageClass.find_by!(name: "status")
+    get "/api/v2/move-damage-class/#{mdc.id}"
+    assert_response :success
+    assert_observability_headers
+
+    etag = response.headers["ETag"]
+    assert etag.present?
+
+    get "/api/v2/move-damage-class/#{mdc.id}", headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+    assert_observability_headers
+    assert_equal "", response.body
   end
 
   test "show returns 404 for invalid lookup token" do

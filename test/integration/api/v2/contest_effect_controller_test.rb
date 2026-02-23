@@ -41,6 +41,17 @@ class Api::V2::ContestEffectControllerTest < ActionDispatch::IntegrationTest
     assert_equal contest_effect.jam, payload["jam"]
   end
 
+  test "show query count stays within budget" do
+    contest_effect = PokeContestEffect.first
+
+    query_count = capture_select_query_count do
+      get "/api/v2/contest-effect/#{contest_effect.id}"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 14
+  end
+
   test "list and show accept trailing slash" do
     contest_effect = PokeContestEffect.first
 
