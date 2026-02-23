@@ -25,13 +25,13 @@ module Api
         end
 
         def learned_by_pokemon_payload(move)
-          move.pokemon_moves.includes(:pokemon).map(&:pokemon).compact.uniq.sort_by(&:id).map do |pokemon|
+          move.pokemon_moves.map(&:pokemon).compact.uniq.sort_by(&:id).map do |pokemon|
             resource_payload(pokemon, :api_v2_pokemon_url)
           end
         end
 
         def machines_payload(move)
-          machines = move.machines.order(:id)
+          machines = move.machines.sort_by(&:id)
           version_groups_by_id = records_by_id(PokeVersionGroup, machines.map(&:version_group_id))
 
           machines.filter_map do |machine|

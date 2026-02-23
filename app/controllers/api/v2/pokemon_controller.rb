@@ -6,7 +6,28 @@ module Api
       MODEL_CLASS = Pokemon
       RESOURCE_URL_HELPER = :api_v2_pokemon_url
 
+      def show
+        pokemon = find_by_id_or_name!(detail_scope, params[:id])
+        render json: detail_payload(pokemon)
+      end
+
       private
+
+      def detail_scope
+        Pokemon.preload(
+          :species,
+          :pokemon_forms,
+          pokemon_abilities: :ability,
+          pokemon_ability_pasts: %i[generation ability],
+          pokemon_game_indices: :version,
+          pokemon_items: %i[item version],
+          pokemon_moves: %i[move version_group move_learn_method],
+          pokemon_stat_pasts: %i[generation stat],
+          pokemon_type_pasts: %i[generation type],
+          pokemon_stats: :stat,
+          pokemon_types: :type
+        )
+      end
 
       def detail_payload(pokemon)
         species = pokemon.species
@@ -37,7 +58,7 @@ module Api
       end
 
       def abilities_payload(pokemon)
-        pokemon.pokemon_abilities.includes(:ability).order(:slot, :ability_id).filter_map do |row|
+        pokemon.pokemon_abilities.sort_by { |row| [ row.slot.to_i, row.ability_id.to_i ] }.filter_map do |row|
           ability = row.ability
           next unless ability
 
@@ -50,7 +71,7 @@ module Api
       end
 
       def past_abilities_payload(pokemon)
-        rows = pokemon.pokemon_ability_pasts.includes(:generation, :ability).order(:generation_id, :slot)
+        rows = pokemon.pokemon_ability_pasts.sort_by { |row| [ row.generation_id.to_i, row.slot.to_i ] }
 
         rows.group_by(&:generation_id)
           .sort
@@ -75,13 +96,13 @@ module Api
       end
 
       def forms_payload(pokemon)
-        pokemon.pokemon_forms.order(:id).map do |pokemon_form|
+        pokemon.pokemon_forms.sort_by(&:id).map do |pokemon_form|
           resource_payload(pokemon_form, :api_v2_pokemon_form_url)
         end
       end
 
       def game_indices_payload(pokemon)
-        rows = pokemon.pokemon_game_indices.includes(:version).order(:version_id, :game_index)
+        rows = pokemon.pokemon_game_indices.sort_by { |row| [ row.version_id.to_i, row.game_index.to_i ] }
 
         rows.filter_map do |row|
           version = row.version
@@ -95,7 +116,7 @@ module Api
       end
 
       def held_items_payload(pokemon)
-        rows = pokemon.pokemon_items.includes(:item, :version).order(:item_id, :version_id)
+        rows = pokemon.pokemon_items.sort_by { |row| [ row.item_id.to_i, row.version_id.to_i ] }
 
         rows.group_by(&:item_id).sort.map do |item_id, entries|
           item = entries.first&.item
@@ -117,8 +138,9 @@ module Api
       end
 
       def moves_payload(pokemon)
-        rows = pokemon.pokemon_moves.includes(:move, :version_group, :move_learn_method)
-          .order(:move_id, :version_group_id, :pokemon_move_method_id, :level)
+        rows = pokemon.pokemon_moves.sort_by do |row|
+          [ row.move_id.to_i, row.version_group_id.to_i, row.pokemon_move_method_id.to_i, row.level.to_i ]
+        end
 
         rows.group_by(&:move_id).sort.map do |move_id, entries|
           move = entries.first&.move
@@ -143,7 +165,7 @@ module Api
       end
 
       def past_stats_payload(pokemon)
-        rows = pokemon.pokemon_stat_pasts.includes(:generation, :stat).order(:generation_id, :stat_id)
+        rows = pokemon.pokemon_stat_pasts.sort_by { |row| [ row.generation_id.to_i, row.stat_id.to_i ] }
 
         rows.group_by(&:generation_id)
           .sort
@@ -169,7 +191,7 @@ module Api
       end
 
       def past_types_payload(pokemon)
-        rows = pokemon.pokemon_type_pasts.includes(:generation, :type).order(:generation_id, :slot)
+        rows = pokemon.pokemon_type_pasts.sort_by { |row| [ row.generation_id.to_i, row.slot.to_i ] }
 
         rows.group_by(&:generation_id)
           .sort
@@ -200,7 +222,7 @@ module Api
       end
 
       def stats_payload(pokemon)
-        rows = pokemon.pokemon_stats.includes(:stat).order(:stat_id)
+        rows = pokemon.pokemon_stats.sort_by { |row| row.stat_id.to_i }
 
         rows.filter_map do |row|
           stat = row.stat
@@ -215,7 +237,7 @@ module Api
       end
 
       def types_payload(pokemon)
-        rows = pokemon.pokemon_types.includes(:type).order(:slot)
+        rows = pokemon.pokemon_types.sort_by { |row| row.slot.to_i }
 
         rows.filter_map do |row|
           type = row.type

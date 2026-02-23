@@ -40,7 +40,7 @@ module Api
         def effect_changes_payload(move)
           changelog_rows = move.move_effect_changelogs
           version_groups_by_id = records_by_id(PokeVersionGroup, changelog_rows.map(&:changed_in_version_group_id))
-          prose_rows = PokeMoveEffectChangelogProse.where(move_effect_changelog_id: changelog_rows.map(&:id))
+          prose_rows = changelog_rows.flat_map(&:proses)
           prose_by_changelog_id = prose_rows.group_by(&:move_effect_changelog_id)
           languages_by_id = records_by_id(PokeLanguage, prose_rows.map(&:local_language_id))
 

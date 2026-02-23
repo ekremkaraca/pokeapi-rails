@@ -27,7 +27,7 @@ module Api
         end
 
         def stat_changes_payload(move)
-          rows = move.move_meta_stat_changes.includes(:stat)
+          rows = move.move_meta_stat_changes
 
           rows.filter_map do |row|
             stat = row.stat

@@ -63,6 +63,15 @@ class Api::V2::PokemonControllerTest < ActionDispatch::IntegrationTest
     assert_nil payload["url"]
   end
 
+  test "show query count stays within budget" do
+    query_count = capture_select_query_count do
+      get "/api/v2/pokemon/bulbasaur"
+      assert_response :success
+    end
+
+    assert_operator query_count, :<=, 14
+  end
+
   test "list and show accept trailing slash" do
     pokemon = Pokemon.find_by!(name: "bulbasaur")
 
