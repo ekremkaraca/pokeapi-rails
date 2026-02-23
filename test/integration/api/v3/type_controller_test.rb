@@ -100,6 +100,29 @@ class Api::V3::TypeControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{/api/v3/type/#{type.id}/$}, payload["url"])
   end
 
+  test "show supports lookup by name and keeps canonical numeric url" do
+    type = PokeType.create!(name: "steel", generation_id: 2, damage_class_id: 3)
+
+    get "/api/v3/type/steel"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal type.id, payload["id"]
+    assert_equal "steel", payload["name"]
+    assert_match(%r{/api/v3/type/#{type.id}/$}, payload["url"])
+  end
+
+  test "show supports case-insensitive name lookup" do
+    type = PokeType.create!(name: "steel", generation_id: 2, damage_class_id: 3)
+
+    get "/api/v3/type/StEeL"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal type.id, payload["id"]
+    assert_equal "steel", payload["name"]
+  end
+
   test "show supports include pokemon" do
     type = PokeType.find_by!(name: "fire")
     pokemon = Pokemon.create!(name: "charmander")
@@ -117,6 +140,15 @@ class Api::V3::TypeControllerTest < ActionDispatch::IntegrationTest
 
   test "show returns standardized not found envelope for invalid token" do
     get "/api/v3/type/not-a-number"
+
+    assert_response :not_found
+    payload = JSON.parse(response.body)
+
+    assert_not_found_error_envelope(payload)
+  end
+
+  test "show returns standardized not found envelope for unknown name" do
+    get "/api/v3/type/not-a-real-type"
 
     assert_response :not_found
     payload = JSON.parse(response.body)

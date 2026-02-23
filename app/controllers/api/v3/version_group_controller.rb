@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        version_group = PokeVersionGroup.find(require_numeric_id!(params[:id]))
+        version_group = find_by_id_or_name!(PokeVersionGroup.all, params[:id])
         render_show_flow(record: version_group, cache_key: "v3/version-group#show")
       end
 

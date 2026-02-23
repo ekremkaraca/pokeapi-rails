@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        pocket = PokeItemPocket.find(require_numeric_id!(params[:id]))
+        pocket = find_by_id_or_name!(PokeItemPocket.all, params[:id])
         render_show_flow(record: pocket, cache_key: "v3/item_pocket#show")
       end
 

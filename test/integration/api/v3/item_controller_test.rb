@@ -107,6 +107,41 @@ class Api::V3::ItemControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{/api/v3/item/#{item.id}/$}, payload["url"])
   end
 
+  test "show supports lookup by name and keeps canonical numeric url" do
+    item = PokeItem.create!(
+      name: "max-potion",
+      cost: 2500,
+      category_id: PokeItemCategory.find_by!(name: "medicine").id,
+      fling_power: nil,
+      fling_effect_id: nil
+    )
+
+    get "/api/v3/item/max-potion"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal item.id, payload["id"]
+    assert_equal "max-potion", payload["name"]
+    assert_match(%r{/api/v3/item/#{item.id}/$}, payload["url"])
+  end
+
+  test "show supports case-insensitive name lookup" do
+    item = PokeItem.create!(
+      name: "max-potion",
+      cost: 2500,
+      category_id: PokeItemCategory.find_by!(name: "medicine").id,
+      fling_power: nil,
+      fling_effect_id: nil
+    )
+
+    get "/api/v3/item/MaX-PoTiOn"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal item.id, payload["id"]
+    assert_equal "max-potion", payload["name"]
+  end
+
   test "show supports include category" do
     item = PokeItem.find_by!(name: "potion")
 
@@ -120,6 +155,15 @@ class Api::V3::ItemControllerTest < ActionDispatch::IntegrationTest
 
   test "show returns standardized not found envelope for invalid token" do
     get "/api/v3/item/not-a-number"
+
+    assert_response :not_found
+    payload = JSON.parse(response.body)
+
+    assert_not_found_error_envelope(payload)
+  end
+
+  test "show returns standardized not found envelope for unknown name" do
+    get "/api/v3/item/not-a-real-item"
 
     assert_response :not_found
     payload = JSON.parse(response.body)

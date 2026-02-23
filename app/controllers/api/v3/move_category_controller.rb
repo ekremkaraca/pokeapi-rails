@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        move_category = PokeMoveMetaCategory.find(require_numeric_id!(params[:id]))
+        move_category = find_by_id_or_name!(PokeMoveMetaCategory.all, params[:id])
         render_show_flow(record: move_category, cache_key: "v3/move_category#show")
       end
 

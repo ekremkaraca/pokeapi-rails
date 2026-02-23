@@ -98,6 +98,29 @@ class Api::V3::AbilityControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{/api/v3/ability/#{ability.id}/$}, payload["url"])
   end
 
+  test "show supports lookup by name and keeps canonical numeric url" do
+    ability = Ability.create!(name: "battle-armor", is_main_series: true)
+
+    get "/api/v3/ability/battle-armor"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal ability.id, payload["id"]
+    assert_equal "battle-armor", payload["name"]
+    assert_match(%r{/api/v3/ability/#{ability.id}/$}, payload["url"])
+  end
+
+  test "show supports case-insensitive name lookup" do
+    ability = Ability.create!(name: "battle-armor", is_main_series: true)
+
+    get "/api/v3/ability/BaTtLe-ArMoR"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal ability.id, payload["id"]
+    assert_equal "battle-armor", payload["name"]
+  end
+
   test "show supports include pokemon" do
     ability = Ability.find_by!(name: "stench")
     pokemon = Pokemon.create!(name: "bulbasaur")
@@ -116,6 +139,15 @@ class Api::V3::AbilityControllerTest < ActionDispatch::IntegrationTest
 
   test "show returns standardized not found envelope for invalid token" do
     get "/api/v3/ability/not-a-number"
+
+    assert_response :not_found
+    payload = JSON.parse(response.body)
+
+    assert_not_found_error_envelope(payload)
+  end
+
+  test "show returns standardized not found envelope for unknown name" do
+    get "/api/v3/ability/not-a-real-ability"
 
     assert_response :not_found
     payload = JSON.parse(response.body)

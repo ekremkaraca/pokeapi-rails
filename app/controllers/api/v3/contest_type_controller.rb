@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        contest_type = PokeContestType.find(require_numeric_id!(params[:id]))
+        contest_type = find_by_id_or_name!(PokeContestType.all, params[:id])
         render_show_flow(record: contest_type, cache_key: "v3/contest_type#show")
       end
 

@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        nature = PokeNature.find(require_numeric_id!(params[:id]))
+        nature = find_by_id_or_name!(PokeNature.all, params[:id])
         render_show_flow(record: nature, cache_key: "v3/nature#show")
       end
 

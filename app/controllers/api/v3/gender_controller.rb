@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        gender = PokeGender.find(require_numeric_id!(params[:id]))
+        gender = find_by_id_or_name!(PokeGender.all, params[:id])
         render_show_flow(record: gender, cache_key: "v3/gender#show")
       end
 

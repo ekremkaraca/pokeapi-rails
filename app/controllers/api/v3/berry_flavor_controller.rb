@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        flavor = PokeBerryFlavor.find(require_numeric_id!(params[:id]))
+        flavor = find_by_id_or_name!(PokeBerryFlavor.all, params[:id])
         render_show_flow(record: flavor, cache_key: "v3/berry_flavor#show")
       end
 

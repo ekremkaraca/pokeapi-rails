@@ -106,6 +106,29 @@ class Api::V3::PokemonControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{/api/v3/pokemon/#{pokemon.id}/$}, payload["url"])
   end
 
+  test "show supports lookup by name and keeps canonical numeric url" do
+    pokemon = Pokemon.create!(name: "ditto")
+
+    get "/api/v3/pokemon/ditto"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal pokemon.id, payload["id"]
+    assert_equal "ditto", payload["name"]
+    assert_match(%r{/api/v3/pokemon/#{pokemon.id}/$}, payload["url"])
+  end
+
+  test "show supports case-insensitive name lookup" do
+    pokemon = Pokemon.create!(name: "ditto")
+
+    get "/api/v3/pokemon/DiTTo"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal pokemon.id, payload["id"]
+    assert_equal "ditto", payload["name"]
+  end
+
   test "show supports fields filter" do
     pokemon = Pokemon.find_by!(name: "bulbasaur")
 
@@ -133,6 +156,19 @@ class Api::V3::PokemonControllerTest < ActionDispatch::IntegrationTest
 
   test "show returns standardized not found error envelope" do
     get "/api/v3/pokemon/999999"
+
+    assert_response :not_found
+    assert_equal "experimental", response.headers["X-API-Stability"]
+    assert_observability_headers
+    payload = JSON.parse(response.body)
+
+    assert_equal %w[error], payload.keys
+    assert_not_found_error_envelope(payload)
+    assert payload.dig("error", "request_id").present?
+  end
+
+  test "show returns standardized not found error envelope for unknown name" do
+    get "/api/v3/pokemon/not-a-real-pokemon"
 
     assert_response :not_found
     assert_equal "experimental", response.headers["X-API-Stability"]

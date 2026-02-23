@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        move_learn_method = PokeMoveLearnMethod.find(require_numeric_id!(params[:id]))
+        move_learn_method = find_by_id_or_name!(PokeMoveLearnMethod.all, params[:id])
         render_show_flow(record: move_learn_method, cache_key: "v3/move_learn_method#show")
       end
 

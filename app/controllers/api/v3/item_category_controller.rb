@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        category = PokeItemCategory.find(require_numeric_id!(params[:id]))
+        category = find_by_id_or_name!(PokeItemCategory.all, params[:id])
         render_show_flow(record: category, cache_key: "v3/item_category#show")
       end
 

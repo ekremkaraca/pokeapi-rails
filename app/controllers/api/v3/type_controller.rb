@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        type = PokeType.find(require_numeric_id!(params[:id]))
+        type = find_by_id_or_name!(PokeType.all, params[:id])
         render_show_flow(record: type, cache_key: "v3/type#show")
       end
 

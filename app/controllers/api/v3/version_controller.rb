@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        version = PokeVersion.find(require_numeric_id!(params[:id]))
+        version = find_by_id_or_name!(PokeVersion.all, params[:id])
         render_show_flow(record: version, cache_key: "v3/version#show")
       end
 

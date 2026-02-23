@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        pal_park_area = PokePalParkArea.find(require_numeric_id!(params[:id]))
+        pal_park_area = find_by_id_or_name!(PokePalParkArea.all, params[:id])
         render_show_flow(record: pal_park_area, cache_key: "v3/pal_park_area#show")
       end
 

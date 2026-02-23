@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        pokemon_form = PokePokemonForm.find(require_numeric_id!(params[:id]))
+        pokemon_form = find_by_id_or_name!(PokePokemonForm.all, params[:id])
         render_show_flow(record: pokemon_form, cache_key: "v3/pokemon_form#show")
       end
 

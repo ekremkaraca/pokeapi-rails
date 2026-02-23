@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        firmness = PokeBerryFirmness.find(require_numeric_id!(params[:id]))
+        firmness = find_by_id_or_name!(PokeBerryFirmness.all, params[:id])
         render_show_flow(record: firmness, cache_key: "v3/berry_firmness#show")
       end
 

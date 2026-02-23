@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        condition_value = PokeEncounterConditionValue.find(require_numeric_id!(params[:id]))
+        condition_value = find_by_id_or_name!(PokeEncounterConditionValue.all, params[:id])
         render_show_flow(record: condition_value, cache_key: "v3/encounter-condition-value#show")
       end
 

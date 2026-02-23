@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        growth_rate = PokeGrowthRate.find(require_numeric_id!(params[:id]))
+        growth_rate = find_by_id_or_name!(PokeGrowthRate.all, params[:id])
         render_show_flow(record: growth_rate, cache_key: "v3/growth-rate#show")
       end
 

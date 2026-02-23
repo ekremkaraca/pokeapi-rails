@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        berry = PokeBerry.find(require_numeric_id!(params[:id]))
+        berry = find_by_id_or_name!(PokeBerry.all, params[:id])
         render_show_flow(record: berry, cache_key: "v3/berry#show")
       end
 

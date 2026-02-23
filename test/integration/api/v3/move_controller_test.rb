@@ -108,6 +108,47 @@ class Api::V3::MoveControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{/api/v3/move/#{move.id}/$}, payload["url"])
   end
 
+  test "show supports lookup by name and keeps canonical numeric url" do
+    move = PokeMove.create!(
+      name: "shadow-ball",
+      power: 80,
+      pp: 15,
+      priority: 0,
+      accuracy: 100,
+      damage_class_id: 3,
+      type_id: 8,
+      target_id: 10
+    )
+
+    get "/api/v3/move/shadow-ball"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal move.id, payload["id"]
+    assert_equal "shadow-ball", payload["name"]
+    assert_match(%r{/api/v3/move/#{move.id}/$}, payload["url"])
+  end
+
+  test "show supports case-insensitive name lookup" do
+    move = PokeMove.create!(
+      name: "shadow-ball",
+      power: 80,
+      pp: 15,
+      priority: 0,
+      accuracy: 100,
+      damage_class_id: 3,
+      type_id: 8,
+      target_id: 10
+    )
+
+    get "/api/v3/move/ShAdOw-BaLl"
+    assert_response :success
+    payload = JSON.parse(response.body)
+
+    assert_equal move.id, payload["id"]
+    assert_equal "shadow-ball", payload["name"]
+  end
+
   test "show supports include pokemon" do
     move = PokeMove.find_by!(name: "tackle")
     pokemon = Pokemon.create!(name: "bulbasaur")
@@ -141,6 +182,15 @@ class Api::V3::MoveControllerTest < ActionDispatch::IntegrationTest
 
   test "show returns standardized not found envelope for invalid token" do
     get "/api/v3/move/not-a-number"
+
+    assert_response :not_found
+    payload = JSON.parse(response.body)
+
+    assert_not_found_error_envelope(payload)
+  end
+
+  test "show returns standardized not found envelope for unknown name" do
+    get "/api/v3/move/not-a-real-move"
 
     assert_response :not_found
     payload = JSON.parse(response.body)

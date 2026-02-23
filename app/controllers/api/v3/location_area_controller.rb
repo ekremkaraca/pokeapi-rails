@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        area = PokeLocationArea.find(require_numeric_id!(params[:id]))
+        area = find_by_id_or_name!(PokeLocationArea.all, params[:id])
         render_show_flow(record: area, cache_key: "v3/location_area#show")
       end
 

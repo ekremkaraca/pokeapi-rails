@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        ability = Ability.find(require_numeric_id!(params[:id]))
+        ability = find_by_id_or_name!(Ability.all, params[:id])
         render_show_flow(record: ability, cache_key: "v3/ability#show")
       end
 

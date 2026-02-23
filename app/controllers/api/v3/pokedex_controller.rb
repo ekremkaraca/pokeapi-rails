@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        pokedex = PokePokedex.find(require_numeric_id!(params[:id]))
+        pokedex = find_by_id_or_name!(PokePokedex.all, params[:id])
         render_show_flow(record: pokedex, cache_key: "v3/pokedex#show")
       end
 

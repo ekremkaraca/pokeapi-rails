@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        evolution_trigger = PokeEvolutionTrigger.find(require_numeric_id!(params[:id]))
+        evolution_trigger = find_by_id_or_name!(PokeEvolutionTrigger.all, params[:id])
         render_show_flow(record: evolution_trigger, cache_key: "v3/evolution-trigger#show")
       end
 

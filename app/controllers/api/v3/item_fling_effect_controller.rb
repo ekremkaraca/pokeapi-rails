@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        fling_effect = PokeItemFlingEffect.find(require_numeric_id!(params[:id]))
+        fling_effect = find_by_id_or_name!(PokeItemFlingEffect.all, params[:id])
         render_show_flow(record: fling_effect, cache_key: "v3/item_fling_effect#show")
       end
 

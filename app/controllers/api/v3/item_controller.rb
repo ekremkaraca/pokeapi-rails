@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        item = PokeItem.find(require_numeric_id!(params[:id]))
+        item = find_by_id_or_name!(PokeItem.all, params[:id])
         render_show_flow(record: item, cache_key: "v3/item#show")
       end
 

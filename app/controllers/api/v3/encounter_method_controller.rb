@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        method = PokeEncounterMethod.find(require_numeric_id!(params[:id]))
+        method = find_by_id_or_name!(PokeEncounterMethod.all, params[:id])
         render_show_flow(record: method, cache_key: "v3/encounter-method#show")
       end
 

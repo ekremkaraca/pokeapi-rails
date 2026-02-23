@@ -75,6 +75,20 @@ module Api
         raw.to_i
       end
 
+      def find_by_id_or_name!(scope, value, name_column: :name, allow_signed_id: false)
+        raw = value.to_s.strip
+        raise ActiveRecord::RecordNotFound if raw.empty?
+
+        id_pattern = allow_signed_id ? /\A-?\d+\z/ : /\A\d+\z/
+        return scope.find(raw.to_i) if id_pattern.match?(raw)
+
+        table = scope.klass.arel_table
+        normalized_name = raw.downcase
+        lower_name = Arel::Nodes::NamedFunction.new("LOWER", [ table[name_column] ])
+
+        scope.where(lower_name.eq(normalized_name)).order(scope.klass.primary_key => :asc).first!
+      end
+
       def stale_collection?(scope:, cache_key:, variation: {})
         last_modified = scope.maximum(:updated_at)
         normalized_variation = variation.to_h.sort.to_h

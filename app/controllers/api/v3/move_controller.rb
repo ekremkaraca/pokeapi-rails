@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        move = PokeMove.find(require_numeric_id!(params[:id]))
+        move = find_by_id_or_name!(PokeMove.all, params[:id])
         render_show_flow(record: move, cache_key: "v3/move#show")
       end
 

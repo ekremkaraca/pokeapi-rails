@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        move_damage_class = PokeMoveDamageClass.find(require_numeric_id!(params[:id]))
+        move_damage_class = find_by_id_or_name!(PokeMoveDamageClass.all, params[:id])
         render_show_flow(record: move_damage_class, cache_key: "v3/move_damage_class#show")
       end
 

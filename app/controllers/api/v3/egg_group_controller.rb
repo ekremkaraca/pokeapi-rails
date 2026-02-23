@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        egg_group = PokeEggGroup.find(require_numeric_id!(params[:id]))
+        egg_group = find_by_id_or_name!(PokeEggGroup.all, params[:id])
         render_show_flow(record: egg_group, cache_key: "v3/egg-group#show")
       end
 

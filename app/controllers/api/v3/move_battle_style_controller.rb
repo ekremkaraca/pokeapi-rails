@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        move_battle_style = PokeMoveBattleStyle.find(require_numeric_id!(params[:id]))
+        move_battle_style = find_by_id_or_name!(PokeMoveBattleStyle.all, params[:id])
         render_show_flow(record: move_battle_style, cache_key: "v3/move_battle_style#show")
       end
 

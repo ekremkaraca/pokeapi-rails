@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        generation = PokeGeneration.find(require_numeric_id!(params[:id]))
+        generation = find_by_id_or_name!(PokeGeneration.all, params[:id])
         render_show_flow(record: generation, cache_key: "v3/generation#show")
       end
 

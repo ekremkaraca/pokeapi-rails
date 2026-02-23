@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        shape = PokePokemonShape.find(require_numeric_id!(params[:id]))
+        shape = find_by_id_or_name!(PokePokemonShape.all, params[:id])
         render_show_flow(record: shape, cache_key: "v3/pokemon_shape#show")
       end
 

@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        region = PokeRegion.find(require_numeric_id!(params[:id]))
+        region = find_by_id_or_name!(PokeRegion.all, params[:id])
         render_show_flow(record: region, cache_key: "v3/region#show")
       end
 

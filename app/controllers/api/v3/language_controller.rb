@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        language = PokeLanguage.find(require_numeric_id!(params[:id]))
+        language = find_by_id_or_name!(PokeLanguage.all, params[:id])
         render_show_flow(record: language, cache_key: "v3/language#show")
       end
 

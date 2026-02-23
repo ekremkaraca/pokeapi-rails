@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        move_target = PokeMoveTarget.find(require_numeric_id!(params[:id]))
+        move_target = find_by_id_or_name!(PokeMoveTarget.all, params[:id])
         render_show_flow(record: move_target, cache_key: "v3/move_target#show")
       end
 

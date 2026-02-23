@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        habitat = PokePokemonHabitat.find(require_numeric_id!(params[:id]))
+        habitat = find_by_id_or_name!(PokePokemonHabitat.all, params[:id])
         render_show_flow(record: habitat, cache_key: "v3/pokemon_habitat#show")
       end
 

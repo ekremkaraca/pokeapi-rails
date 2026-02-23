@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        ailment = PokeMoveAilment.find(require_signed_id!(params[:id]))
+        ailment = find_by_id_or_name!(PokeMoveAilment.all, params[:id], allow_signed_id: true)
         render_show_flow(record: ailment, cache_key: "v3/move_ailment#show")
       end
 
@@ -55,13 +55,6 @@ module Api
           name: ailment.name,
           url: canonical_url_for(ailment, :api_v3_move_ailment_url)
         }
-      end
-
-      def require_signed_id!(value)
-        raw = value.to_s.strip
-        raise ActiveRecord::RecordNotFound unless /\A-?\d+\z/.match?(raw)
-
-        raw.to_i
       end
     end
   end

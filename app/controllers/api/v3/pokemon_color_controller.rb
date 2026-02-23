@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        color = PokePokemonColor.find(require_numeric_id!(params[:id]))
+        color = find_by_id_or_name!(PokePokemonColor.all, params[:id])
         render_show_flow(record: color, cache_key: "v3/pokemon_color#show")
       end
 

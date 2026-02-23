@@ -19,7 +19,7 @@ module Api
       end
 
       def show
-        stat = PokeStat.find(require_numeric_id!(params[:id]))
+        stat = find_by_id_or_name!(PokeStat.all, params[:id])
         render_show_flow(record: stat, cache_key: "v3/stat#show")
       end
 
