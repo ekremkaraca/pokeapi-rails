@@ -95,8 +95,6 @@ module Api
       # include_key: symbol expected in include list (e.g. :pokemon)
       # loader: private loader method name that accepts array of ids
       def include_map_for_resource(record:, includes:, include_key:, loader:)
-        return {} unless includes.include?(include_key)
-
         send(loader, [ record.id ])
       end
     end
