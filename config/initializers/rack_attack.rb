@@ -1,3 +1,5 @@
+require "digest/sha1"
+
 class Rack::Attack
   class << self
     def enabled_by_default?
@@ -23,9 +25,39 @@ class Rack::Attack
   API_PERIOD = ->(_req) { ENV.fetch("RACK_ATTACK_API_PERIOD", "300").to_i }
   API_BURST_LIMIT = ->(_req) { ENV.fetch("RACK_ATTACK_API_BURST_LIMIT", "60").to_i }
   API_BURST_PERIOD = ->(_req) { ENV.fetch("RACK_ATTACK_API_BURST_PERIOD", "60").to_i }
+  NON_API_LIMIT = ->(_req) { ENV.fetch("RACK_ATTACK_NON_API_LIMIT", "30").to_i }
+  NON_API_PERIOD = ->(_req) { ENV.fetch("RACK_ATTACK_NON_API_PERIOD", "60").to_i }
+  V2_SHOW_PERIOD = ENV.fetch("RACK_ATTACK_V2_SHOW_PERIOD", "60").to_i
+  V2_SHOW_LIMIT = ENV.fetch("RACK_ATTACK_V2_SHOW_LIMIT", "20").to_i
+
+  SAFE_NON_API_PATHS = [
+    "/",
+    "/favicon.ico",
+    "/icon.png",
+    HEALTHCHECK_PATH
+  ].freeze
+
+  MALICIOUS_PATH_PATTERN = %r{
+    \A/
+    (?:
+      \.git(?:/|$)|
+      \.env(?:$|/)|
+      wp-admin(?:/|$)|
+      wp-login\.php$|
+      xmlrpc\.php$|
+      server-status$|
+      server-info$|
+      vendor/phpunit(?:/|$)|
+      .*\.php$
+    )
+  }ix.freeze
 
   safelist("allow-healthcheck") do |req|
     req.path == HEALTHCHECK_PATH
+  end
+
+  blocklist("malicious-path-probes") do |req|
+    req.path.to_s.match?(MALICIOUS_PATH_PATTERN)
   end
 
   throttle("api/ip", limit: API_LIMIT, period: API_PERIOD) do |req|
@@ -34,6 +66,22 @@ class Rack::Attack
 
   throttle("api/ip/burst", limit: API_BURST_LIMIT, period: API_BURST_PERIOD) do |req|
     req.ip if req.path.start_with?(API_PATH_PREFIX)
+  end
+
+  throttle("non_api/ip", limit: NON_API_LIMIT, period: NON_API_PERIOD) do |req|
+    next if req.path.start_with?(API_PATH_PREFIX)
+    next if SAFE_NON_API_PATHS.include?(req.path)
+
+    req.ip
+  end
+
+  if V2_SHOW_LIMIT.positive?
+    throttle("api/v2/show/ip", limit: V2_SHOW_LIMIT, period: V2_SHOW_PERIOD) do |req|
+      next unless req.get? || req.head?
+      next unless req.path.match?(%r{\A/api/v2/[^/]+/[^/]+/?\z})
+
+      req.ip
+    end
   end
 
   self.throttled_responder = lambda do |req|
@@ -53,8 +101,11 @@ class Rack::Attack
 
   ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, _id, payload|
     request = payload[:request]
+    ua_sha1 = Digest::SHA1.hexdigest(request.user_agent.to_s)
     Rails.logger.warn(
-      "[rack-attack] throttle=#{payload[:match_type]} rule=#{payload[:match_discriminator]} ip=#{request.ip} path=#{request.path}"
+      "[rack-attack] throttle=#{payload[:match_type]} rule=#{payload[:match_discriminator]} " \
+      "host=#{request.host} method=#{request.request_method} ip=#{request.ip} " \
+      "ua_sha1=#{ua_sha1} path=#{request.path}"
     )
   end
 end

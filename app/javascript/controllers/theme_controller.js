@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 const STORAGE_KEY = "pokeapi-theme"
 
 export default class extends Controller {
-  static targets = ["label"]
+  static targets = ["label", "icon", "toggle"]
 
   connect() {
     this.applyInitialTheme()
@@ -34,9 +34,20 @@ export default class extends Controller {
   }
 
   updateLabel(theme) {
-    if (!this.hasLabelTarget) return
+    const nextLabel = theme === "dark" ? "Switch to Light" : "Switch to Dark"
 
-    this.labelTarget.textContent = theme === "dark" ? "Switch to Light" : "Switch to Dark"
+    if (this.hasLabelTarget) {
+      this.labelTarget.textContent = nextLabel
+    }
+
+    if (this.hasIconTarget) {
+      this.iconTarget.textContent = theme === "dark" ? "☀︎" : "☾"
+    }
+
+    if (this.hasToggleTarget) {
+      this.toggleTarget.setAttribute("aria-label", nextLabel)
+      this.toggleTarget.setAttribute("title", nextLabel)
+    }
   }
 
   currentTheme() {

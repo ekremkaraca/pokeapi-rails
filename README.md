@@ -2,7 +2,7 @@
 
 `pokeapi-rails` is a Rails implementation of the [PokeAPI](https://pokeapi.co) platform.
 
-It keeps `/api/v2` behavior compatible with the existing ecosystem while building and stabilizing a normalized `/api/v3` surface with stronger contracts, performance checks, and generated OpenAPI docs.
+It keeps `/api/v2` behavior compatible with the existing ecosystem while building and stabilizing a normalized `/api/v3` surface with stronger contracts and performance checks.
 
 ## Docs
 

@@ -24,6 +24,7 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
+    <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
@@ -33,7 +34,26 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body data-controller="theme">
+    <header class="site-header">
+      <div class="site-header-inner">
+        <p class="site-brand">PokeAPI Rails</p>
+        <nav class="site-nav">
+          <button type="button" data-action="theme#toggle" data-theme-target="toggle" class="theme-toggle" aria-label="Switch theme" title="Switch theme">
+            <span data-theme-target="icon" aria-hidden="true">☾</span>
+            <span data-theme-target="label" class="sr-only">Switch to Dark</span>
+          </button>
+          <a href="/api/v2/">API v2 Root</a>
+          <a href="/api/v3/">API v3 Root</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <%= yield %>
+    </main>
+    <footer class="site-footer">
+      Code is licensed under the BSD 3-Clause License. Inspired by the upstream PokeAPI project.
+      Pokemon and Pokemon character names are trademarks of Nintendo.
+    </footer>
   </body>
 </html>

@@ -1,25 +1,12 @@
-<main
+<div
   class="min-h-screen bg-[radial-gradient(1200px_600px_at_10%_-10%,#fde68a_0%,transparent_55%),radial-gradient(1000px_500px_at_100%_0%,#a7f3d0_0%,transparent_50%),linear-gradient(180deg,#f8fafc_0%,#ecfeff_100%)] text-slate-900 dark:bg-[radial-gradient(1200px_600px_at_10%_-10%,#3f3f46_0%,transparent_55%),radial-gradient(1000px_500px_at_100%_0%,#0f766e_0%,transparent_50%),linear-gradient(180deg,#020617_0%,#111827_100%)] dark:text-slate-100"
-  data-controller="api-explorer theme"
+  data-controller="api-explorer"
   data-api-explorer-v2-samples-value="<%= @sample_paths.fetch("v2").join("|") %>"
   data-api-explorer-v3-samples-value="<%= @sample_paths.fetch("v3").join("|") %>"
 >
   <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-    <header class="mb-12 flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">PokeAPI Rails</p>
-        <h1 class="text-3xl font-black tracking-tight sm:text-4xl">Explore Pokemon Data Fast</h1>
-      </div>
-      <nav class="flex items-center gap-2 text-sm font-semibold">
-        <button type="button" data-action="theme#toggle" class="rounded-full border border-slate-300 bg-white/80 px-4 py-2 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-700">
-          <span data-theme-target="label">Switch to Dark</span>
-        </button>
-        <a class="rounded-full border border-slate-300 bg-white/80 px-4 py-2 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-700" href="/api/v2/">API v2 Root</a>
-        <a class="rounded-full border border-slate-300 bg-white/80 px-4 py-2 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-700" href="/api/v3/">API v3 Root</a>
-      </nav>
-    </header>
-
     <section class="mb-10 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8 dark:border-slate-700 dark:bg-slate-900/70">
+      <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-4xl">Explore Pokemon Data Fast</h1>
       <p class="max-w-3xl text-lg leading-relaxed text-slate-700 dark:text-slate-300">
         Test live endpoints from this page. Pick API version, type a relative path, and inspect JSON plus response headers.
       </p>
@@ -124,6 +111,7 @@
         <ul class="space-y-1 text-sm text-slate-700 dark:text-slate-300">
           <li><code>limit</code> and <code>offset</code> on list endpoints.</li>
           <li>Lookup accepts id or name in most resources.</li>
+          <li>Show endpoints usually include broad associated data by default.</li>
           <li>Example: <code>/api/v2/pokemon/ditto</code></li>
         </ul>
       </article>
@@ -131,10 +119,11 @@
         <h3 class="mb-2 text-lg font-bold">v3 Quick Notes</h3>
         <ul class="space-y-1 text-sm text-slate-700 dark:text-slate-300">
           <li>Supports <code>fields</code>, <code>include</code>, <code>sort</code>, <code>filter[name]</code>.</li>
+          <li>Show endpoints are compact by default; use <code>include=...</code> to expand related data.</li>
           <li>Returns <code>X-Query-Count</code> and <code>X-Response-Time-Ms</code>.</li>
           <li>Example: <code>/api/v3/move?include=pokemon&amp;limit=20</code></li>
         </ul>
       </article>
     </section>
   </div>
-</main>
+</div>

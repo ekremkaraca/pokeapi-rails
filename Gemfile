@@ -18,7 +18,6 @@ gem "prosopite", "~> 2.1", ">= 2.1.2"
 gem "pg_query", "~> 6.2", ">= 6.2.2"
 gem "image_processing", "~> 1.2"
 gem "csv", "~> 3.3"
-gem "oas_rails", "~> 1.3", ">= 1.3.4"
 gem "rack-attack"
 
 group :development, :test do

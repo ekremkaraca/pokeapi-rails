@@ -145,9 +145,9 @@ Recent consolidated updates are tracked in `docs/recent-changes.md`.
 
 ## Remaining Work (Pre-Merge / Pre-Cutover)
 
-- Finalize API docs publishing flow:
-  - verify `oas_rails` output path and public serving path in production
-  - smoke-check rendered Swagger/OpenAPI UI against deployed app
+- API docs generation/public serving is postponed:
+  - `oas_rails` runtime wiring removed from routes/initializers
+  - continue using static contract files (`public/openapi-v3.yml`) and local contract validation tasks
 - Keep heavy contract checks as release gates (manual/local):
   - `bin/rails pokeapi:contract:drift_v3`
   - `bin/rails pokeapi:contract:check_v3_budgets`
@@ -158,7 +158,7 @@ Recent consolidated updates are tracked in `docs/recent-changes.md`.
 - Define cutover readiness signals:
   - acceptable p95 latency and 429 rates after rate limiting
   - endpoint error-rate threshold and rollback trigger
-  - post-deploy smoke checks for `/api/v2`, `/api/v3`, and `/docs`
+  - post-deploy smoke checks for `/api/v2` and `/api/v3`
 
 ## Implemented API Endpoints
 

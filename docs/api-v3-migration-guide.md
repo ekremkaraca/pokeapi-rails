@@ -158,6 +158,14 @@ This guide covers currently implemented `/api/v3` resources:
 - `/api/v3` not-found and query errors use a standardized envelope:
   - `error.code`, `error.message`, `error.details`, `error.request_id`
 
+## Show Action Association Differences
+
+- `/api/v2` detail (`show`) endpoints generally include broad associated data by default.
+- `/api/v3` detail (`show`) endpoints are compact by default; associated data is included only when explicitly requested with `include=...`.
+- Example:
+  - v2: `GET /api/v2/pokemon/1`
+  - v3: `GET /api/v3/pokemon/1?include=abilities`
+
 ## Query Convention Differences
 
 Current `/api/v3` query controls:

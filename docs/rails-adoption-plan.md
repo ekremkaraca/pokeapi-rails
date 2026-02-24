@@ -206,7 +206,7 @@ Definition of done:
 
 ## Immediate Next Steps
 1. Treat `drift_v3` and `check_v3_budgets` as manual release gates for each candidate deploy.
-2. Keep API docs generation/public serving (`oas_rails`) validated in staging/production smoke checks.
+2. Keep API docs generation/public serving postponed until after v3 cutover stabilization; continue validating static OpenAPI contracts locally.
 3. Define and document cutover SLO triggers (latency, error rate, throttle rate) and rollback thresholds.
 4. Run a final endpoint smoke suite across `/api/v2` and `/api/v3` before merge-to-main and each production release.
 

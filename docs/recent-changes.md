@@ -61,6 +61,15 @@ This file is a compact timeline of major updates made during the current migrati
 - Updated docs links and deployment guidance for public OpenAPI serving.
 - Moved deployment runbook content from `README.md` into `docs/deployment.md`.
 
+## 2026-02-24
+
+### API docs phase adjustment
+
+- Postponed runtime API docs publishing.
+- Removed `oas_rails` runtime wiring from application routes and initializer.
+- Removed `/docs` and `/docs.json` safelist exceptions from `rack-attack` non-API allow paths.
+- Kept static OpenAPI contract files and contract validation tasks for local/manual use.
+
 ### CI and release workflow
 
 - Removed heavy parity/budget checks from GitHub Actions CI to reduce recurring cost.
