@@ -37,6 +37,16 @@ module Api
           public: true
         )
       end
+
+      def cached_json_payload(cache_key, expires_in: show_cache_ttl, race_condition_ttl: 5.seconds)
+        return yield unless ActionController::Base.perform_caching
+
+        Rails.cache.fetch(cache_key, expires_in: expires_in, race_condition_ttl: race_condition_ttl) { yield }
+      end
+
+      def show_cache_ttl
+        ENV.fetch("API_V2_SHOW_CACHE_TTL_SECONDS", "60").to_i.seconds
+      end
     end
   end
 end

@@ -8,7 +8,13 @@ module Api
 
       def show
         pokemon = find_by_id_or_name!(detail_scope, params[:id])
-        render json: detail_payload(pokemon)
+        return unless stale_resource?(record: pokemon, cache_key: "#{model_class.name.underscore}/show")
+
+        payload = cached_json_payload("api/v2/pokemon/show/#{pokemon.cache_key_with_version}") do
+          detail_payload(pokemon)
+        end
+
+        render json: payload
       end
 
       private

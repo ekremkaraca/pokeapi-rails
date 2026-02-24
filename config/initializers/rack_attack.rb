@@ -108,8 +108,10 @@ class Rack::Attack
     request = payload[:request]
     ua_sha1 = Digest::SHA1.hexdigest(request.user_agent.to_s)
     client_ip = client_ip_for(request)
+    match_type = request.env["rack.attack.match_type"] || payload[:match_type] || payload["match_type"] || "throttle"
+    rule_name = request.env["rack.attack.matched"] || payload[:name] || payload["name"] || payload[:match_discriminator] || payload["match_discriminator"] || "unknown"
     Rails.logger.warn(
-      "[rack-attack] throttle=#{payload[:match_type]} rule=#{payload[:match_discriminator]} " \
+      "[rack-attack] throttle=#{match_type} rule=#{rule_name} " \
       "host=#{request.host} method=#{request.request_method} ip=#{client_ip} " \
       "ua_sha1=#{ua_sha1} path=#{request.path}"
     )

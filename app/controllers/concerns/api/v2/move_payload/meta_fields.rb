@@ -9,11 +9,13 @@ module Api
         def meta_payload(move)
           row = move.move_meta
           return nil unless row
+          meta_ailment_by_id = records_by_id(PokeMoveAilment, [ row.meta_ailment_id ], allow_zero: true)
+          meta_category_by_id = records_by_id(PokeMoveMetaCategory, [ row.meta_category_id ], allow_zero: true)
 
           {
-            ailment: ailment_payload(row),
+            ailment: ailment_payload(row, meta_ailment_by_id),
             ailment_chance: row.ailment_chance,
-            category: meta_category_payload(row),
+            category: meta_category_payload(row, meta_category_by_id),
             crit_rate: row.crit_rate,
             drain: row.drain,
             flinch_chance: row.flinch_chance,
@@ -28,9 +30,10 @@ module Api
 
         def stat_changes_payload(move)
           rows = move.move_meta_stat_changes
+          stats_by_id = records_by_id(PokeStat, rows.map(&:stat_id))
 
           rows.filter_map do |row|
-            stat = row.stat
+            stat = stats_by_id[row.stat_id]
             next unless stat
 
             {
@@ -40,15 +43,15 @@ module Api
           end
         end
 
-        def meta_category_payload(move_meta)
-          category = move_meta.meta_category
+        def meta_category_payload(move_meta, meta_category_by_id)
+          category = meta_category_by_id[move_meta.meta_category_id]
           return nil unless category
 
           resource_payload(category, :api_v2_move_category_url)
         end
 
-        def ailment_payload(move_meta)
-          ailment = move_meta.meta_ailment
+        def ailment_payload(move_meta, meta_ailment_by_id)
+          ailment = meta_ailment_by_id[move_meta.meta_ailment_id]
           return nil unless ailment
 
           resource_payload(ailment, :api_v2_move_ailment_url)

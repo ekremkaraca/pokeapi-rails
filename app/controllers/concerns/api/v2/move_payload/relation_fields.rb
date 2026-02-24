@@ -25,7 +25,10 @@ module Api
         end
 
         def learned_by_pokemon_payload(move)
-          move.pokemon_moves.map(&:pokemon).compact.uniq.sort_by(&:id).map do |pokemon|
+          rows = move.pokemon_moves
+          pokemon_by_id = records_by_id(Pokemon, rows.map(&:pokemon_id))
+
+          pokemon_by_id.values.sort_by(&:id).map do |pokemon|
             resource_payload(pokemon, :api_v2_pokemon_url)
           end
         end
