@@ -12,7 +12,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", text: "Fetch JSON"
     assert_select "label", text: /View raw JSON/
     assert_select "h2", text: "Recent Requests"
-    assert_select "h3", text: "v2 Quick Notes"
-    assert_select "h3", text: "v3 Quick Notes"
+    assert_select "h3", text: "Quick Notes"
+    assert_select "h4", text: "v2"
+    assert_select "h4", text: "v3"
   end
 end

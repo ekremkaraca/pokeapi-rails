@@ -28,13 +28,18 @@
     color: #111827;
   }
 
+  .dark body {
+    background: #020617;
+    color: #e5e7eb;
+  }
+
   main {
     flex: 1;
   }
 
   .site-header {
     border-bottom: 1px solid #e5e7eb;
-    background: #fff;
+    background: transparent;
   }
 
   .site-header-inner {
@@ -52,6 +57,7 @@
     margin: 0;
     font-size: 14px;
     font-weight: 700;
+    color: #111827;
   }
 
   .site-nav {
@@ -65,7 +71,8 @@
   .site-nav button {
     border: 1px solid #d1d5db;
     border-radius: 999px;
-    background: #fff;
+    background: rgb(255 255 255 / 0.58);
+    backdrop-filter: blur(2px);
     color: #111827;
     text-decoration: none;
     font-size: 11px;
@@ -76,13 +83,53 @@
   }
 
   .theme-toggle {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    font-size: 14px;
+  }
+
+  .theme-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    transition: opacity 180ms ease, transform 220ms ease;
+    will-change: opacity, transform;
+  }
+
+  .theme-icon-sun {
+    opacity: 0;
+    transform: scale(0.75) rotate(-20deg);
+    position: absolute;
+  }
+
+  .dark .theme-icon-moon {
+    opacity: 0;
+    transform: scale(0.75) rotate(20deg);
+  }
+
+  .dark .theme-icon-sun {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  .theme-icon-moon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  .theme-toggle {
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-icon {
+      transition: none;
+    }
   }
 
   .sr-only {
@@ -103,6 +150,30 @@
     font-size: 12px;
     color: #4b5563;
     text-align: center;
-    background: #f9fafb;
+    background: transparent;
+  }
+
+  .dark .site-header {
+    border-bottom-color: #334155;
+    background: rgb(2 6 23 / 0.55);
+    backdrop-filter: blur(4px);
+  }
+
+  .dark .site-brand {
+    color: #e5e7eb;
+  }
+
+  .dark .site-nav a,
+  .dark .site-nav button {
+    border-color: #475569;
+    background: rgb(15 23 42 / 0.45);
+    color: #e5e7eb;
+  }
+
+  .dark .site-footer {
+    border-top-color: #334155;
+    background: rgb(2 6 23 / 0.55);
+    backdrop-filter: blur(4px);
+    color: #cbd5e1;
   }
 }

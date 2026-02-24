@@ -173,7 +173,7 @@ export default class extends Controller {
     ].filter(([_key, value]) => value && value.length > 0)
 
     if (entries.length === 0) return "-"
-    return entries.map(([key, value]) => `${key}=${value}`).join(" | ")
+    return entries.map(([key, value]) => `${key}: ${value}`).join("\n")
   }
 
   toggleRawJson() {
