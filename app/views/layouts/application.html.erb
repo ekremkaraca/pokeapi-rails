@@ -31,7 +31,9 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <% skip_js_build = ActiveModel::Type::Boolean.new.cast(ENV["SKIP_JS_BUILD"]) %>
+    <%# Some CI/test runs skip JS build, so the bundled entrypoint may be absent. %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" unless skip_js_build %>
   </head>
 
   <body data-controller="theme">

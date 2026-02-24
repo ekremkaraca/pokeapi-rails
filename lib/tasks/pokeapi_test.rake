@@ -1,6 +1,6 @@
 namespace :test do
   desc "Prepare test database (creates test db and loads schema)"
-  task :db => :environment do
+  task db: :environment do
     puts "Preparing test database..."
     ActiveRecord::Base.establish_connection(:test)
     ActiveRecord::Schema.verbose = false
@@ -17,13 +17,13 @@ namespace :test do
   end
 
   desc "Run integration tests (all /api/v2/* and /api/v3/* endpoints)"
-  task :integration => :environment do
+  task integration: :environment do
     puts "Running integration tests..."
     system("RAILS_ENV=test bin/rails test test/integration/**/*_test.rb --format=documentation", exception: true)
   end
 
   desc "Run smoke tests (fast subset of integration tests for quick CI feedback)"
-  task :integration_smoke => :environment do
+  task integration_smoke: :environment do
     puts "Running smoke tests..."
 
     # Run a focused subset of key integration tests for fast feedback
@@ -44,25 +44,25 @@ namespace :test do
   end
 
   desc "Run model tests"
-  task :models => :environment do
+  task models: :environment do
     puts "Running model tests..."
     system("RAILS_ENV=test bin/rails test test/models/**/*_test.rb --format=documentation", exception: true)
   end
 
   desc "Run service/importer tests"
-  task :services => :environment do
+  task services: :environment do
     puts "Running service tests..."
     system("RAILS_ENV=test bin/rails test test/services/**/*_test.rb --format=documentation", exception: true)
   end
 
   desc "Run lib tests (gem runtime smoke, parity tools, etc.)"
-  task :lib => :environment do
+  task lib: :environment do
     puts "Running lib tests..."
     system("RAILS_ENV=test bin/rails test test/lib/**/*_test.rb --format=documentation", exception: true)
   end
 
   desc "Run all tests"
-  task :all => :environment do
+  task all: :environment do
     puts "Running all tests..."
     system("RAILS_ENV=test bin/rails test --format=documentation", exception: true)
   end
