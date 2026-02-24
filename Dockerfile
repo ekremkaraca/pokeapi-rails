@@ -51,9 +51,9 @@ RUN gem install bundler -v "${BUNDLER_VERSION}" --no-document
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-ARG CACHE_KEY_PREFIX=s/0f3b7bdf-3267-4efc-a8ce-57492829ef18
 
-RUN --mount=type=cache,id=${CACHE_KEY_PREFIX}/usr/local/bundle/cache,target=/usr/local/bundle/cache \
+# Railway requires a literal cache id prefix (s/<service-id>/...) for cache mounts.
+RUN --mount=type=cache,id=s/0f3b7bdf-3267-4efc-a8ce-57492829ef18/usr/local/bundle/cache,target=/usr/local/bundle/cache \
     bundle _${BUNDLER_VERSION}_ install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
@@ -61,7 +61,7 @@ RUN --mount=type=cache,id=${CACHE_KEY_PREFIX}/usr/local/bundle/cache,target=/usr
 
 # Install node modules
 COPY package.json bun.lock* ./
-RUN --mount=type=cache,id=${CACHE_KEY_PREFIX}/root/bun/install/cache,target=/root/.bun/install/cache \
+RUN --mount=type=cache,id=s/0f3b7bdf-3267-4efc-a8ce-57492829ef18/root/bun/install/cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
 # Copy application code
