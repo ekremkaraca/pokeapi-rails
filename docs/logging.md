@@ -27,7 +27,7 @@ The logger subscribes to `process_action.action_controller` notifications and bu
   - `status`
   - `controller`, `action`, `format`
   - `duration_ms`, `db_ms`, `view_ms`
-  - `host`, `remote_ip`
+  - `host`, `remote_ip`, `client_ip`
   - `ua_sha1` (SHA1 fingerprint of user-agent, not raw UA)
 
 ## Environment Toggles
@@ -75,6 +75,7 @@ Example:
   "format": "json",
   "host": "pokeapi.ekrem.dev",
   "remote_ip": "203.0.113.10",
+  "client_ip": "198.51.100.20",
   "ua_sha1": "f2a5...",
   "duration_ms": 43.79,
   "slow": false,

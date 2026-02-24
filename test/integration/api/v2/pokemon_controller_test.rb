@@ -118,6 +118,7 @@ class Api::V2::PokemonControllerTest < ActionDispatch::IntegrationTest
     get "/api/v2/pokemon/%2A%2A"
 
     assert_response :not_found
+    assert_equal({ "detail" => "Not found." }, JSON.parse(response.body))
   end
 
   test "encounters requires numeric id and existing pokemon" do

@@ -19,11 +19,15 @@ module Api
       end
 
       def show
-        pokemon = find_by_id_or_name!(Pokemon.all, params[:id])
+        pokemon = find_by_id_or_name!(show_scope, params[:id])
         render_show_flow(record: pokemon, cache_key: "v3/pokemon#show")
       end
 
       private
+
+      def show_scope
+        Pokemon.select(:id, :name, :base_experience, :height, :is_default, :weight, :sort_order, :species_id, :updated_at)
+      end
 
       def summary_fields
         %i[id name url abilities]

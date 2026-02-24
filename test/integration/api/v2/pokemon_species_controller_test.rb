@@ -121,5 +121,6 @@ class Api::V2::PokemonSpeciesControllerTest < ActionDispatch::IntegrationTest
     get "/api/v2/pokemon-species/%2A%2A"
 
     assert_response :not_found
+    assert_equal({ "detail" => "Not found." }, JSON.parse(response.body))
   end
 end

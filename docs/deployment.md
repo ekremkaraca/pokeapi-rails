@@ -33,12 +33,24 @@ Optional request logging tuning:
 - `SIMPLE_REQUEST_SUPPRESS_404_NOISE` (`1`/`0`, default enabled)
 - `SIMPLE_REQUEST_SAMPLE_RATE` (`0.0..1.0`, default: `1.0`)
 
+Optional v2 show-response cache tuning:
+
+- `API_V2_SHOW_CACHE_TTL_SECONDS` (default: `60`)
+- `API_V2_NAME_MISS_CACHE_TTL_SECONDS` (default: `15`)
+
+Optional Puma process tuning:
+
+- `WEB_CONCURRENCY`
+  - `0` or unset: single-mode (recommended on small Railway instances)
+  - `2+`: cluster mode with that worker count
+
 Recommended production values:
 
 - `SIMPLE_REQUEST_LOGS=1`
 - `SIMPLE_REQUEST_SLOW_MS=500`
 - `SIMPLE_REQUEST_SUPPRESS_404_NOISE=1`
 - `SIMPLE_REQUEST_SAMPLE_RATE=1.0`
+- `WEB_CONCURRENCY=0` (unless you intentionally run 2+ workers)
 
 Recommended post-deploy commands (manual):
 

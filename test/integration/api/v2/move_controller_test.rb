@@ -159,4 +159,30 @@ class Api::V2::MoveControllerTest < ActionDispatch::IntegrationTest
     assert_equal "ailment-#{suffix}", payload.dig("meta", "ailment", "name")
     assert_equal "category-#{suffix}", payload.dig("meta", "category", "name")
   end
+
+  test "show returns v2 not found payload for invalid lookup token" do
+    get "/api/v2/move/%2A%2A"
+
+    assert_response :not_found
+    assert_equal({ "detail" => "Not found." }, JSON.parse(response.body))
+  end
+
+  test "name miss lookups are short-lived cached to reduce repeated typo query cost" do
+    missing_name = "missing-#{SecureRandom.hex(8)}"
+
+    with_memory_cache do
+      first_count = capture_select_query_count do
+        get "/api/v2/move/#{missing_name}"
+        assert_response :not_found
+      end
+
+      second_count = capture_select_query_count do
+        get "/api/v2/move/#{missing_name}"
+        assert_response :not_found
+      end
+
+      assert_operator first_count, :>=, 1
+      assert_equal 0, second_count
+    end
+  end
 end

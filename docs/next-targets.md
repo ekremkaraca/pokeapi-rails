@@ -55,7 +55,7 @@ Status: all listed targets (#1-#7) are completed.
 
 This checklist is derived from production logs and ordered by impact.
 
-1. Optimize slow `/api/v2` hot paths (highest impact)
+- [x] 1. Optimize slow `/api/v2` hot paths (highest impact)
    - Evidence from logs:
      - `/api/v2/move` index around `3347ms`
      - `/api/v2/pokemon/ditto` show around `1080-1725ms`
@@ -74,7 +74,7 @@ This checklist is derived from production logs and ordered by impact.
      - extend integration tests for these endpoints with query/time budget assertions where stable
      - run targeted suites for v2 move/pokemon/pokemon-species controllers
 
-2. Fix request observability metric consistency (`db_ms > duration_ms`)
+- [x] 2. Fix request observability metric consistency (`db_ms > duration_ms`)
    - Evidence from logs:
      - `db_ms` occasionally exceeds total `duration_ms`, which is not physically consistent
    - Files to review:
@@ -88,7 +88,7 @@ This checklist is derived from production logs and ordered by impact.
      - extend logging formatter tests in `test/lib/pokeapi/logging/*`
      - assert `db_ms <= duration_ms` for synthetic request cases
 
-3. Reduce root-path 406 noise (`GET/HEAD /` with uncommon `Accept`)
+- [x] 3. Reduce root-path 406 noise (`GET/HEAD /` with uncommon `Accept`)
    - Evidence from logs:
      - periodic `406` responses on `/` and `HEAD /`
    - Files to review:
@@ -100,7 +100,7 @@ This checklist is derived from production logs and ordered by impact.
    - Tests/validation:
      - add integration coverage for `HEAD /` and unusual `Accept` headers
 
-4. Ensure real client IP visibility for logs and throttling
+- [x] 4. Ensure real client IP visibility for logs and throttling
    - Evidence from logs:
      - many `remote_ip` values are Cloudflare edge/private ranges
    - Files to review:
@@ -114,7 +114,7 @@ This checklist is derived from production logs and ordered by impact.
    - Tests/validation:
      - request tests around forwarded headers / remote_ip derivation
 
-5. Optional crawler-noise reduction (`/sitemap.xml`)
+- [x] 5. Optional crawler-noise reduction (`/sitemap.xml`)
    - Evidence from logs:
      - recurring `GET /sitemap.xml` `404`
    - Files to review:
@@ -125,7 +125,7 @@ This checklist is derived from production logs and ordered by impact.
    - Tests/validation:
      - integration check for `/sitemap.xml` response contract
 
-6. Monitor and tune `/api/v3/pokemon/:id` tail latency
+- [x] 6. Monitor and tune `/api/v3/pokemon/:id` tail latency
    - Evidence from logs:
      - occasional slow responses around `583-648ms`
    - Files to review:
@@ -136,6 +136,17 @@ This checklist is derived from production logs and ordered by impact.
      - inspect non-DB overhead (rendering, serialization, allocations)
    - Tests/validation:
      - keep/expand budget assertions for v3 pokemon show paths
+
+Status summary:
+- Completed: checklist items #1 through #6.
+
+Implemented for item #6:
+- Reduced `v3/pokemon#show` record load to a minimal selected column set in:
+  - `app/controllers/api/v3/pokemon_controller.rb`
+- Added explicit show query-budget regression tests in:
+  - `test/integration/api/v3/pokemon_controller_test.rb`
+    - default show budget
+    - show with `include=abilities` budget
 
 ## Current Focus
 

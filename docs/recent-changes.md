@@ -70,6 +70,31 @@ This file is a compact timeline of major updates made during the current migrati
 - Removed `/docs` and `/docs.json` safelist exceptions from `rack-attack` non-API allow paths.
 - Kept static OpenAPI contract files and contract validation tasks for local/manual use.
 
+### API performance and response-contract hardening
+
+- Optimized `/api/v2` hot paths with targeted scope/payload tuning:
+  - split heavy detail loading from list loading in `v2/move`
+  - reduced nested preload overhead in `v2/pokemon` and `v2/pokemon-species`
+  - added short TTL response cache for v2 show endpoints:
+    - `pokemon`
+    - `move`
+    - `pokemon-species`
+  - added short TTL negative cache for repeated v2 name-typo misses to reduce repeated DB lookups.
+- Updated v2 not-found response contract from empty `404` body to canonical JSON:
+  - `{ "detail": "Not found." }`
+- Added lightweight `/sitemap.xml` handler to reduce crawler 404 noise.
+- Tuned `v3/pokemon#show` by loading a minimal selected column set and added explicit show query-budget regression coverage.
+
+### Runtime and operations updates
+
+- Improved real client IP handling:
+  - request logs now emit both `remote_ip` and parsed `client_ip`
+  - Rack::Attack throttling keys use parsed client IP behind proxies/CDN.
+- Fixed Rack::Attack throttle logging to emit stable match type/rule values.
+- Updated Puma config to avoid cluster mode with a single worker:
+  - default/`WEB_CONCURRENCY<=1` now forces single mode (`workers 0`)
+  - cluster mode only when `WEB_CONCURRENCY > 1`.
+
 ### CI and release workflow
 
 - Removed heavy parity/budget checks from GitHub Actions CI to reduce recurring cost.

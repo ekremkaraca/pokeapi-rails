@@ -421,5 +421,7 @@ Rails.application.routes.draw do
     mount RailsPgExtras::Web::Engine, at: "pg_extras"
   end
 
+  get "sitemap.xml", to: "sitemaps#show", defaults: { format: :xml }
+
   match "*unmatched", to: "errors#not_found", via: :all
 end

@@ -154,6 +154,24 @@ class Api::V3::PokemonControllerTest < ActionDispatch::IntegrationTest
     assert_equal "overgrow", payload.dig("abilities", 0, "ability", "name")
   end
 
+  test "show query count stays within budget without includes" do
+    pokemon = Pokemon.find_by!(name: "bulbasaur")
+
+    get "/api/v3/pokemon/#{pokemon.id}"
+    assert_response :success
+    assert_query_count_at_most(1)
+  end
+
+  test "show query count stays within budget with include abilities" do
+    pokemon = Pokemon.find_by!(name: "bulbasaur")
+    ability = Ability.create!(name: "overgrow", is_main_series: true)
+    PokePokemonAbility.create!(pokemon_id: pokemon.id, ability_id: ability.id, is_hidden: false, slot: 1)
+
+    get "/api/v3/pokemon/#{pokemon.id}", params: { include: "abilities" }
+    assert_response :success
+    assert_query_count_at_most(3)
+  end
+
   test "show returns standardized not found error envelope" do
     get "/api/v3/pokemon/999999"
 

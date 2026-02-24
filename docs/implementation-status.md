@@ -76,23 +76,34 @@ Recent consolidated updates are tracked in `docs/recent-changes.md`.
   - `fields`, `include` allowlists, `sort`, `filter[name]`, legacy `q`
   - `ETag`/conditional GET + observability headers (`X-API-Stability`, `X-Query-Count`, `X-Response-Time-Ms`)
   - OpenAPI validation/drift checks + budget-check task
+- `/api/v3/pokemon#show` tail-latency follow-up completed:
+  - minimal selected-column load for default show path
+  - explicit show query-budget regression tests (default and `include=abilities`)
 - `/api/v3` include expansion canonical links now consistently point to `/api/v3/*` URLs.
 - `/api/v3` include loaders for `ability` and `pokemon` now use association-backed eager loading.
 - `/api/v3` include loaders were further normalized to association-backed lookups for item/category, species/generation, generation/region, version/version-group, location/region, location-area/location, and machine/item include paths.
 - API abuse controls are wired:
   - `rack-attack` middleware installed with sustained + burst per-IP throttles on `/api/*`
   - healthcheck safelist for `/up`
+  - throttling now keys on parsed client IP behind proxy/CDN headers
   - standardized rate-limit headers on API responses:
     - `X-RateLimit-Limit`
     - `X-RateLimit-Period`
     - `X-RateLimit-Burst-Limit`
     - `X-RateLimit-Burst-Period`
     - `X-RateLimit-Policy`
+- v2 response and cache behavior hardening completed:
+  - v2 show endpoints return canonical not-found JSON (`{ "detail": "Not found." }`)
+  - v2 show payload short-TTL response caching
+  - short-TTL negative cache for repeated name-miss typos
+- Crawler-noise reduction:
+  - lightweight `/sitemap.xml` endpoint is served explicitly
 - Deployment/runtime hardening updates completed:
   - docs moved to dedicated `docs/deployment.md`
   - Dockerfile tuned for leaner runtime + safer dependency copying
   - boot-time DB prepare made explicit/optional (manual one-off preferred)
   - CI heavy parity/budget pipeline removed from GitHub Actions (kept for local/manual runs)
+  - Puma process mode defaults to single mode for `WEB_CONCURRENCY<=1` to avoid single-worker cluster overhead warnings
 - Implemented `/api/v3` resources (list + detail):
   - `pokemon`
   - `ability`

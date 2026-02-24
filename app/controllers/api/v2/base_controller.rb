@@ -14,7 +14,7 @@ module Api
       end
 
       def render_not_found
-        head :not_found
+        render json: { detail: "Not found." }, status: :not_found
       end
 
       def stale_collection?(scope:, cache_key:, variation: {})
@@ -39,7 +39,7 @@ module Api
       end
 
       def cached_json_payload(cache_key, expires_in: show_cache_ttl, race_condition_ttl: 5.seconds)
-        return yield unless ActionController::Base.perform_caching
+        return yield if Rails.cache.is_a?(ActiveSupport::Cache::NullStore)
 
         Rails.cache.fetch(cache_key, expires_in: expires_in, race_condition_ttl: race_condition_ttl) { yield }
       end
