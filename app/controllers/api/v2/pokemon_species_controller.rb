@@ -6,7 +6,37 @@ module Api
       MODEL_CLASS = PokePokemonSpecies
       RESOURCE_URL_HELPER = :api_v2_pokemon_species_url
 
+      def show
+        record = find_by_id_or_name!(detail_scope, params[:id])
+        return unless stale_resource?(record: record, cache_key: "#{model_class.name.underscore}/show")
+
+        render json: detail_payload(record)
+      end
+
       private
+
+      def model_scope
+        PokePokemonSpecies.all
+      end
+
+      def detail_scope
+        PokePokemonSpecies.preload(
+          :color,
+          :generation,
+          :growth_rate,
+          :habitat,
+          :shape,
+          :evolution_chain,
+          :evolves_from_species,
+          :pokemon_egg_groups,
+          :pokemon_species_names,
+          :pokemon_species_flavor_texts,
+          :pokemon_species_proses,
+          :pal_parks,
+          :pokemon_dex_numbers,
+          :pokemon
+        )
+      end
 
       def detail_payload(species)
         {
@@ -90,10 +120,11 @@ module Api
       end
 
       def egg_groups_payload(species)
-        rows = species.pokemon_egg_groups.includes(:egg_group).order(:egg_group_id)
+        rows = species.pokemon_egg_groups.sort_by(&:egg_group_id)
+        egg_groups_by_id = records_by_id(PokeEggGroup, rows.map(&:egg_group_id))
 
         rows.filter_map do |row|
-          egg_group = row.egg_group
+          egg_group = egg_groups_by_id[row.egg_group_id]
           next unless egg_group
 
           resource_payload(egg_group, :api_v2_egg_group_url)
@@ -102,9 +133,10 @@ module Api
 
       def names_payload(species)
         rows = species_name_rows(species)
+        languages_by_id = species_name_languages_by_id(species, rows)
 
         rows.filter_map do |row|
-          language = row.local_language
+          language = languages_by_id[row.local_language_id]
           next unless language
 
           {
@@ -116,11 +148,12 @@ module Api
 
       def genera_payload(species)
         rows = species_name_rows(species)
+        languages_by_id = species_name_languages_by_id(species, rows)
 
         rows.filter_map do |row|
           next if row.genus.to_s.strip.empty?
 
-          language = row.local_language
+          language = languages_by_id[row.local_language_id]
           next unless language
 
           {
@@ -132,15 +165,22 @@ module Api
 
       def species_name_rows(species)
         @species_name_rows ||= {}
-        @species_name_rows[species.id] ||= species.pokemon_species_names.includes(:local_language).to_a
+        @species_name_rows[species.id] ||= species.pokemon_species_names.to_a
+      end
+
+      def species_name_languages_by_id(species, rows)
+        @species_name_languages ||= {}
+        @species_name_languages[species.id] ||= records_by_id(PokeLanguage, rows.map(&:local_language_id))
       end
 
       def flavor_text_entries_payload(species)
-        rows = species.pokemon_species_flavor_texts.includes(:language, :version)
+        rows = species.pokemon_species_flavor_texts
+        languages_by_id = records_by_id(PokeLanguage, rows.map(&:language_id))
+        versions_by_id = records_by_id(PokeVersion, rows.map(&:version_id))
 
         rows.filter_map do |row|
-          language = row.language
-          version = row.version
+          language = languages_by_id[row.language_id]
+          version = versions_by_id[row.version_id]
           next unless language && version
 
           {
@@ -152,12 +192,13 @@ module Api
       end
 
       def form_descriptions_payload(species)
-        rows = species.pokemon_species_proses.includes(:local_language)
+        rows = species.pokemon_species_proses
+        languages_by_id = records_by_id(PokeLanguage, rows.map(&:local_language_id))
 
         rows.filter_map do |row|
           next if row.form_description.to_s.strip.empty?
 
-          language = row.local_language
+          language = languages_by_id[row.local_language_id]
           next unless language
 
           {
@@ -168,8 +209,11 @@ module Api
       end
 
       def pal_park_encounters_payload(species)
-        species.pal_parks.includes(:area).filter_map do |row|
-          area = row.area
+        rows = species.pal_parks
+        areas_by_id = records_by_id(PokePalParkArea, rows.map(&:area_id))
+
+        rows.filter_map do |row|
+          area = areas_by_id[row.area_id]
           next unless area
 
           {
@@ -181,8 +225,11 @@ module Api
       end
 
       def pokedex_numbers_payload(species)
-        species.pokemon_dex_numbers.includes(:pokedex).filter_map do |row|
-          pokedex = row.pokedex
+        rows = species.pokemon_dex_numbers
+        pokedexes_by_id = records_by_id(PokePokedex, rows.map(&:pokedex_id))
+
+        rows.filter_map do |row|
+          pokedex = pokedexes_by_id[row.pokedex_id]
           next unless pokedex
 
           {
@@ -206,6 +253,34 @@ module Api
           name: record.name,
           url: "#{public_send(route_helper, record).sub(%r{/+\z}, '')}/"
         }
+      end
+
+      def records_by_id(model_class, ids)
+        normalized_ids = ids.filter_map { |id| normalized_id(id) }.uniq
+        return {} if normalized_ids.empty?
+
+        cache = lookup_cache_for(model_class)
+        missing_ids = normalized_ids - cache.keys
+
+        if missing_ids.any?
+          loaded = model_class.where(id: missing_ids).index_by(&:id)
+          missing_ids.each { |id| cache[id] = loaded[id] }
+        end
+
+        normalized_ids.each_with_object({}) do |id, rows|
+          record = cache[id]
+          rows[id] = record if record
+        end
+      end
+
+      def lookup_cache_for(model_class)
+        @lookup_cache ||= {}
+        @lookup_cache[model_class] ||= {}
+      end
+
+      def normalized_id(value)
+        integer_id = value.to_i
+        integer_id.positive? ? integer_id : nil
       end
 
       def normalize_text(value)

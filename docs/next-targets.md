@@ -51,6 +51,92 @@ Status: all listed targets (#1-#7) are completed.
    - Move repeated helper logic into `test/support/*`.
    - Prefer shared assertion helpers over copy/pasted assertion blocks.
 
+## Production Log Follow-up Checklist (2026-02-24)
+
+This checklist is derived from production logs and ordered by impact.
+
+1. Optimize slow `/api/v2` hot paths (highest impact)
+   - Evidence from logs:
+     - `/api/v2/move` index around `3347ms`
+     - `/api/v2/pokemon/ditto` show around `1080-1725ms`
+     - `/api/v2/pokemon-species/aegislash` show around `1001ms`
+   - Files to review first:
+     - `app/controllers/api/v2/move_controller.rb`
+     - `app/controllers/api/v2/pokemon_controller.rb`
+     - `app/controllers/api/v2/pokemon_species_controller.rb`
+     - any shared v2 concerns used by these controllers (pagination, payload builders, serializers/presenters)
+   - Action plan:
+     - profile query counts and SQL timings on list/show paths
+     - remove N+1 and avoid high-cardinality eager loads in default payloads
+     - reduce heavy payload assembly work in Ruby for v2 show actions where possible
+     - add/verify indexes for query hotspots discovered in logs/plans
+   - Tests/validation:
+     - extend integration tests for these endpoints with query/time budget assertions where stable
+     - run targeted suites for v2 move/pokemon/pokemon-species controllers
+
+2. Fix request observability metric consistency (`db_ms > duration_ms`)
+   - Evidence from logs:
+     - `db_ms` occasionally exceeds total `duration_ms`, which is not physically consistent
+   - Files to review:
+     - request logging middleware/subscriber implementation under `lib/pokeapi/logging/*`
+     - any instrumentation in `config/initializers/*` that computes request/db/view durations
+   - Action plan:
+     - align timing source and units for total/db/view durations
+     - ensure DB timers are scoped per request and reset correctly
+     - prevent double-counting across nested instrumentation callbacks
+   - Tests/validation:
+     - extend logging formatter tests in `test/lib/pokeapi/logging/*`
+     - assert `db_ms <= duration_ms` for synthetic request cases
+
+3. Reduce root-path 406 noise (`GET/HEAD /` with uncommon `Accept`)
+   - Evidence from logs:
+     - periodic `406` responses on `/` and `HEAD /`
+   - Files to review:
+     - `app/controllers/home_controller.rb`
+     - routing/format handling in `config/routes.rb`
+   - Action plan:
+     - make `/` and `HEAD /` degrade gracefully for broad/unknown accept headers
+     - keep response lightweight and avoid noisy error paths
+   - Tests/validation:
+     - add integration coverage for `HEAD /` and unusual `Accept` headers
+
+4. Ensure real client IP visibility for logs and throttling
+   - Evidence from logs:
+     - many `remote_ip` values are Cloudflare edge/private ranges
+   - Files to review:
+     - proxy/IP config under `config/environments/production.rb`
+     - log event builder fields in `lib/pokeapi/logging/*`
+     - rate-limit keying logic in `config/initializers/rack_attack.rb`
+   - Action plan:
+     - verify trusted proxy configuration and forwarded-IP handling
+     - ensure Rack::Attack keys on real client IP after proxy parsing
+     - optionally log forwarded IP chain for debugging
+   - Tests/validation:
+     - request tests around forwarded headers / remote_ip derivation
+
+5. Optional crawler-noise reduction (`/sitemap.xml`)
+   - Evidence from logs:
+     - recurring `GET /sitemap.xml` `404`
+   - Files to review:
+     - `config/routes.rb`
+     - optional static/public sitemap file
+   - Action plan:
+     - serve a minimal static sitemap or explicit lightweight handler
+   - Tests/validation:
+     - integration check for `/sitemap.xml` response contract
+
+6. Monitor and tune `/api/v3/pokemon/:id` tail latency
+   - Evidence from logs:
+     - occasional slow responses around `583-648ms`
+   - Files to review:
+     - `app/controllers/api/v3/pokemon_controller.rb`
+     - v3 include/payload concerns related to pokemon show
+   - Action plan:
+     - compare cold vs warm behavior
+     - inspect non-DB overhead (rendering, serialization, allocations)
+   - Tests/validation:
+     - keep/expand budget assertions for v3 pokemon show paths
+
 ## Current Focus
 
 - Completed: target #1 (placeholder prose sanitization at import time).

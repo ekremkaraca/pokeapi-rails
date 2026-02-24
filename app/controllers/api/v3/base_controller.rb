@@ -64,6 +64,9 @@ module Api
 
         table = scope.klass.arel_table
         normalized_name = raw.downcase
+        indexed_match = scope.where(name_column => normalized_name).order(scope.klass.primary_key => :asc).first
+        return indexed_match if indexed_match
+
         lower_name = Arel::Nodes::NamedFunction.new("LOWER", [ table[name_column] ])
 
         scope.where(lower_name.eq(normalized_name)).order(scope.klass.primary_key => :asc).first!

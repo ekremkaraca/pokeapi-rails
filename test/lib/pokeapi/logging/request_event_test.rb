@@ -4,7 +4,15 @@ require Rails.root.join("lib/pokeapi/logging/request_event")
 module Pokeapi
   module Logging
     class RequestEventTest < ActiveSupport::TestCase
-      Request = Struct.new(:request_id, :path, :query_parameters, :host, :remote_ip, :user_agent, keyword_init: true)
+      Request = Struct.new(:request_id, :path, :query_parameters, :host, :remote_ip, :user_agent, :headers, keyword_init: true) do
+        def ip
+          remote_ip
+        end
+
+        def get_header(key)
+          headers&.[](key)
+        end
+      end
 
       test "build returns compact structured request event" do
         payload = {
@@ -50,6 +58,7 @@ module Pokeapi
         assert_equal "json", event[:format]
         assert_equal "pokeapi.ekrem.dev", event[:host]
         assert_equal "203.0.113.2", event[:remote_ip]
+        assert_equal "203.0.113.2", event[:client_ip]
         assert_equal Digest::SHA1.hexdigest("curl/8.0"), event[:ua_sha1]
         assert_equal 123.45, event[:duration_ms]
         assert_equal false, event[:slow]
@@ -138,6 +147,63 @@ module Pokeapi
         )
 
         refute event.key?(:params)
+      end
+
+      test "build includes client_ip resolved from forwarded headers" do
+        payload = {
+          request: Request.new(
+            request_id: "req-cf",
+            path: "/",
+            query_parameters: {},
+            host: "pokeapi.ekrem.dev",
+            remote_ip: "172.69.109.75",
+            user_agent: "Mozilla/5.0",
+            headers: { "HTTP_CF_CONNECTING_IP" => "198.51.100.42" }
+          ),
+          method: "GET",
+          path: "/",
+          status: 200,
+          controller: "HomeController",
+          action: "index"
+        }
+
+        event = RequestEvent.build(payload: payload, started_at: 1.0, finished_at: 1.01)
+
+        assert_equal "172.69.109.75", event[:remote_ip]
+        assert_equal "198.51.100.42", event[:client_ip]
+      end
+
+      test "build clamps db and view runtimes to request duration when payload values overflow" do
+        payload = {
+          request: Request.new(
+            request_id: "req-overflow",
+            path: "/api/v2/pokemon/ditto",
+            query_parameters: {},
+            host: "pokeapi.ekrem.dev",
+            remote_ip: "203.0.113.29",
+            user_agent: "curl/8.0"
+          ),
+          method: "GET",
+          path: "/api/v2/pokemon/ditto",
+          status: 200,
+          controller: "Api::V2::PokemonController",
+          action: "show",
+          db_runtime: 1133.54,
+          view_runtime: 9.91
+        }
+
+        event = RequestEvent.build(
+          payload: payload,
+          started_at: 100.0,
+          finished_at: 101.08003
+        )
+
+        assert_equal 1080.03, event[:duration_ms]
+        assert_equal 1080.03, event[:db_ms]
+        assert_equal 9.91, event[:view_ms]
+        assert_equal 1133.54, event[:db_ms_raw]
+        assert_equal 9.91, event[:view_ms_raw]
+        assert_equal true, event[:runtime_clamped]
       end
     end
   end

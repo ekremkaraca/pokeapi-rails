@@ -1,4 +1,5 @@
 require "digest/sha1"
+require Rails.root.join("lib/pokeapi/network/client_ip")
 
 module Pokeapi
   module Logging
@@ -17,6 +18,11 @@ module Pokeapi
           duration_ms = ((finished_at - started_at) * 1000.0).round(2)
           slow_threshold_value = slow_threshold_ms&.to_f
           slow = slow_threshold_value ? duration_ms >= slow_threshold_value : nil
+          runtime_values = normalized_runtime_values(
+            duration_ms: duration_ms,
+            db_runtime_ms: payload[:db_runtime].to_f,
+            view_runtime_ms: payload[:view_runtime].to_f
+          )
 
           {
             event: "request",
@@ -30,12 +36,16 @@ module Pokeapi
             format: normalize_format(payload[:format]),
             host: request&.host,
             remote_ip: request&.remote_ip,
+            client_ip: Pokeapi::Network::ClientIp.from_request(request),
             ua_sha1: user_agent.present? ? Digest::SHA1.hexdigest(user_agent) : nil,
             duration_ms: duration_ms,
             slow: slow,
             slow_threshold_ms: slow_threshold_value,
-            db_ms: payload[:db_runtime].to_f.round(2),
-            view_ms: payload[:view_runtime].to_f.round(2),
+            db_ms: runtime_values[:db_ms],
+            view_ms: runtime_values[:view_ms],
+            db_ms_raw: runtime_values[:db_ms_raw],
+            view_ms_raw: runtime_values[:view_ms_raw],
+            runtime_clamped: runtime_values[:runtime_clamped],
             query_count: parse_integer_header(headers, "X-Query-Count"),
             response_bytes: parse_integer_header(headers, "Content-Length"),
             params: compact_params.presence,
@@ -67,6 +77,25 @@ module Pokeapi
           return nil unless /\A\d+\z/.match?(raw)
 
           raw.to_i
+        end
+
+        def normalized_runtime_values(duration_ms:, db_runtime_ms:, view_runtime_ms:)
+          total = duration_ms.to_f
+          db_raw = db_runtime_ms.round(2)
+          view_raw = view_runtime_ms.round(2)
+
+          # Keep timing fields physically consistent in logs (sub-runtime should not exceed wall time).
+          db = db_raw.clamp(0.0, total).round(2)
+          view = view_raw.clamp(0.0, total).round(2)
+          clamped = (db != db_raw) || (view != view_raw)
+
+          {
+            db_ms: db,
+            view_ms: view,
+            db_ms_raw: clamped ? db_raw : nil,
+            view_ms_raw: clamped ? view_raw : nil,
+            runtime_clamped: clamped ? true : nil
+          }
         end
       end
     end

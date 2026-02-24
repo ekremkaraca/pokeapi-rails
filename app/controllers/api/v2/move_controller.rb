@@ -7,9 +7,20 @@ module Api
       MODEL_CLASS = PokeMove
       RESOURCE_URL_HELPER = :api_v2_move_url
 
+      def show
+        record = find_by_id_or_name!(detail_scope, params[:id])
+        return unless stale_resource?(record: record, cache_key: "#{model_class.name.underscore}/show")
+
+        render json: detail_payload(record)
+      end
+
       private
 
       def model_scope
+        PokeMove.all
+      end
+
+      def detail_scope
         PokeMove.preload(
           :contest_effect,
           :contest_type,

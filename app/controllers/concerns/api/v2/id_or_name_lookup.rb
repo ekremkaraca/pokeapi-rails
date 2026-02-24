@@ -14,7 +14,17 @@ module Api
 
           scope.find(lookup_id)
         elsif NAME_PATTERN.match?(lookup)
-          scope.find_by!("LOWER(name) = ?", lookup.downcase)
+          normalized_name = lookup.downcase
+          primary_key = scope.klass.primary_key
+
+          # Fast path for canonical lowercase names that can use a plain index.
+          indexed_match = scope.where(name: normalized_name).order(primary_key => :asc).first
+          return indexed_match if indexed_match
+
+          table = scope.klass.arel_table
+          lower_name = Arel::Nodes::NamedFunction.new("LOWER", [ table[:name] ])
+
+          scope.where(lower_name.eq(normalized_name)).order(primary_key => :asc).first!
         else
           raise ActiveRecord::RecordNotFound
         end

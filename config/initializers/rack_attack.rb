@@ -1,4 +1,5 @@
 require "digest/sha1"
+require Rails.root.join("lib/pokeapi/network/client_ip")
 
 class Rack::Attack
   class << self
@@ -52,6 +53,10 @@ class Rack::Attack
     )
   }ix.freeze
 
+  def self.client_ip_for(req)
+    Pokeapi::Network::ClientIp.from_request(req)
+  end
+
   safelist("allow-healthcheck") do |req|
     req.path == HEALTHCHECK_PATH
   end
@@ -61,18 +66,18 @@ class Rack::Attack
   end
 
   throttle("api/ip", limit: API_LIMIT, period: API_PERIOD) do |req|
-    req.ip if req.path.start_with?(API_PATH_PREFIX)
+    client_ip_for(req) if req.path.start_with?(API_PATH_PREFIX)
   end
 
   throttle("api/ip/burst", limit: API_BURST_LIMIT, period: API_BURST_PERIOD) do |req|
-    req.ip if req.path.start_with?(API_PATH_PREFIX)
+    client_ip_for(req) if req.path.start_with?(API_PATH_PREFIX)
   end
 
   throttle("non_api/ip", limit: NON_API_LIMIT, period: NON_API_PERIOD) do |req|
     next if req.path.start_with?(API_PATH_PREFIX)
     next if SAFE_NON_API_PATHS.include?(req.path)
 
-    req.ip
+    client_ip_for(req)
   end
 
   if V2_SHOW_LIMIT.positive?
@@ -80,7 +85,7 @@ class Rack::Attack
       next unless req.get? || req.head?
       next unless req.path.match?(%r{\A/api/v2/[^/]+/[^/]+/?\z})
 
-      req.ip
+      client_ip_for(req)
     end
   end
 
@@ -102,9 +107,10 @@ class Rack::Attack
   ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, _id, payload|
     request = payload[:request]
     ua_sha1 = Digest::SHA1.hexdigest(request.user_agent.to_s)
+    client_ip = client_ip_for(request)
     Rails.logger.warn(
       "[rack-attack] throttle=#{payload[:match_type]} rule=#{payload[:match_discriminator]} " \
-      "host=#{request.host} method=#{request.request_method} ip=#{request.ip} " \
+      "host=#{request.host} method=#{request.request_method} ip=#{client_ip} " \
       "ua_sha1=#{ua_sha1} path=#{request.path}"
     )
   end

@@ -16,4 +16,17 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "h4", text: "v2"
     assert_select "h4", text: "v3"
   end
+
+  test "renders root successfully for non-html accept headers" do
+    get "/", headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    assert_equal "text/html; charset=utf-8", response.headers["Content-Type"]
+  end
+
+  test "head root responds successfully without 406" do
+    head "/", headers: { "Accept" => "*/*" }
+
+    assert_response :success
+  end
 end
