@@ -2,7 +2,7 @@
 
 This document tracks what has already been implemented in `pokeapi-rails` during the Django -> Rails adoption.
 
-Recent consolidated updates are tracked in `docs/recent-changes.md`.
+Recent consolidated updates are tracked in `docs/planning/recent-changes.md`.
 
 ## Completed Foundations
 
@@ -52,7 +52,7 @@ Recent consolidated updates are tracked in `docs/recent-changes.md`.
   - added focused model tests for these association paths
   - completed broader model association normalization across ability/pokemon/move/item/language/berry/region domains
   - verified that FK-backed models have explicit association mappings
-  - documented association decisions and standalone lookup models in `docs/model-association-audit.md`
+  - documented association decisions and standalone lookup models in `docs/architecture/model-association-audit.md`
 - Parity tooling implemented:
   - `pokeapi:parity:diff` task compares sampled Django vs Rails responses
   - normalized base-URL handling to avoid false positives on host differences
@@ -99,7 +99,7 @@ Recent consolidated updates are tracked in `docs/recent-changes.md`.
 - Crawler-noise reduction:
   - lightweight `/sitemap.xml` endpoint is served explicitly
 - Deployment/runtime hardening updates completed:
-  - docs moved to dedicated `docs/deployment.md`
+  - docs moved to dedicated `docs/operations/deployment.md`
   - Dockerfile tuned for leaner runtime + safer dependency copying
   - boot-time DB prepare made explicit/optional (manual one-off preferred)
   - CI heavy parity/budget pipeline removed from GitHub Actions (kept for local/manual runs)
@@ -165,7 +165,7 @@ Recent consolidated updates are tracked in `docs/recent-changes.md`.
   - archive JSON artifacts for each release candidate
 - Add deploy guardrails/runbook automation:
   - explicit one-off `db:migrate` and `db:seed` steps for fresh environments
-  - verify production env var checklist from `docs/deployment.md`
+  - verify production env var checklist from `docs/operations/deployment.md`
 - Define cutover readiness signals:
   - acceptable p95 latency and 429 rates after rate limiting
   - endpoint error-rate threshold and rollback trigger

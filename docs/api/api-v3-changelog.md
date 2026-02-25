@@ -16,7 +16,7 @@
   - `X-RateLimit-Burst-Limit`
   - `X-RateLimit-Burst-Period`
   - `X-RateLimit-Policy`
-- Moved deployment runbook details out of `README.md` into `docs/deployment.md`.
+- Moved deployment runbook details out of `README.md` into `docs/operations/deployment.md`.
 - Reduced GitHub Actions cost by removing heavy parity/budget checks from CI (kept available for local/manual runs).
 - Enforced JSON-only behavior on API endpoints:
   - API routes now default to JSON format

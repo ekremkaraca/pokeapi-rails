@@ -192,10 +192,10 @@ Exit criteria:
   - `/api/v3` OpenAPI skeleton added at `public/openapi-v3.yml`
   - validation task added: `bin/rails pokeapi:contract:validate_v3_openapi`
 - Versioning/adoption docs added:
-  - version/deprecation policy: `docs/api-versioning-policy.md`
-  - pilot migration guide: `docs/api-v3-migration-guide.md`
-  - pilot performance budgets: `docs/api-v3-performance-budgets.md`
-  - v3 changelog: `docs/api-v3-changelog.md`
+  - version/deprecation policy: `docs/api/api-versioning-policy.md`
+  - pilot migration guide: `docs/api/api-v3-migration-guide.md`
+  - pilot performance budgets: `docs/api/api-v3-performance-budgets.md`
+  - v3 changelog: `docs/api/api-v3-changelog.md`
 - Phase 1 pilot foundation started:
   - implemented `GET /api/v3/pokemon`
   - implemented `GET /api/v3/pokemon/{id}`

@@ -20,6 +20,7 @@ Runs a focused subset of key integration tests for immediate feedback on every P
 - Catch configuration errors
 - Verify app boots and responds
 - Detect obvious breakage fast
+- **Fail the build** when tests fail (prevents broken code from passing CI)
 - Provide quick CI feedback (30-60 seconds)
 
 **Tests Run:**
@@ -31,13 +32,13 @@ Runs a focused subset of key integration tests for immediate feedback on every P
 
 **Command:**
 ```bash
-bin/rails test \
-  test/integration/api/v2/pokemon_controller_test.rb \
-  test/integration/api/v3/pokemon_controller_test.rb \
-  test/integration/api/v3/ability_controller_test.rb \
-  test/integration/home_controller_test.rb \
-  test/integration/api/v2/pokemon_encounters_controller_test.rb
+bin/rails test test:integration_smoke
 ```
+
+**Behavior:**
+- Tests run sequentially, failing on first error
+- CI build shows ❌ when any test fails
+- Prevents broken code from passing checks
 
 ### test_integration
 
@@ -109,12 +110,13 @@ bin/rails test test:all
 - ❌ Unclear quality signal to external reviewers
 
 ### After
-- ✅ **Ultra-fast smoke tests** (30-60 seconds) catch obvious issues immediately
+- ✅ **Test failure detection** - Tests now properly fail when tests fail, raising errors to break CI
+- ✅ **Fast smoke tests** (30-60 seconds) catch configuration errors and obvious breakage
 - ✅ **Parallel test execution** - 3 jobs run simultaneously
-- ✅ **Clear quality signal** - Green checkmarks on every PR
-- ✅ **Guardrails** - Can't merge failing tests
+- ✅ **Clear quality signal** - Green checkmarks accurately reflect test status
+- ✅ **Guardrails** - Can't merge failing tests (tests now fail builds)
 - ✅ **Reproducible environment** - Same test environment for everyone
-- ✅ **Comprehensive coverage** - All 167 test files can be run
+- ✅ **Comprehensive coverage** - All 157 test files can be run
 
 ## Test Coverage Summary
 

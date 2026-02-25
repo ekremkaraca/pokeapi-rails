@@ -18,7 +18,7 @@ This file is a compact timeline of major updates made during the current migrati
   - slow-request warn threshold via env
   - optional suppression for common noisy 404 scanner/static-miss paths
 - Added formatter tests in `test/lib/pokeapi/logging/request_event_test.rb`.
-- Documented full logging behavior and env controls in `docs/logging.md`.
+- Documented full logging behavior and env controls in `docs/operations/logging.md`.
 
 ## 2026-02-21
 
@@ -59,7 +59,7 @@ This file is a compact timeline of major updates made during the current migrati
 
 - Replaced `rswag-ui`/`rswag-api` setup with `oas_rails`.
 - Updated docs links and deployment guidance for public OpenAPI serving.
-- Moved deployment runbook content from `README.md` into `docs/deployment.md`.
+- Moved deployment runbook content from `README.md` into `docs/operations/deployment.md`.
 
 ## 2026-02-24
 
@@ -99,6 +99,8 @@ This file is a compact timeline of major updates made during the current migrati
 
 - Removed heavy parity/budget checks from GitHub Actions CI to reduce recurring cost.
 - Kept parity/contract budget checks available for local/manual release gates.
+- Added a solo-maintainer execution roadmap in `docs/planning/solo-maintainer-roadmap.md`.
+- Added architecture decision records in `docs/architecture/architecture-decisions.md` to document core trade-offs and rationale.
 
 ### Model and controller normalization
 
@@ -106,7 +108,7 @@ This file is a compact timeline of major updates made during the current migrati
 - Added explicit `foreign_key` / `inverse_of` where naming is non-standard.
 - Added/updated model associations for ability, pokemon, move, item, language, berry, region, type, and related graphs.
 - Refactored selected controllers to use associations while preserving response payload shape.
-- Documented audit details in `docs/model-association-audit.md`.
+- Documented audit details in `docs/architecture/model-association-audit.md`.
 
 ### Deployment hardening
 
@@ -118,5 +120,5 @@ This file is a compact timeline of major updates made during the current migrati
 
 ## Notes
 
-- For active status and remaining release tasks, see `docs/implementation-status.md`.
-- For migration planning context, see `docs/rails-adoption-plan.md`.
+- For active status and remaining release tasks, see `docs/planning/implementation-status.md`.
+- For migration planning context, see `docs/planning/rails-adoption-plan.md`.

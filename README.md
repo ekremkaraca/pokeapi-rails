@@ -46,15 +46,7 @@ The v3 version allows testing improved API patterns before making breaking chang
 
 ## Docs
 
-- Plan: [`docs/rails-adoption-plan.md`](docs/rails-adoption-plan.md)
-- Implementation status: [`docs/implementation-status.md`](docs/implementation-status.md)
-- Recent changes timeline: [`docs/recent-changes.md`](docs/recent-changes.md)
-- Next targets: [`docs/next-targets.md`](docs/next-targets.md)
-- Model association audit: [`docs/model-association-audit.md`](docs/model-association-audit.md)
-- Import guide: [`docs/importing.md`](docs/importing.md)
-- Logging guide: [`docs/logging.md`](docs/logging.md)
-- Parity diff guide: [`docs/parity-diff.md`](docs/parity-diff.md)
-- Deployment guide: [`docs/deployment.md`](docs/deployment.md)
+- Documentation index: [`docs/README.md`](docs/README.md)
 
 ## Tech Stack
 
