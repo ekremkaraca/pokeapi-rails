@@ -14,7 +14,7 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "oj"
 gem "thruster", require: false
-gem "prosopite", "~> 2.1", ">= 2.1.2"
+gem "prosopite", "~> 2.2"
 gem "pg_query", "~> 6.2", ">= 6.2.2"
 gem "image_processing", "~> 1.2"
 gem "csv", "~> 3.3"
